@@ -33,17 +33,17 @@ class SettingsBLoC {
     return _userId;
   }
 
-  String get studyId => "2";
+  String get studyId => "1";
 
   /// The CARP username.
-  String get username => "researcher@example.com";
+  String get username => "googlePlay@test.dk";
 
   /// The CARP password.
-  String get password =>
-      "..."; //decrypt("lkjhf98sdvhcksdmnfewoiywefhowieyurpo2hjr");
+  String get password => "googlePlay";
+      //"..."; //decrypt("lkjhf98sdvhcksdmnfewoiywefhowieyurpo2hjr");
 
   /// The URI of the CARP server.
-  String get uri => "http://0.0.0.0:8091";
+  String get uri => "http://nolo.ugr.es:8089";
 
   String get clientID => "carp";
   String get clientSecret => "carp";

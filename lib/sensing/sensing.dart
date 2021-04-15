@@ -53,7 +53,7 @@ class Sensing implements StudyManager {
         ..name = 'POSTCOVID-AI'
         ..description = "Fork from pulmonary monitor app"
         ..dataEndPoint =
-            getDataEndpoint(DataEndPointTypes.FILE) // TODO use CARP here
+            getDataEndpoint(DataEndPointTypes.CARP) // TODO use CARP here
         // Measure sensors every 5 mins
         ..addTriggerTask(
             PeriodicTrigger(period: Duration(minutes: 5)),
