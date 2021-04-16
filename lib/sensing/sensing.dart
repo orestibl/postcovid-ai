@@ -56,20 +56,27 @@ class Sensing implements StudyManager {
             getDataEndpoint(DataEndPointTypes.CARP) // TODO use CARP here
         // Measure sensors every 5 mins
         ..addTriggerTask(
-            PeriodicTrigger(period: Duration(minutes: 5)),
-            AutomaticTask()
-              ..measures = SamplingSchema.common()
-                  .getMeasureList(namespace: NameSpace.CARP, types: [
-                ContextSamplingPackage.LOCATION,
+            ImmediateTrigger(),
+            AutomaticTask(name: 'sensor task')
+              ..measures = SamplingSchema.common().getMeasureList(types: [
                 ContextSamplingPackage.ACTIVITY,
                 ContextSamplingPackage.MOBILITY,
                 ContextSamplingPackage.WEATHER,
-                SensorSamplingPackage.ACCELEROMETER,
                 AudioSamplingPackage.NOISE,
                 ConnectivitySamplingPackage.CONNECTIVITY,
                 ConnectivitySamplingPackage.BLUETOOTH,
                 ConnectivitySamplingPackage.WIFI
               ]))
+
+        // Manually set up accelerometer sampling (too high freq with common sampling schema)
+        /*..addTriggerTask(
+            ImmediateTrigger(),
+            AutomaticTask(name: 'accelerometer task')
+              ..addMeasure(PeriodicMeasure(
+                  type: MeasureType(NameSpace.CARP, SensorSamplingPackage.ACCELEROMETER),
+                  frequency: const Duration(minutes: 10),
+                  duration: const Duration(seconds: 1))))
+        */
         // Add a (test) survey every 10 min and catch location value when performing it
         ..addTriggerTask(
             PeriodicTrigger(period: Duration(minutes: 30)),
