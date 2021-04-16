@@ -57,19 +57,22 @@ class Sensing implements StudyManager {
         // Measure sensors every 5 mins
         ..addTriggerTask(
             PeriodicTrigger(period: Duration(minutes: 5)),
-            Task()
+            AutomaticTask()
               ..measures = SamplingSchema.common()
                   .getMeasureList(namespace: NameSpace.CARP, types: [
                 ContextSamplingPackage.LOCATION,
+                ContextSamplingPackage.ACTIVITY,
+                ContextSamplingPackage.MOBILITY,
+                ContextSamplingPackage.WEATHER,
                 SensorSamplingPackage.ACCELEROMETER,
-                AudioSamplingPackage.AUDIO,
+                AudioSamplingPackage.NOISE,
                 ConnectivitySamplingPackage.CONNECTIVITY,
                 ConnectivitySamplingPackage.BLUETOOTH,
                 ConnectivitySamplingPackage.WIFI
               ]))
         // Add a (test) survey every 10 min and catch location value when performing it
         ..addTriggerTask(
-            PeriodicTrigger(period: Duration(minutes: 10)),
+            PeriodicTrigger(period: Duration(minutes: 30)),
             AppTask(
               type: SurveyUserTask.SURVEY_TYPE,
               title: testSurvey.title,
@@ -81,10 +84,6 @@ class Sensing implements StudyManager {
                 name: testSurvey.title,
                 enabled: true,
                 surveyTask: testSurvey.survey,
-              ))
-              ..measures.add(Measure(
-                type: MeasureType(
-                    NameSpace.CARP, ContextSamplingPackage.LOCATION),
               )));
     }
 
