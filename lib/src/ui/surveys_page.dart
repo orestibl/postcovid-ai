@@ -13,7 +13,8 @@ class _TaskListState extends State<TaskList> {
       GlobalKey<ScaffoldState>();
 
   Widget build(BuildContext context) {
-    List<UserTask> tasks = bloc.tasks.reversed.toList();
+    List<UserTask> tasks =
+        []; // TODO insert tasks bloc.tasks.reversed.toList();
 
     return Scaffold(
       key: scaffoldKey,
@@ -67,14 +68,21 @@ class _TaskListState extends State<TaskList> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               ListTile(
-                leading: taskTypeIcon[userTask.type],
-                title: Text(userTask.title),
-                subtitle: Text(userTask.description),
-                trailing: taskStateIcon[userTask.state],
-              ),
+                  leading: Icon(
+                    Icons.description,
+                    color: CACHET.ORANGE,
+                    size: 40,
+                  ), // TODO fix when research package is installedtaskTypeIcon[userTask.type],
+                  title: Text(userTask.title),
+                  subtitle: Text(userTask.description),
+                  trailing: Icon(
+                    Icons.description,
+                    color: CACHET.ORANGE,
+                    size: 40,
+                  ) //taskStateIcon[userTask.state], TODO fix when research package is installed
+                  ),
               // TODO - only add button if there is a task to do. Might be an info card.
-              (userTask.state == UserTaskState.enqueued ||
-                      userTask.state == UserTaskState.onhold)
+              (userTask.state == UserTaskState.enqueued)
                   ? ButtonBar(
                       children: <Widget>[
                         FlatButton(
@@ -89,7 +97,7 @@ class _TaskListState extends State<TaskList> {
       ),
     );
   }
-
+/*
   Map<String, Icon> get taskTypeIcon => {
         SurveyUserTask.WHO5_SURVEY_TYPE: Icon(
           Icons.design_services,
@@ -123,7 +131,8 @@ class _TaskListState extends State<TaskList> {
         UserTaskState.enqueued: Icon(Icons.notifications, color: CACHET.YELLOW),
         UserTaskState.dequeued: Icon(Icons.stop, color: CACHET.YELLOW),
         UserTaskState.started: Icon(Icons.play_arrow, color: CACHET.GREY_4),
-        UserTaskState.onhold: Icon(Icons.pause, color: CACHET.GREY_4),
         UserTaskState.done: Icon(Icons.check, color: CACHET.GREEN),
       };
+
+ */
 }
