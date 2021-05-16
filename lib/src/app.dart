@@ -35,14 +35,16 @@ class App extends StatelessWidget {
 
 class CarpMobileSensingApp extends StatefulWidget {
   CarpMobileSensingApp({Key key}) : super(key: key);
-
   CarpMobileSensingAppState createState() => CarpMobileSensingAppState();
 }
 
 class CarpMobileSensingAppState extends State<CarpMobileSensingApp> {
   int _selectedIndex = 0;
 
-  final _pages = [HomePage(), TaskList()];
+  final _pages = [
+    HomePage(),
+    TaskList()
+  ];
 
   void initState() {
     super.initState();

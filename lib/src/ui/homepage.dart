@@ -4,22 +4,22 @@ class HomePage extends StatefulWidget {
   const HomePage({Key key}) : super(key: key);
   static const String routeName = '/study';
 
-  _StudyVizState createState() => _StudyVizState(bloc.studyDeploymentModel);
+  _HomePageState createState() => _HomePageState(bloc.studyDeploymentModel);
 }
 
-class _StudyVizState extends State<HomePage> {
+class _HomePageState extends State<HomePage> {
   static final GlobalKey<ScaffoldState> _scaffoldKey =
       GlobalKey<ScaffoldState>();
   final double _appBarHeight = 256.0;
 
   final StudyDeploymentModel studyDeploymentModel;
 
-  _StudyVizState(this.studyDeploymentModel) : super();
+  _HomePageState(this.studyDeploymentModel) : super();
 
   Widget build(BuildContext context) =>
-      _buildStudyVisualization(context, bloc.studyDeploymentModel);
+        _buildHomePage(context, bloc.studyDeploymentModel);
 
-  Widget _buildStudyVisualization(
+  Widget _buildHomePage(
     BuildContext context,
     StudyDeploymentModel studyDeploymentModel,
   ) {
@@ -41,6 +41,15 @@ class _StudyVizState extends State<HomePage> {
                 ),
                 tooltip: 'Settings',
                 onPressed: _showSettings,
+              ),
+              IconButton(
+                icon: Icon(
+                  Theme.of(context).platform == TargetPlatform.iOS
+                      ? Icons.more_horiz
+                      : Icons.more_vert,
+                ),
+                tooltip: 'Informed Conset',
+                onPressed: _showInformedConsent,
               ),
             ],
             flexibleSpace: FlexibleSpaceBar(
@@ -146,6 +155,10 @@ class _StudyVizState extends State<HomePage> {
     Scaffold.of(context).showSnackBar(const SnackBar(
         content: Text('Settings not implemented yet...', softWrap: true)));
   }
+
+  void _showInformedConsent() {
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => InformedConsentPage()));
+  }
 }
 
 class _StudyControllerLine extends StatelessWidget {
@@ -169,6 +182,8 @@ class _StudyControllerLine extends StatelessWidget {
                         TextSpan(text: line),
                       ],
                     ),
-                  )));
+                  )
+        )
+    );
   }
 }

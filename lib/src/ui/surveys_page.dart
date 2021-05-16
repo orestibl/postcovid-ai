@@ -13,8 +13,7 @@ class _TaskListState extends State<TaskList> {
       GlobalKey<ScaffoldState>();
 
   Widget build(BuildContext context) {
-    List<UserTask> tasks =
-        []; // TODO insert tasks bloc.tasks.reversed.toList();
+    List<UserTask> tasks = bloc.tasks.reversed.toList();
 
     return Scaffold(
       key: scaffoldKey,
@@ -82,7 +81,8 @@ class _TaskListState extends State<TaskList> {
                   ) //taskStateIcon[userTask.state], TODO fix when research package is installed
                   ),
               // TODO - only add button if there is a task to do. Might be an info card.
-              (userTask.state == UserTaskState.enqueued)
+              (userTask.state == UserTaskState.enqueued ||
+                  userTask.state == UserTaskState.canceled)
                   ? ButtonBar(
                       children: <Widget>[
                         FlatButton(

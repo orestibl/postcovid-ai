@@ -7,6 +7,9 @@ class SensingBLoC {
 
   CarpApp get app => _app;
 
+  /// The list of available app tasks for the user to address.
+  List<UserTask> get tasks => AppTaskController().userTaskQueue;
+
   /// Is sensing running, i.e. has the study executor been resumed?
   bool get isRunning =>
       (Sensing().controller != null) &&

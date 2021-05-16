@@ -1,22 +1,27 @@
 library postcovid_ai;
 
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:async';
+import 'dart:convert';
 
-import 'package:carp_audio_package/audio.dart';
-import 'package:carp_backend/carp_backend.dart';
-import 'package:carp_connectivity_package/connectivity.dart';
-// import 'package:carp_connectivity_package/connectivity.dart';
-import 'package:carp_context_package/context.dart';
+import 'package:research_package/research_package.dart';
+import 'src/research_package_objects/informed_consent_objects.dart';
+import 'src/research_package_objects/linear_survey_objects.dart';
+
 import 'package:carp_core/carp_core.dart';
 import 'package:carp_mobile_sensing/carp_mobile_sensing.dart';
+import 'package:carp_audio_package/audio.dart';
+// import 'package:carp_connectivity_package/connectivity.dart';
+import 'package:carp_context_package/context.dart';
+import 'package:carp_survey_package/survey.dart';
 //import 'package:carp_communication_package/communication.dart';
 //import 'package:carp_apps_package/apps.dart';
 
 import 'package:carp_webservices/carp_auth/carp_auth.dart';
 import 'package:carp_webservices/carp_services/carp_services.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_foreground_service/flutter_foreground_service.dart';
+import 'package:carp_backend/carp_backend.dart';
+//import 'package:flutter_foreground_service/flutter_foreground_service.dart';
 
 import 'src/sensing/credentials.dart';
 
@@ -32,13 +37,17 @@ part 'src/sensing/study_protocol_manager.dart';
 part 'src/ui/cachet.dart';
 part 'src/ui/homepage.dart';
 part 'src/ui/surveys_page.dart';
+part 'src/ui/informed_consent_page.dart';
+part 'src/ui/linear_survey_page.dart';
 
+/*
 void startForegroundService() async {
   ForegroundServiceHandler.notification.setTitle("PostCOVID-AI");
   ForegroundServiceHandler.notification.setText("App is sensing");
   ForegroundService().start();
   debugPrint("Started service");
 }
+ */
 
 void main() {
   runApp(App());
