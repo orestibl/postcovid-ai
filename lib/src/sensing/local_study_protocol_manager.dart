@@ -17,15 +17,7 @@ class LocalStudyProtocolManager implements StudyProtocolManager {
   /// Create a new CAMS study protocol.
   Future<StudyProtocol> getStudyProtocol(String ignored) async {
     CAMSStudyProtocol protocol = CAMSStudyProtocol()
-      ..name = '#23-Coverage'
-      ..dataEndPoint = CarpDataEndPoint(
-          uploadMethod: CarpUploadMethod.DATA_POINT,
-          name: 'CARP Staging Server',
-          uri: uri,
-          clientId: clientID,
-          clientSecret: clientSecret,
-          email: username,
-          password: password)
+      ..name = '#24-Local CAMS app protocol'
       ..owner = ProtocolOwner(
         id: 'AB',
         name: 'Alex Boyon',
@@ -33,27 +25,46 @@ class LocalStudyProtocolManager implements StudyProtocolManager {
       )
       ..protocolDescription = StudyProtocolDescription(
         title: 'Sensing Coverage Study',
-        description: 'This is a study for testing the coverage of sampling.',
+        description: 'This is a study for testing the coverage of sampling. '
+            'This is the version of the protocol generated locally on the phone.',
       );
 
     // Define which devices are used for data collection.
     Smartphone phone = Smartphone();
 
-    protocol..addMasterDevice(phone);
+    protocol
+      ..addMasterDevice(phone);
 
     protocol.addTriggeredTask(
         ImmediateTrigger(),
         AutomaticTask()
           ..measures = SamplingPackageRegistry().debug().getMeasureList(
             types: [
-              ContextSamplingPackage.ACTIVITY,
-              ContextSamplingPackage.MOBILITY,
+              // ConnectivitySamplingPackage.CONNECTIVITY,
+              // ConnectivitySamplingPackage.WIFI, // 60 s
+              AudioSamplingPackage.NOISE, // 60 s
+              ContextSamplingPackage.ACTIVITY, // ~3 s
+              ContextSamplingPackage.MOBILITY, // ~3 s
               ContextSamplingPackage.WEATHER,
-              AudioSamplingPackage.NOISE,
-              //ConnectivitySamplingPackage.CONNECTIVITY,
             ],
           ),
         phone);
+
+    // protocol.addTriggeredTask(
+    //     RandomRecurrentTrigger(
+    //       startTime: Time(hour: 23, minute: 56),
+    //       endTime: Time(hour: 24, minute: 0),
+    //       minNumberOfTriggers: 2,
+    //       maxNumberOfTriggers: 8,
+    //     ),
+    //     AutomaticTask()
+    //       ..measures = SamplingPackageRegistry().debug().getMeasureList(
+    //         types: [
+    //           DeviceSamplingPackage.DEVICE,
+    //           ContextSamplingPackage.LOCATION,
+    //         ],
+    //       ),
+    //     phone);
 
     protocol.addTriggeredTask(
         ImmediateTrigger(),
@@ -81,7 +92,7 @@ class LocalStudyProtocolManager implements StudyProtocolManager {
               type: 'dk.cachet.carp.periodic_accelerometer',
               name: 'Accelerometer',
               description:
-                  'Collects movement data based on the onboard phone accelerometer sensor.',
+              'Collects movement data based on the onboard phone accelerometer sensor.',
               enabled: true,
               frequency: const Duration(minutes: 25),
               duration: const Duration(seconds: 1),
@@ -116,34 +127,7 @@ class LocalStudyProtocolManager implements StudyProtocolManager {
             surveyTask: linearSurveyTask,
           )),
         phone);
-/*
-    protocol.addTriggeredTask(
-        RandomRecurrentTrigger(
-          startTime: Time(hour: 23, minute: 56),
-          endTime: Time(hour: 24, minute: 0),
-          minNumberOfTriggers: 2,
-          maxNumberOfTriggers: 8,
-        ),
-        AutomaticTask()
-          ..measures = SamplingPackageRegistry().debug().getMeasureList(
-            types: [
-              DeviceSamplingPackage.DEVICE,
-              ContextSamplingPackage.LOCATION,
-            ],
-          ),
-        phone);
 
-    protocol.addTriggeredTask(
-        PeriodicTrigger(period: Duration(minutes: 5)), // 5 min
-        AutomaticTask()
-          ..measures = SamplingPackageRegistry().debug().getMeasureList(
-            types: [
-              ContextSamplingPackage.WEATHER,
-              ContextSamplingPackage.AIR_QUALITY,
-            ],
-          ),
-        phone);
-*/
     return protocol;
   }
 
