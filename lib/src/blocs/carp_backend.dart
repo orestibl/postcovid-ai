@@ -1,10 +1,6 @@
 part of postcovid_ai;
 
 class CarpBackend {
-  //static const String PROD_URI = "http://nolo.ugr.es:8089";
-  //static const String CLIENT_ID = "carp";
-  //static const String CLIENT_SECRET = "carp";
-
   static CarpBackend _instance = CarpBackend._();
   CarpBackend._() : super();
 

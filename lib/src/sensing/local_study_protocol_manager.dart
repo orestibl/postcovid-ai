@@ -18,11 +18,6 @@ class LocalStudyProtocolManager implements StudyProtocolManager {
   Future<StudyProtocol> getStudyProtocol(String ignored) async {
     CAMSStudyProtocol protocol = CAMSStudyProtocol()
       ..name = '#24-Local CAMS app protocol'
-      ..owner = ProtocolOwner(
-        id: 'AB',
-        name: 'Alex Boyon',
-        email: 'alex@uni.dk',
-      )
       ..protocolDescription = StudyProtocolDescription(
         title: 'Sensing Coverage Study',
         description: 'This is a study for testing the coverage of sampling. '
@@ -32,8 +27,7 @@ class LocalStudyProtocolManager implements StudyProtocolManager {
     // Define which devices are used for data collection.
     Smartphone phone = Smartphone();
 
-    protocol
-      ..addMasterDevice(phone);
+    protocol..addMasterDevice(phone);
 
     protocol.addTriggeredTask(
         ImmediateTrigger(),
@@ -92,7 +86,7 @@ class LocalStudyProtocolManager implements StudyProtocolManager {
               type: 'dk.cachet.carp.periodic_accelerometer',
               name: 'Accelerometer',
               description:
-              'Collects movement data based on the onboard phone accelerometer sensor.',
+                  'Collects movement data based on the onboard phone accelerometer sensor.',
               enabled: true,
               frequency: const Duration(minutes: 25),
               duration: const Duration(seconds: 1),
@@ -107,8 +101,7 @@ class LocalStudyProtocolManager implements StudyProtocolManager {
           type: SurveyUserTask.SURVEY_TYPE,
           title: "IMMEDIATE SURVEY",
           description: "test of immediate survey",
-        )
-          ..measures.add(RPTaskMeasure(
+        )..measures.add(RPTaskMeasure(
             type: SurveySamplingPackage.SURVEY,
             surveyTask: linearSurveyTask,
           )),
@@ -121,8 +114,7 @@ class LocalStudyProtocolManager implements StudyProtocolManager {
           type: SurveyUserTask.SURVEY_TYPE,
           title: "PERIODIC SURVEY",
           description: "test of periodic survey",
-        )
-          ..measures.add(RPTaskMeasure(
+        )..measures.add(RPTaskMeasure(
             type: SurveySamplingPackage.SURVEY,
             surveyTask: linearSurveyTask,
           )),
