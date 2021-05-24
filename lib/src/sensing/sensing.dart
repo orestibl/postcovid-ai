@@ -110,6 +110,20 @@ class Sensing {
     // add and deploy this deployment
     _controller = await client.addStudy(studyDeploymentId, deviceRolename);
 
+    // Set data endpoint to deployment
+    if (bloc.deploymentMode == DeploymentMode.CARP) {
+      CarpDataEndPoint cdep = CarpDataEndPoint(
+          uploadMethod: CarpUploadMethod.DATA_POINT,
+          uri: uri,
+          name: "CANS Production @ UGR",
+          clientId: clientID,
+          clientSecret: clientSecret,
+          email: username,
+          password: password
+      );
+      deployment.dataEndPoint = cdep;
+    }
+
     // configure the controller with the default privacy schema
     await _controller.configure(
       privacySchemaName: PrivacySchema.DEFAULT,
