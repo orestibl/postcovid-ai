@@ -17,6 +17,8 @@ class Sensing {
   DeploymentService deploymentService;
   SmartPhoneClientManager client;
 
+  String deploymentId;
+
   /// The deployment is running on this phone
   CAMSMasterDeviceDeployment get deployment => _controller?.deployment;
 
@@ -88,11 +90,25 @@ class Sensing {
           await CarpService()
             .authenticate(username: username, password: password);
 
+        CarpParticipationService().configureFrom(CarpService());
+        CarpDeploymentService().configureFrom(CarpService());
+
+        // get invitations for this account (user)
+        List<ActiveParticipationInvitation> invitations =
+        await CarpParticipationService().getActiveParticipationInvitations();
+
+        // Get study deployment id
+        if (invitations.isNotEmpty) {
+          deploymentId = invitations[0].participation.studyDeploymentId;
+        } else {
+          deploymentId = testStudyDeploymentId;
+        }
+
         // get the study deployment id
         // this would normally be done by getting the invitations for this user,
         // but for demo/testing we're using the deployment id in the 'credentials.dart' file
         _status = await CustomProtocolDeploymentService()
-            .getStudyDeploymentStatus(testStudyDeploymentId);
+           .getStudyDeploymentStatus(deploymentId);
 
         // now register the CARP data manager for uploading data back to CARP
         DataManagerRegistry().register(CarpDataManager());
