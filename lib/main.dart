@@ -7,7 +7,6 @@ import 'dart:convert';
 
 import 'package:research_package/research_package.dart';
 import 'src/research_package_objects/informed_consent_objects.dart';
-import 'src/research_package_objects/linear_survey_objects.dart';
 
 import 'package:carp_mobile_sensing/carp_mobile_sensing.dart';
 import 'package:carp_audio_package/audio.dart';
@@ -38,7 +37,6 @@ part 'src/ui/cachet.dart';
 part 'src/ui/homepage.dart';
 part 'src/ui/surveys_page.dart';
 part 'src/ui/informed_consent_page.dart';
-part 'src/ui/linear_survey_page.dart';
 
 void main() {
   runApp(App());

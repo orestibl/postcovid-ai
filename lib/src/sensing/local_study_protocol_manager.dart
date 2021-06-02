@@ -95,30 +95,30 @@ class LocalStudyProtocolManager implements StudyProtocolManager {
         phone);
 
     // collect demographics & location once when the study starts
-    protocol.addTriggeredTask(
-        ImmediateTrigger(),
-        AppTask(
-          type: SurveyUserTask.SURVEY_TYPE,
-          title: "IMMEDIATE SURVEY",
-          description: "test of immediate survey",
-        )..measures.add(RPTaskMeasure(
-            type: SurveySamplingPackage.SURVEY,
-            surveyTask: linearSurveyTask,
-          )),
-        phone);
-
-    // collect symptoms on a daily basis
-    protocol.addTriggeredTask(
-        PeriodicTrigger(period: Duration(minutes: 1)),
-        AppTask(
-          type: SurveyUserTask.SURVEY_TYPE,
-          title: "PERIODIC SURVEY",
-          description: "test of periodic survey",
-        )..measures.add(RPTaskMeasure(
-            type: SurveySamplingPackage.SURVEY,
-            surveyTask: linearSurveyTask,
-          )),
-        phone);
+    // protocol.addTriggeredTask(
+    //     ImmediateTrigger(),
+    //     AppTask(
+    //       type: SurveyUserTask.SURVEY_TYPE,
+    //       title: "IMMEDIATE SURVEY",
+    //       description: "test of immediate survey",
+    //     )..measures.add(RPTaskMeasure(
+    //         type: SurveySamplingPackage.SURVEY,
+    //         surveyTask: linearSurveyTask,
+    //       )),
+    //     phone);
+    //
+    // // collect symptoms on a daily basis
+    // protocol.addTriggeredTask(
+    //     PeriodicTrigger(period: Duration(minutes: 1)),
+    //     AppTask(
+    //       type: SurveyUserTask.SURVEY_TYPE,
+    //       title: "PERIODIC SURVEY",
+    //       description: "test of periodic survey",
+    //     )..measures.add(RPTaskMeasure(
+    //         type: SurveySamplingPackage.SURVEY,
+    //         surveyTask: linearSurveyTask,
+    //       )),
+    //     phone);
 
     return protocol;
   }

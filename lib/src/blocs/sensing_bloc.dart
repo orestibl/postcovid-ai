@@ -3,6 +3,7 @@ part of postcovid_ai;
 class SensingBLoC {
   CAMSMasterDeviceDeployment get deployment => Sensing().deployment;
   StudyDeploymentModel _model;
+  RPTask rpTask = new RPTask('rpTask');
 
   /// What kind of deployment are we running - local or CARP?
   DeploymentMode deploymentMode = DeploymentMode.CARP;
