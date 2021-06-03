@@ -6,7 +6,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:research_package/research_package.dart';
-import 'src/research_package_objects/informed_consent_objects.dart';
 
 import 'package:carp_mobile_sensing/carp_mobile_sensing.dart';
 import 'package:carp_audio_package/audio.dart';

@@ -48,7 +48,7 @@ class _HomePageState extends State<HomePage> {
                       ? Icons.more_horiz
                       : Icons.more_vert,
                 ),
-                tooltip: 'Informed Conset',
+                tooltip: 'Informed Consent',
                 onPressed: _showInformedConsent,
               ),
             ],
@@ -156,8 +156,15 @@ class _HomePageState extends State<HomePage> {
         content: Text('Settings not implemented yet...', softWrap: true)));
   }
 
-  void _showInformedConsent() {
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) => InformedConsentPage()));
+  Future<void> _showInformedConsent() async {
+    try {
+      // Download informed consent task from database and present it to the user
+      DocumentSnapshot informedConsent = await CarpService().documentById(testInformedConsentId).get(); //TODO: check alternatives to document id
+      RPOrderedTask consentTask = RPOrderedTask.fromJson(informedConsent.data);
+      Navigator.of(context).push(MaterialPageRoute(builder: (context) => InformedConsentPage(consentTask: consentTask)));
+    } catch (e) {
+      print(e);
+    }
   }
 }
 
