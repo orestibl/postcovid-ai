@@ -26,13 +26,14 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_launcher_icons: ^0.8.0
+  flutter_local_notifications: ^4.0.1+2
 
   #TODO: Check if these are necessary
   uuid: ^2.0.0
   shared_preferences: '>=0.5.7 <2.0.0'
 
   carp_core: ^0.21.0
-  carp_mobile_sensing: ^0.21.0
+  #carp_mobile_sensing: ^0.21.0
   carp_context_package: ^0.21.0
   #carp_connectivity_package: ^0.21.0 #TODO: Solve dependency issue with research_package
   carp_survey_package: ^0.21.0
@@ -44,17 +45,19 @@ dependencies:
 
 # Overriding carp libraries to use the local or github copy
 # Remove this before release of package
-#  carp_mobile_sensing:
-#    path: ../carp/carp.sensing-flutter/carp_mobile_sensing/
-#  carp_context_package:
-#    path: ../carp/carp.sensing-flutter/packages/carp_context_package/
-#  carp_survey_package:
-#    path: ../carp/carp.sensing-flutter/packages/carp_survey_package/
-#  carp_audio_package:
-#    path: ../carp/carp.sensing-flutter/packages/carp_audio_package/
-#  carp_backend:
-#    path: ../carp/carp.sensing-flutter/backends/carp_backend/
-
+dependency_overrides:
+  carp_mobile_sensing:
+    path: ./carp.sensing-flutter/carp_mobile_sensing/
+  #carp_context_package:
+  #  path: ./carp.sensing-flutter/packages/carp_context_package/
+  #carp_survey_package:
+  #  path: ./carp.sensing-flutter/packages/carp_survey_package/
+  #carp_audio_package:
+  #  path: ./carp.sensing-flutter/packages/carp_audio_package/
+  #carp_backend:
+  #  path: ./carp.sensing-flutter/backends/carp_backend/
+  #carp_core:
+  #  path: ./carp.sensing-flutter/carp_core/
 
 dev_dependencies:
   flutter_test:
