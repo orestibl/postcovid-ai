@@ -9,8 +9,15 @@ class App extends StatelessWidget {
   ///  * initialize sensing
   ///  * start sensing
   Future<bool> init(BuildContext context) async {
-    await bloc.init();
-    if (!bloc.isRunning) bloc.resume();
+    /// initialize the bloc, informing about the deployment mode (local or CARP)
+    /// LOCAL (default) - Protocol retrieved and data stored locally on phone
+    /// CARP - Protocol retrieved and data stored on backend
+    await bloc.initialize(DeploymentMode.CARP);
+    // only initialize the CARP backend bloc, if needed
+    if (bloc.deploymentMode == DeploymentMode.CARP)
+      await CarpBackend().initialize();
+    await Sensing().initialize();
+
     return true;
   }
 
@@ -35,14 +42,16 @@ class App extends StatelessWidget {
 
 class CarpMobileSensingApp extends StatefulWidget {
   CarpMobileSensingApp({Key key}) : super(key: key);
-
   CarpMobileSensingAppState createState() => CarpMobileSensingAppState();
 }
 
 class CarpMobileSensingAppState extends State<CarpMobileSensingApp> {
   int _selectedIndex = 0;
 
-  final _pages = [HomePage(), TaskList()];
+  final _pages = [
+    HomePage(),
+    TaskList()
+  ];
 
   void initState() {
     super.initState();

@@ -17,23 +17,11 @@ class LocalStudyProtocolManager implements StudyProtocolManager {
   /// Create a new CAMS study protocol.
   Future<StudyProtocol> getStudyProtocol(String ignored) async {
     CAMSStudyProtocol protocol = CAMSStudyProtocol()
-      ..name = '#23-Coverage'
-      ..dataEndPoint = CarpDataEndPoint(
-          uploadMethod: CarpUploadMethod.DATA_POINT,
-          name: 'CARP Staging Server',
-          uri: uri,
-          clientId: clientID,
-          clientSecret: clientSecret,
-          email: username,
-          password: password)
-      ..owner = ProtocolOwner(
-        id: 'AB',
-        name: 'Alex Boyon',
-        email: 'alex@uni.dk',
-      )
+      ..name = '#24-Local CAMS app protocol'
       ..protocolDescription = StudyProtocolDescription(
         title: 'Sensing Coverage Study',
-        description: 'This is a study for testing the coverage of sampling.',
+        description: 'This is a study for testing the coverage of sampling. '
+            'This is the version of the protocol generated locally on the phone.',
       );
 
     // Define which devices are used for data collection.
@@ -44,16 +32,33 @@ class LocalStudyProtocolManager implements StudyProtocolManager {
     protocol.addTriggeredTask(
         ImmediateTrigger(),
         AutomaticTask()
-          ..measures = SamplingPackageRegistry().common().getMeasureList(
+          ..measures = SamplingPackageRegistry().debug().getMeasureList(
             types: [
-              ContextSamplingPackage.ACTIVITY,
-              ContextSamplingPackage.MOBILITY,
+              // ConnectivitySamplingPackage.CONNECTIVITY,
+              // ConnectivitySamplingPackage.WIFI, // 60 s
+              AudioSamplingPackage.NOISE, // 60 s
+              ContextSamplingPackage.ACTIVITY, // ~3 s
+              ContextSamplingPackage.MOBILITY, // ~3 s
               ContextSamplingPackage.WEATHER,
-              AudioSamplingPackage.NOISE,
-              ConnectivitySamplingPackage.CONNECTIVITY,
             ],
           ),
         phone);
+
+    // protocol.addTriggeredTask(
+    //     RandomRecurrentTrigger(
+    //       startTime: Time(hour: 23, minute: 56),
+    //       endTime: Time(hour: 24, minute: 0),
+    //       minNumberOfTriggers: 2,
+    //       maxNumberOfTriggers: 8,
+    //     ),
+    //     AutomaticTask()
+    //       ..measures = SamplingPackageRegistry().debug().getMeasureList(
+    //         types: [
+    //           DeviceSamplingPackage.DEVICE,
+    //           ContextSamplingPackage.LOCATION,
+    //         ],
+    //       ),
+    //     phone);
 
     protocol.addTriggeredTask(
         ImmediateTrigger(),
@@ -88,34 +93,33 @@ class LocalStudyProtocolManager implements StudyProtocolManager {
             )
           ],
         phone);
-/*
-    protocol.addTriggeredTask(
-        RandomRecurrentTrigger(
-          startTime: Time(hour: 23, minute: 56),
-          endTime: Time(hour: 24, minute: 0),
-          minNumberOfTriggers: 2,
-          maxNumberOfTriggers: 8,
-        ),
-        AutomaticTask()
-          ..measures = SamplingPackageRegistry().debug().getMeasureList(
-            types: [
-              DeviceSamplingPackage.DEVICE,
-              ContextSamplingPackage.LOCATION,
-            ],
-          ),
-        phone);
 
-    protocol.addTriggeredTask(
-        PeriodicTrigger(period: Duration(minutes: 5)), // 5 min
-        AutomaticTask()
-          ..measures = SamplingPackageRegistry().debug().getMeasureList(
-            types: [
-              ContextSamplingPackage.WEATHER,
-              ContextSamplingPackage.AIR_QUALITY,
-            ],
-          ),
-        phone);
-*/
+    // collect demographics & location once when the study starts
+    // protocol.addTriggeredTask(
+    //     ImmediateTrigger(),
+    //     AppTask(
+    //       type: SurveyUserTask.SURVEY_TYPE,
+    //       title: "IMMEDIATE SURVEY",
+    //       description: "test of immediate survey",
+    //     )..measures.add(RPTaskMeasure(
+    //         type: SurveySamplingPackage.SURVEY,
+    //         surveyTask: linearSurveyTask,
+    //       )),
+    //     phone);
+    //
+    // // collect symptoms on a daily basis
+    // protocol.addTriggeredTask(
+    //     PeriodicTrigger(period: Duration(minutes: 1)),
+    //     AppTask(
+    //       type: SurveyUserTask.SURVEY_TYPE,
+    //       title: "PERIODIC SURVEY",
+    //       description: "test of periodic survey",
+    //     )..measures.add(RPTaskMeasure(
+    //         type: SurveySamplingPackage.SURVEY,
+    //         surveyTask: linearSurveyTask,
+    //       )),
+    //     phone);
+
     return protocol;
   }
 

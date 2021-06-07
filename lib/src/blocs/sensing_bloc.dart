@@ -3,9 +3,13 @@ part of postcovid_ai;
 class SensingBLoC {
   CAMSMasterDeviceDeployment get deployment => Sensing().deployment;
   StudyDeploymentModel _model;
-  CarpApp _app;
+  RPTask rpTask = new RPTask('rpTask');
 
-  CarpApp get app => _app;
+  /// What kind of deployment are we running - local or CARP?
+  DeploymentMode deploymentMode = DeploymentMode.CARP;
+
+  /// The list of available app tasks for the user to address.
+  List<UserTask> get tasks => AppTaskController().userTaskQueue;
 
   /// Is sensing running, i.e. has the study executor been resumed?
   bool get isRunning =>
@@ -25,23 +29,12 @@ class SensingBLoC {
       Sensing().runningDevices.map((device) => DeviceModel(device));
 
   void connectToDevice(DeviceModel device) {
-    DeviceController().devices[device.type].connect();
+    Sensing().client?.deviceRegistry?.devices[device.type].connect();
   }
 
-  Future init() async {
-    globalDebugLevel = DebugLevel.DEBUG;
-    await settings.init();
-    _app = CarpApp(
-      name: "CANS Production @ DTU",
-      uri: Uri.parse(uri),
-      oauth: OAuthEndPoint(clientID: clientID, clientSecret: clientSecret),
-    );
-
-    // configure and authenticate
-    CarpService().configure(app);
-    await CarpService().authenticate(username: username, password: password);
-
-    await Sensing().initialize();
+  Future initialize([DeploymentMode deploymentMode]) async {
+    this.deploymentMode = deploymentMode ?? DeploymentMode.LOCAL;
+    await Settings().init();
     info('$runtimeType initialized');
   }
 
