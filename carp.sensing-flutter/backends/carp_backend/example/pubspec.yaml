@@ -1,0 +1,36 @@
+name: carp_backend_example
+description: An example of how to usee the carp_backend package to upload data to CARP.
+version: 0.0.1
+author:  CACHET Team <cph.cachet@gmail.com>
+homepage: https://github.com/cph-cachet/carp.sensing-flutter/tree/master/carp_core
+publish_to: none
+
+environment:
+  sdk: ">=2.3.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+#  carp_core:
+#    path: ../../../carp_core
+#  carp_mobile_sensing:
+#    path: ../../../carp_mobile_sensing
+#  carp_webservices:
+#    path: ../../carp_webservices
+#  research_package:
+#    path: ../../../../../research.package/
+  carp_backend:
+    path: ../
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+
+# The following section is specific to Flutter.
+flutter:
+  uses-material-design: true
+  #assets:
+  #  - asset/images/
+

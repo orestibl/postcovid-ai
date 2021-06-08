@@ -1,0 +1,63 @@
+{
+    "ownerId": "xyz@dtu.dk",
+    "creationDate": "2021-05-10T14:06:25.652663Z",
+    "masterDevices": [
+     {
+      "$type": "dk.cachet.carp.protocols.domain.devices.Smartphone",
+      "isMasterDevice": true,
+      "roleName": "masterphone",
+      "samplingConfiguration": {}
+     }
+    ],
+    "connectedDevices": [
+     {
+      "$type": "dk.cachet.carp.protocols.domain.devices.DeviceDescriptor",
+      "isMasterDevice": false,
+      "roleName": "eSense",
+      "samplingConfiguration": {}
+     }
+    ],
+    "connections": [],
+    "triggers": {
+     "0": {
+      "$type": "dk.cachet.carp.protocols.domain.triggers.Trigger"
+     },
+     "1": {
+      "$type": "dk.cachet.carp.protocols.domain.triggers.ManualTrigger"
+     }
+    },
+    "tasks": [
+     {
+      "$type": "dk.cachet.carp.protocols.domain.tasks.ConcurrentTask",
+      "name": "Start measures",
+      "measures": [
+       {
+        "$type": "dk.cachet.carp.protocols.domain.tasks.measures.Measure",
+        "type": "dk.cachet.carp.light"
+       },
+       {
+        "$type": "dk.cachet.carp.protocols.domain.tasks.measures.DataTypeMeasure",
+        "type": "dk.cachet.carp.gps"
+       },
+       {
+        "$type": "dk.cachet.carp.protocols.domain.tasks.measures.PhoneSensorMeasure",
+        "type": "dk.cachet.carp.steps",
+        "duration": 10
+       }
+      ]
+     }
+    ],
+    "triggeredTasks": [
+     {
+      "triggerId": 0,
+      "taskName": "Start measures",
+      "targetDeviceRoleName": "masterphone"
+     },
+     {
+      "triggerId": 1,
+      "taskName": "Start measures",
+      "targetDeviceRoleName": "masterphone"
+     }
+    ],
+    "expectedParticipantData": []
+   }
