@@ -16,8 +16,9 @@ class Sensing {
 
   DeploymentService deploymentService;
   SmartPhoneClientManager client;
+  StudyProtocol protocol;
 
-  String deploymentId;
+  /// *** Runtime variables ***
 
   /// The deployment is running on this phone
   CAMSMasterDeviceDeployment get deployment => _controller?.deployment;
@@ -55,90 +56,55 @@ class Sensing {
     //SamplingPackageRegistry().register(SensorSamplingPackage());
   }
 
-  /// Initialize and setup sensing.
+  /// *** Initialize and setup sensing ***
+
   Future<void> initialize() async {
-    info('Initializing $runtimeType - mode ${bloc.deploymentMode}');
+    info('Initializing $runtimeType');
 
     // set up the devices available on this phone
     DeviceController().registerAllAvailableDevices();
 
-    switch (bloc.deploymentMode) {
-      case DeploymentMode.LOCAL:
-        // use the local, phone based deployment service
-        deploymentService = SmartphoneDeploymentService();
+    // use the CARP deployment service that knows how to download a
+    // custom protocol
+    deploymentService = CustomProtocolDeploymentService();
 
-        //get the protocol from the local study protocol manager
-        // note that the study id is not used
-        StudyProtocol protocol =
-            await LocalStudyProtocolManager().getStudyProtocol('');
+    // authenticate the user
+    if (!CarpService().authenticated)
+      await CarpService().authenticate(username: username, password: password);
 
-        // deploy this protocol using the on-phone deployment service
-        _status = await SmartphoneDeploymentService().createStudyDeployment(
-            protocol,
-        );
+    // Get current user id
+    CarpUser user = await CarpService().getCurrentUserProfile();
 
-        break;
-      case DeploymentMode.CARP:
-        // use the CARP deployment service that knows how to download a
-        // custom protocol
-        deploymentService = CustomProtocolDeploymentService();
+    // Download custom protocol
+    protocol = await CANSProtocolService().getBy(StudyProtocolId(user.accountId, testProtocolName));
 
-        // authenticate the user
-        // this would normally trigger a dialogue, but for demo/testing we're using
-        // the username/password in the 'credentials.dart' file
-        if (!CarpService().authenticated)
-          await CarpService()
-            .authenticate(username: username, password: password);
+    // Create deployment for this user
+    _status = await CarpDeploymentService().createStudyDeployment(protocol);
 
-        CarpParticipationService().configureFrom(CarpService());
-        CarpDeploymentService().configureFrom(CarpService());
-
-        // get invitations for this account (user)
-        List<ActiveParticipationInvitation> invitations =
-        await CarpParticipationService().getActiveParticipationInvitations();
-
-        // Get study deployment id
-        if (invitations.isNotEmpty) {
-          deploymentId = invitations[0].participation.studyDeploymentId;
-        } else {
-          deploymentId = testStudyDeploymentId;
-        }
-
-        // get the study deployment id
-        // this would normally be done by getting the invitations for this user,
-        // but for demo/testing we're using the deployment id in the 'credentials.dart' file
-        _status = await CustomProtocolDeploymentService()
-           .getStudyDeploymentStatus(deploymentId);
-
-        // now register the CARP data manager for uploading data back to CARP
-        DataManagerRegistry().register(CarpDataManager());
-
-        break;
-    }
+    // Now register the CARP data manager for uploading data back to CARP
+    DataManagerRegistry().register(CarpDataManager());
 
     //create and configure a client manager for this phone
     client = SmartPhoneClientManager(
       deploymentService: deploymentService,
       deviceRegistry: DeviceController(),
     );
-    await client.configure();
+    await client.configure(); //TODO: set userId as deviceId in the client configuration. Now is not possible because the study has not been already deployed here, so the userId has not been generated yet.
 
     // add and deploy this deployment
     _controller = await client.addStudy(studyDeploymentId, deviceRolename);
 
     // Set data endpoint to deployment
-    if (bloc.deploymentMode == DeploymentMode.CARP) {
-      CarpDataEndPoint cdep = CarpDataEndPoint(
-          uploadMethod: CarpUploadMethod.DATA_POINT,
-          uri: uri,
-          name: "CANS Production @ UGR",
-          clientId: clientID,
-          clientSecret: clientSecret,
-          email: username,
-          password: password
-      );
-      deployment.dataEndPoint = cdep;
-    }
+    CarpDataEndPoint dataEndPoint = CarpDataEndPoint(
+        uploadMethod: CarpUploadMethod.DATA_POINT,
+        uri: uri,
+        name: "CANS Production @ UGR",
+        clientId: clientID,
+        clientSecret: clientSecret,
+        email: username,
+        password: password
+    );
+    deployment.dataEndPoint = dataEndPoint;
 
     // configure the controller with the default privacy schema
     await _controller.configure(

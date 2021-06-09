@@ -5,9 +5,6 @@ class SensingBLoC {
   StudyDeploymentModel _model;
   RPTask rpTask = new RPTask('rpTask');
 
-  /// What kind of deployment are we running - local or CARP?
-  DeploymentMode deploymentMode = DeploymentMode.CARP;
-
   /// The list of available app tasks for the user to address.
   List<UserTask> get tasks => AppTaskController().userTaskQueue;
 
@@ -32,8 +29,7 @@ class SensingBLoC {
     Sensing().client?.deviceRegistry?.devices[device.type].connect();
   }
 
-  Future initialize([DeploymentMode deploymentMode]) async {
-    this.deploymentMode = deploymentMode ?? DeploymentMode.LOCAL;
+  Future initialize() async {
     await Settings().init();
     info('$runtimeType initialized');
   }
