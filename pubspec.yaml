@@ -32,7 +32,7 @@ dependencies:
   uuid: ^2.0.0
   shared_preferences: '>=0.5.7 <2.0.0'
 
-  carp_core: ^0.21.0
+  #carp_core: ^0.21.0
   #carp_mobile_sensing: ^0.21.0
   carp_context_package: ^0.21.0
   #carp_connectivity_package: ^0.21.0 #TODO: Solve dependency issue with research_package
@@ -48,6 +48,8 @@ dependencies:
 dependency_overrides:
   carp_mobile_sensing:
     path: ./carp.sensing-flutter/carp_mobile_sensing/
+  carp_webservices:
+    path: ./carp.sensing-flutter/backends/carp_webservices/
   #carp_context_package:
   #  path: ./carp.sensing-flutter/packages/carp_context_package/
   #carp_survey_package:
@@ -56,8 +58,8 @@ dependency_overrides:
   #  path: ./carp.sensing-flutter/packages/carp_audio_package/
   #carp_backend:
   #  path: ./carp.sensing-flutter/backends/carp_backend/
-  #carp_core:
-  #  path: ./carp.sensing-flutter/carp_core/
+  carp_core:
+    path: ./carp.sensing-flutter/carp_core/
 
 dev_dependencies:
   flutter_test:

@@ -9,13 +9,11 @@ class App extends StatelessWidget {
   ///  * initialize sensing
   ///  * start sensing
   Future<bool> init(BuildContext context) async {
-    /// initialize the bloc, informing about the deployment mode (local or CARP)
-    /// LOCAL (default) - Protocol retrieved and data stored locally on phone
-    /// CARP - Protocol retrieved and data stored on backend
-    await bloc.initialize(DeploymentMode.CARP);
-    // only initialize the CARP backend bloc, if needed
-    if (bloc.deploymentMode == DeploymentMode.CARP)
-      await CarpBackend().initialize();
+    /// initialize the bloc
+    await bloc.initialize();
+    /// initialize carp backend
+    await CarpBackend().initialize();
+    /// initialize sensing
     await Sensing().initialize();
 
     return true;

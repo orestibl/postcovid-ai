@@ -22,6 +22,9 @@ class CarpBackend {
     CarpService().configure(app);
     await CarpService().authenticate(username: username, password: password);
 
+    CarpDeploymentService().configureFrom(CarpService());
+    CANSProtocolService().configureFrom(CarpService());
+
     info('$runtimeType initialized');
   }
 }
