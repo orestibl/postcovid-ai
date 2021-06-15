@@ -37,10 +37,12 @@ dependencies:
   #carp_connectivity_package: ^0.21.0 #TODO: Solve dependency issue with research_package
   carp_survey_package: ^0.21.0
   carp_audio_package: ^0.21.0
+  carp_communication_package: ^0.21.0
+  carp_apps_package: ^0.21.0
   carp_backend: ^0.21.0
   research_package: ^0.5.0
   #permission_handler: ^5.0.1+1
-
+  http: ^0.12.0
 
 # Overriding carp libraries to use the local or github copy
 # Remove this before release of package
@@ -75,7 +77,7 @@ dev_dependencies:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/logo/coronavirus.png"
+  image_path: "assets/logo/app_icon.png"
 
 
 
@@ -89,11 +91,10 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/logo/cachet_logo.png
-    - assets/logo/coronavirus.png
+    - assets/logo/
     - assets/images/maui.png
     - assets/images/running.png
-    - assets/images/analytics.jpg
+    - assets/images/background.jpg
     - assets/images/audio.png
     - assets/images/cachet.png
     - assets/images/survey.png

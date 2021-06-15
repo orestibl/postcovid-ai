@@ -3,7 +3,9 @@ part of postcovid_ai;
 class SensingBLoC {
   CAMSMasterDeviceDeployment get deployment => Sensing().deployment;
   StudyDeploymentModel _model;
-  RPTask rpTask = new RPTask('rpTask');
+
+  /// Dummy object to register json deserialization functions
+  RPTask rpTask = new RPTask('ignored');
 
   /// The list of available app tasks for the user to address.
   List<UserTask> get tasks => AppTaskController().userTaskQueue;
@@ -31,6 +33,7 @@ class SensingBLoC {
 
   Future initialize() async {
     await Settings().init();
+    Settings().debugLevel = DebugLevel.DEBUG; //TODO: remove for production
     info('$runtimeType initialized');
   }
 
