@@ -18,7 +18,7 @@ def get_study():
         assert len(user_code) == 10
         response = helpers.get_study(user_code)
         return response
-    except (KeyError, AssertionError):
+    except (KeyError, AssertionError, TypeError):
         return {"status": 400, "description": "Invalid parameters"}
     except Exception as e:
         logger.exception("Exception getting study %s", request.json)
