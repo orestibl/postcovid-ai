@@ -76,7 +76,11 @@ class Sensing {
     CarpUser user = await CarpService().getCurrentUserProfile();
 
     // Download custom protocol
-    protocol = await CANSProtocolService().getBy(StudyProtocolId(user.accountId, testProtocolName));
+    //protocol = await CANSProtocolService().getBy(StudyProtocolId(user.accountId, testProtocolName));
+    // DEBUG - Local protocol
+    LocalStudyProtocolManager localStudyProtocolManager = LocalStudyProtocolManager();
+    localStudyProtocolManager.userID = user.accountId;
+    StudyProtocol protocol = await localStudyProtocolManager.getStudyProtocol("");
 
     // Create deployment for this user
     _status = await CarpDeploymentService().createStudyDeployment(protocol);

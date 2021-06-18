@@ -14,113 +14,123 @@ part of postcovid_ai;
 class LocalStudyProtocolManager implements StudyProtocolManager {
   Future initialize() async {}
 
+  String userID;
+
   /// Create a new CAMS study protocol.
   Future<StudyProtocol> getStudyProtocol(String ignored) async {
+
     CAMSStudyProtocol protocol = CAMSStudyProtocol()
-      ..name = '#24-Local CAMS app protocol'
-      ..protocolDescription = StudyProtocolDescription(
-        title: 'Sensing Coverage Study',
-        description: 'This is a study for testing the coverage of sampling. '
-            'This is the version of the protocol generated locally on the phone.',
-      );
+      ..name = 'test_protocol_rp'
+      ..description = 'Remote test protocol with RP tasks'
+      ..ownerId = userID;
 
     // Define which devices are used for data collection.
     Smartphone phone = Smartphone();
-
     protocol..addMasterDevice(phone);
 
-    protocol.addTriggeredTask(
-        ImmediateTrigger(),
-        AutomaticTask()
-          ..measures = SamplingPackageRegistry().debug().getMeasureList(
-            types: [
-              // ConnectivitySamplingPackage.CONNECTIVITY,
-              // ConnectivitySamplingPackage.WIFI, // 60 s
-              AudioSamplingPackage.NOISE, // 60 s
-              ContextSamplingPackage.ACTIVITY, // ~3 s
-              ContextSamplingPackage.MOBILITY, // ~3 s
-              ContextSamplingPackage.WEATHER,
-            ],
-          ),
-        phone);
-
-    // protocol.addTriggeredTask(
-    //     RandomRecurrentTrigger(
-    //       startTime: Time(hour: 23, minute: 56),
-    //       endTime: Time(hour: 24, minute: 0),
-    //       minNumberOfTriggers: 2,
-    //       maxNumberOfTriggers: 8,
-    //     ),
-    //     AutomaticTask()
-    //       ..measures = SamplingPackageRegistry().debug().getMeasureList(
-    //         types: [
-    //           DeviceSamplingPackage.DEVICE,
-    //           ContextSamplingPackage.LOCATION,
-    //         ],
-    //       ),
-    //     phone);
-
+    // Sensors
     protocol.addTriggeredTask(
         ImmediateTrigger(),
         AutomaticTask()
           ..measures = [
-            LocationMeasure(
-              type: "dk.cachet.carp.geolocation",
-              name: 'Geo-location',
-              description: "Collects location from the phone's GPS sensor",
-              enabled: false,
-              frequency: Duration(hours: 6),
-              notificationTitle: "POSTCOVID-AI",
-              notificationMsg: "Notification to keep app sensing",
-              accuracy: GeolocationAccuracy.low,
-              distance: 3,
-            )
-          ],
-        phone);
-
-    protocol.addTriggeredTask(
-        ImmediateTrigger(),
-        AutomaticTask()
-          ..measures = [
-            PeriodicMeasure(
-              type: 'dk.cachet.carp.periodic_accelerometer',
-              name: 'Accelerometer',
-              description:
-                  'Collects movement data based on the onboard phone accelerometer sensor.',
+            NoiseMeasure(
+              type: AudioSamplingPackage.NOISE,
+              name: 'Ambient Noise',
+              description: "Collects noise in the background from the phone's microphone",
               enabled: true,
-              frequency: const Duration(minutes: 25),
-              duration: const Duration(seconds: 1),
+              frequency: Duration(minutes: 1), // Sample each minute
+              duration: Duration(seconds: 5),  // Measures during 5 secs and outputs the average
+            ),
+            CAMSMeasure(
+              type: ContextSamplingPackage.ACTIVITY,
+              description: "Collects activity type from the phone's activity recognition module",
+              enabled: true,
+            ),
+            MobilityMeasure(
+              type: ContextSamplingPackage.MOBILITY,
+              name: 'Mobility Features',
+              description:
+              "Extracts mobility features based on location tracking",
+              enabled: true,
+              placeRadius: 50,
+              stopRadius: 25,
+              usePriorContexts: true,
+              stopDuration: Duration(minutes: 3),
+            ),
+            WeatherMeasure(
+              type: ContextSamplingPackage.WEATHER,
+              name: 'Weather',
+              description: "Collects local weather from the WeatherAPI web service",
+              enabled: true,
+              apiKey: '12b6e28582eb9298577c734a31ba9f4f'
+            ),
+            LocationMeasure(
+              type: ContextSamplingPackage.GEOLOCATION,
+              name: 'Geolocation',
+              description: "Collects location from the phone's GPS sensor",
+              enabled: true,
+              frequency: Duration(seconds: 10), // Measure every second
+              notificationTitle: "POSTCOVID-AI",
+              notificationMsg: "Notification of Location Measure to keep the app sensing",
+            ),
+          ],
+        phone);
+
+    // Survey
+    protocol.addTriggeredTask(
+        PeriodicTrigger(
+            period: Duration(minutes: 5)  // Frequency of the survey
+        ),
+        AppTask(
+          type: SurveyUserTask.SURVEY_TYPE,
+          title: "SURVEY",
+          description: "test of survey",
+        )
+          ..measures = [
+            RPTaskMeasure(
+              type: 'dk.cachet.carp.survey',
+              enabled: true,
+              surveyTask: RPOrderedTask("surveyTaskID",
+                  [
+                    RPInstructionStep("instructionID",
+                      title: "Welcome!",
+                      detailText: "This is a test of a instruction step",
+                    )..text= "Please fill out this questionnaire!",
+                    RPQuestionStep("questionID",
+                      title: "Boolean question",
+                      answerFormat: RPBooleanAnswerFormat(
+                        trueText: "YES",
+                        falseText: "NO"
+                      )
+                    )
+                  ]
+              )
+
             )
           ],
         phone);
 
-    // collect demographics & location once when the study starts
-    // protocol.addTriggeredTask(
-    //     ImmediateTrigger(),
-    //     AppTask(
-    //       type: SurveyUserTask.SURVEY_TYPE,
-    //       title: "IMMEDIATE SURVEY",
-    //       description: "test of immediate survey",
-    //     )..measures.add(RPTaskMeasure(
-    //         type: SurveySamplingPackage.SURVEY,
-    //         surveyTask: linearSurveyTask,
-    //       )),
-    //     phone);
-    //
-    // // collect symptoms on a daily basis
-    // protocol.addTriggeredTask(
-    //     PeriodicTrigger(period: Duration(minutes: 1)),
-    //     AppTask(
-    //       type: SurveyUserTask.SURVEY_TYPE,
-    //       title: "PERIODIC SURVEY",
-    //       description: "test of periodic survey",
-    //     )..measures.add(RPTaskMeasure(
-    //         type: SurveySamplingPackage.SURVEY,
-    //         surveyTask: linearSurveyTask,
-    //       )),
-    //     phone);
+    /// Create a new CustomProtocol
+    StudyProtocol customProtocol = StudyProtocol(
+        name: protocol.name,
+        description: protocol.description,
+        ownerId: protocol.ownerId
+    );
 
-    return protocol;
+    // Define which devices are used for data collection.
+    CustomProtocolDevice customDevice = CustomProtocolDevice();
+    customProtocol..addMasterDevice(customDevice);
+
+    // Add task
+    customProtocol.addTriggeredTask(
+        ElapsedTimeTrigger(
+            elapsedTime: Duration(seconds: 0)
+        )..sourceDeviceRoleName = customDevice.roleName,
+        CustomProtocolTask(
+            name: 'Custom device task', studyProtocol: toJsonString(protocol)),
+        customDevice);
+
+    return customProtocol;
   }
 
   Future<bool> saveStudyProtocol(String studyId, StudyProtocol protocol) async {
