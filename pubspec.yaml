@@ -26,7 +26,6 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_launcher_icons: ^0.8.0
-  flutter_local_notifications: ^4.0.1+2
 
   #TODO: Check if these are necessary
   uuid: ^2.0.0
