@@ -1,0 +1,15 @@
+version: "3.0"
+services:
+  rest-api:
+    image: postcovid_rest
+    build: .
+    ports:
+      - 8000:8000
+    volumes:
+      - ./logs:/var/log/postcovid-ai
+    networks:
+      - docker_cans
+networks:
+  docker_cans:
+    driver: bridge
+    name: docker_cans

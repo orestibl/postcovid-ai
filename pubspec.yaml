@@ -26,34 +26,40 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_launcher_icons: ^0.8.0
+  flutter_local_notifications: ^4.0.1+2
+
+  #TODO: Check if these are necessary
   uuid: ^2.0.0
   shared_preferences: '>=0.5.7 <2.0.0'
 
-  carp_mobile_sensing: ^0.11.0
-  carp_context_package: ^0.11.0
-  carp_connectivity_package: ^0.11.0
-  carp_survey_package: ^0.11.0
-  carp_audio_package: ^0.11.0
-  carp_backend: ^0.11.0
-  #carp_communication_package: ^0.6.1
-  
-  research_package: ^0.3.0
-  #carp_health_package: ^0.6.1
+  #carp_core: ^0.21.0
+  #carp_mobile_sensing: ^0.21.0
+  carp_context_package: ^0.21.0
+  #carp_connectivity_package: ^0.21.0 #TODO: Solve dependency issue with research_package
+  carp_survey_package: ^0.21.0
+  carp_audio_package: ^0.21.0
+  carp_backend: ^0.21.0
+  research_package: ^0.5.0
+  #permission_handler: ^5.0.1+1
 
 
 # Overriding carp libraries to use the local or github copy
 # Remove this before release of package
-#  carp_mobile_sensing:
-#    path: ../carp/carp.sensing-flutter/carp_mobile_sensing/
-#  carp_context_package:
-#    path: ../carp/carp.sensing-flutter/packages/carp_context_package/
-#  carp_survey_package:
-#    path: ../carp/carp.sensing-flutter/packages/carp_survey_package/
-#  carp_audio_package:
-#    path: ../carp/carp.sensing-flutter/packages/carp_audio_package/
-#  carp_backend:
-#    path: ../carp/carp.sensing-flutter/backends/carp_backend/
-
+dependency_overrides:
+  carp_mobile_sensing:
+    path: ./carp.sensing-flutter/carp_mobile_sensing/
+  carp_webservices:
+    path: ./carp.sensing-flutter/backends/carp_webservices/
+  #carp_context_package:
+  #  path: ./carp.sensing-flutter/packages/carp_context_package/
+  #carp_survey_package:
+  #  path: ./carp.sensing-flutter/packages/carp_survey_package/
+  #carp_audio_package:
+  #  path: ./carp.sensing-flutter/packages/carp_audio_package/
+  #carp_backend:
+  #  path: ./carp.sensing-flutter/backends/carp_backend/
+  carp_core:
+    path: ./carp.sensing-flutter/carp_core/
 
 dev_dependencies:
   flutter_test:
@@ -84,22 +90,22 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-   - assets/logo/cachet_logo.png
-   - assets/logo/coronavirus.png
-   - assets/images/maui.png
-   - assets/images/running.png
-   - assets/images/analytics.jpg
-   - assets/images/audio.png
-   - assets/images/cachet.png
-   - assets/images/survey.png
-   - assets/images/waving-hand.png
-   - assets/images/very-sad.png
-   - assets/images/sad.png
-   - assets/images/ok.png
-   - assets/images/happy.png
-   - assets/images/very-happy.png
-   - assets/lang/da.json
-   - assets/lang/en.json
+    - assets/logo/cachet_logo.png
+    - assets/logo/coronavirus.png
+    - assets/images/maui.png
+    - assets/images/running.png
+    - assets/images/analytics.jpg
+    - assets/images/audio.png
+    - assets/images/cachet.png
+    - assets/images/survey.png
+    - assets/images/waving-hand.png
+    - assets/images/very-sad.png
+    - assets/images/sad.png
+    - assets/images/ok.png
+    - assets/images/happy.png
+    - assets/images/very-happy.png
+    - assets/lang/da.json
+    - assets/lang/en.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
