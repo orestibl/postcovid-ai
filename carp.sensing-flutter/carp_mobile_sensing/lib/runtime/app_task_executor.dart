@@ -27,9 +27,9 @@ class NotificationService {
 
     final notification.IOSInitializationSettings initializationSettingsIOS =
         notification.IOSInitializationSettings(
-      requestSoundPermission: false,
-      requestBadgePermission: false,
-      requestAlertPermission: false,
+      requestSoundPermission: true,
+      requestBadgePermission: true,
+      requestAlertPermission: true,
       //onDidReceiveLocalNotification: onDidReceiveLocalNotification,
     );
 
@@ -82,7 +82,14 @@ class AppTaskExecutor extends TaskExecutor {
   AppTask appTask;
   TaskExecutor _taskExecutor;
 
-  void onInitialize(Measure measure) {
+  /// Notification srevice variables.
+  NotificationService notificationService;
+  notification.NotificationDetails platformChannelSpecifics;
+
+  void onInitialize(Measure measure) async {
+    if (appTask.type == 'survey') {
+      initializeNotificationService();
+    }
     _taskExecutor.initialize(measure);
   }
 
@@ -98,21 +105,34 @@ class AppTaskExecutor extends TaskExecutor {
     // TODO - don't know what to do on pause????
   }
 
-  void showNotification() async {
-    NotificationService service = NotificationService();
-    await service.init();
+  void initializeNotificationService() async {
+    print('NOTIFICATIONS: Notification service initialized.');
+    notificationService = NotificationService();
+    await notificationService.init();
+
     notification.AndroidNotificationDetails androidPlatformChannelSpecifics =
         notification.AndroidNotificationDetails(
             'your channel id', 'your channel name', 'your channel description',
             importance: notification.Importance.max,
             priority: notification.Priority.high,
             showWhen: false);
-    notification.NotificationDetails platformChannelSpecifics =
-        notification.NotificationDetails(
-            android: androidPlatformChannelSpecifics);
 
-    await service.flutterLocalNotificationsPlugin.show(0, 'POSTCOVID-AI',
-        'There is an available survey', platformChannelSpecifics,
+    notification.IOSNotificationDetails iOSPlatformChannelSpecifics =
+        notification.IOSNotificationDetails(
+            presentAlert: false, presentBadge: true, presentSound: true);
+
+    platformChannelSpecifics = notification.NotificationDetails(
+        android: androidPlatformChannelSpecifics,
+        iOS: iOSPlatformChannelSpecifics);
+  }
+
+  void showNotification() async {
+    print('NOTIFICATIONS: Notification shown.');
+    await notificationService.flutterLocalNotificationsPlugin.show(
+        0,
+        'POSTCOVID-AI',
+        'There is an available survey',
+        platformChannelSpecifics,
         payload: 'item x');
   }
 

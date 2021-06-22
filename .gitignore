@@ -29,7 +29,7 @@
 .packages
 .pub-cache/
 .pub/
-/build/
+build/
 
 # Web related
 lib/generated_plugin_registrant.dart
@@ -43,3 +43,7 @@ lib/src/sensing/credentials.dart
 pubspec.lock
 rest_api/logs/
 rest_api/credentials.py
+
+# iOS Related
+Podfile
+Podfile.lock

@@ -31,6 +31,7 @@ dependencies:
   meta: ^1.1.8
   permission_handler_platform_interface: ^2.0.1
   cron: ^0.2.3            # For scheduling / triggering cron jobs
+  flutter_local_notifications: ^4.0.1+2
 
   # probe-dependent plugins
   sensors: '>=0.4.2 <2.0.0'
