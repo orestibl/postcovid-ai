@@ -8,7 +8,7 @@ class StudyDeploymentModel {
   String get description =>
       deployment?.protocolDescription?.description ??
       'No description available.';
-  Image get image => Image.asset('assets/images/analytics.jpg');
+  Image get image => Image.asset('assets/images/background.jpg');
   String get studyId => deployment?.studyId ?? '';
   String get studyDeploymentId => deployment?.studyDeploymentId ?? '';
   String get userID => deployment?.userId ?? '';

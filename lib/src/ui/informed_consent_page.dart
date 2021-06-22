@@ -3,29 +3,25 @@ part of postcovid_ai;
 class InformedConsentPage extends StatelessWidget {
   /// RPOrderedTask to be presented as informed consent
   final RPOrderedTask consentTask;
+  final String code;
 
-  InformedConsentPage({this.consentTask}) : super();
+  InformedConsentPage({this.consentTask, this.code}) : super();
 
-  String _encode(Object object) =>
-      const JsonEncoder.withIndent(' ').convert(object);
-
-  Future<void> resultCallback(RPTaskResult result) async {
-    // Do anything with the result
-    //print(_encode(result));
-
-    // Extract signature from informed consent result
+  Future<void> resultCallback(BuildContext context, RPTaskResult result) async {
+    // Extract signature from informed consent result and identify participant
     RPConsentSignatureResult signature = result.results['consentreviewstepID'].results['consentSignatureID'];
-
-    // Identify the participant
-    signature.userID = "test_user_code"; //TODO: replace with the code provided by the user or the device ID
+    signature.userID = code;
 
     // Upload the signature to the database
     await CarpService().createConsentDocument(signature.toJson());
-  }
 
-  void cancelCallBack() {
-    // Do anything with the result at the moment of the cancellation
-    print("Cancelled");
+    // Mark the document as uploaded
+    Settings().preferences.setBool("isConsentUploaded", true);
+
+    // Push main screen
+    Navigator.of(context).pushReplacement(MaterialPageRoute(
+        builder: (context) =>
+            LoadingPage(text: code)));
   }
 
   @override
@@ -33,11 +29,8 @@ class InformedConsentPage extends StatelessWidget {
     return RPUITask(
       task: consentTask,
       onSubmit: (result) {
-        resultCallback(result);
-      },
-      onCancel: ([result]) {
-        cancelCallBack();
-      },
+        resultCallback(context, result);
+      }
     );
   }
 }

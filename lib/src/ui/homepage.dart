@@ -17,7 +17,7 @@ class _HomePageState extends State<HomePage> {
   _HomePageState(this.studyDeploymentModel) : super();
 
   Widget build(BuildContext context) =>
-        _buildHomePage(context, bloc.studyDeploymentModel);
+      _buildHomePage(context, bloc.studyDeploymentModel);
 
   Widget _buildHomePage(
     BuildContext context,
@@ -41,15 +41,6 @@ class _HomePageState extends State<HomePage> {
                 ),
                 tooltip: 'Settings',
                 onPressed: _showSettings,
-              ),
-              IconButton(
-                icon: Icon(
-                  Theme.of(context).platform == TargetPlatform.iOS
-                      ? Icons.more_horiz
-                      : Icons.more_vert,
-                ),
-                tooltip: 'Informed Consent',
-                onPressed: _showInformedConsent,
               ),
             ],
             flexibleSpace: FlexibleSpaceBar(
@@ -155,17 +146,6 @@ class _HomePageState extends State<HomePage> {
     Scaffold.of(context).showSnackBar(const SnackBar(
         content: Text('Settings not implemented yet...', softWrap: true)));
   }
-
-  Future<void> _showInformedConsent() async {
-    try {
-      // Download informed consent task from database and present it to the user
-      DocumentSnapshot informedConsent = await CarpService().documentById(testInformedConsentId).get(); //TODO: check alternatives to document id
-      RPOrderedTask consentTask = RPOrderedTask.fromJson(informedConsent.data);
-      Navigator.of(context).push(MaterialPageRoute(builder: (context) => InformedConsentPage(consentTask: consentTask)));
-    } catch (e) {
-      print(e);
-    }
-  }
 }
 
 class _StudyControllerLine extends StatelessWidget {
@@ -189,8 +169,6 @@ class _StudyControllerLine extends StatelessWidget {
                         TextSpan(text: line),
                       ],
                     ),
-                  )
-        )
-    );
+                  )));
   }
 }

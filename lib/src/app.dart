@@ -1,55 +1,56 @@
 part of postcovid_ai;
 
-class App extends StatelessWidget {
-  /// This methods is used to set up the entire app, including:
-  ///  * initialize the bloc
-  ///  * authenticate the user
-  ///  * get the invitation
-  ///  * get the study
-  ///  * initialize sensing
-  ///  * start sensing
-  Future<bool> init(BuildContext context) async {
-    /// initialize the bloc
-    await bloc.initialize();
-    /// initialize carp backend
-    await CarpBackend().initialize();
-    /// initialize sensing
-    await Sensing().initialize();
+/// APP
 
-    return true;
+class App extends StatelessWidget {
+  String code = "";
+
+  Future<bool> getCode() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    // Check if we have the code
+    if (prefs.containsKey("code")) {
+      code = prefs.getString("code");
+      return true;
+    } else {
+      return false;
+    }
   }
 
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData.dark(),
-      home: FutureBuilder(
-        future: init(context),
-        builder: (context, snapshot) => (!snapshot.hasData)
-            ? Scaffold(
-                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                body: Center(
-                    child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [CircularProgressIndicator()],
-                )))
-            : CarpMobileSensingApp(key: key),
-      ),
-    );
+        theme: ThemeData.dark(),
+        home: FutureBuilder(
+            future: getCode(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                // Wait till we have the code
+                return Scaffold(
+                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                    body: Center(
+                        child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [CircularProgressIndicator()],
+                    )));
+              } else {
+                // Code is obtained, go to loading page
+                return LoadingPage(text: code);
+              }
+            }));
   }
 }
 
-class CarpMobileSensingApp extends StatefulWidget {
-  CarpMobileSensingApp({Key key}) : super(key: key);
-  CarpMobileSensingAppState createState() => CarpMobileSensingAppState();
+/// Main page
+
+class PostcovidAIApp extends StatefulWidget {
+  PostcovidAIApp({Key key}) : super(key: key);
+
+  PostcovidAIAppState createState() => PostcovidAIAppState();
 }
 
-class CarpMobileSensingAppState extends State<CarpMobileSensingApp> {
+class PostcovidAIAppState extends State<PostcovidAIApp> {
   int _selectedIndex = 0;
 
-  final _pages = [
-    HomePage(),
-    TaskList()
-  ];
+  final _pages = [HomePage(), TaskList()];
 
   void initState() {
     super.initState();

@@ -49,16 +49,22 @@ class Sensing {
   Sensing._() {
     // create and register external sampling packages
     //SamplingPackageRegistry().register(ConnectivitySamplingPackage());
+    SamplingPackageRegistry().register(AppsSamplingPackage());
+    SamplingPackageRegistry().register(CommunicationSamplingPackage());
     SamplingPackageRegistry().register(ContextSamplingPackage());
     SamplingPackageRegistry().register(AudioSamplingPackage());
     SamplingPackageRegistry().register(SurveySamplingPackage());
-    //SamplingPackageRegistry().register(CommunicationSamplingPackage());
-    //SamplingPackageRegistry().register(SensorSamplingPackage());
+    SamplingPackageRegistry().register(SensorSamplingPackage());
   }
 
   /// *** Initialize and setup sensing ***
 
-  Future<void> initialize() async {
+  Future<void> initialize(
+      {String username,
+      String password,
+      String clientID,
+      String clientSecret,
+      String protocolName}) async {
     info('Initializing $runtimeType');
 
     // set up the devices available on this phone
@@ -76,14 +82,21 @@ class Sensing {
     CarpUser user = await CarpService().getCurrentUserProfile();
 
     // Download custom protocol
-    //protocol = await CANSProtocolService().getBy(StudyProtocolId(user.accountId, testProtocolName));
+    protocol = await CANSProtocolService().getBy(StudyProtocolId(user.accountId, protocolName));
     // DEBUG - Local protocol
-    LocalStudyProtocolManager localStudyProtocolManager = LocalStudyProtocolManager();
-    localStudyProtocolManager.userID = user.accountId;
-    StudyProtocol protocol = await localStudyProtocolManager.getStudyProtocol("");
+    //LocalStudyProtocolManager localStudyProtocolManager = LocalStudyProtocolManager();
+    //localStudyProtocolManager.userID = user.accountId;
+    //StudyProtocol protocol = await localStudyProtocolManager.getStudyProtocol("");
 
-    // Create deployment for this user
-    _status = await CarpDeploymentService().createStudyDeployment(protocol);
+    // Get deployment
+    if (!Settings().preferences.containsKey("studyDeploymentId")){
+      // Create deployment for this user -> deployment added to db
+      _status = await CarpDeploymentService().createStudyDeployment(protocol);
+      Settings().preferences.setString("studyDeploymentId", studyDeploymentId);
+    } else {
+      // Get deployment status if already exists
+      _status = await CarpDeploymentService().getStudyDeploymentStatus(Settings().preferences.getString("studyDeploymentId"));
+    }
 
     // Now register the CARP data manager for uploading data back to CARP
     DataManagerRegistry().register(CarpDataManager());
@@ -93,12 +106,13 @@ class Sensing {
       deploymentService: deploymentService,
       deviceRegistry: DeviceController(),
     );
-    await client.configure(); //TODO: set userId as deviceId in the client configuration. Now is not possible because the study has not been already deployed here, so the userId has not been generated yet.
+    await client
+        .configure(); //TODO: set userId as deviceId in the client configuration. Now is not possible because the study has not been already deployed here, so the userId has not been generated yet.
 
-    // add and deploy this deployment
+    // add and deploy this deployment -> device added to deployment
     _controller = await client.addStudy(studyDeploymentId, deviceRolename);
 
-    // Set data endpoint to deployment
+    // Set data endpoint to deployment (default value is FILE)
     CarpDataEndPoint dataEndPoint = CarpDataEndPoint(
         uploadMethod: CarpUploadMethod.DATA_POINT,
         uri: uri,
@@ -106,11 +120,10 @@ class Sensing {
         clientId: clientID,
         clientSecret: clientSecret,
         email: username,
-        password: password
-    );
+        password: password);
     deployment.dataEndPoint = dataEndPoint;
 
-    // configure the controller with the default privacy schema
+    // configure the controller with the default privacy schema -> deploy the protocol and ask for permissions
     await _controller.configure(
       privacySchemaName: PrivacySchema.DEFAULT,
     );
