@@ -172,7 +172,6 @@ class CustomProtocolDeploymentService implements DeploymentService {
 
   @override
   Future<StudyDeploymentStatus> stop(String studyDeploymentId) {
-    throw CARPBackendException('stop() is not supported.');
   }
 
   @override

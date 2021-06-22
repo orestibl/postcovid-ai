@@ -19,17 +19,6 @@ class _TaskListState extends State<TaskList> {
       key: scaffoldKey,
       appBar: AppBar(
         title: Text('Surveys'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(
-              Theme.of(context).platform == TargetPlatform.iOS
-                  ? Icons.more_horiz
-                  : Icons.more_vert,
-            ),
-            tooltip: 'Settings',
-            onPressed: _showSettings,
-          ),
-        ],
       ),
       body: StreamBuilder<UserTask>(
         stream: AppTaskController().userTaskEvents,
@@ -46,11 +35,6 @@ class _TaskListState extends State<TaskList> {
         },
       ),
     );
-  }
-
-  void _showSettings() {
-    Scaffold.of(context).showSnackBar(
-        const SnackBar(content: Text('Settings not implemented yet...')));
   }
 
   Widget _buildTaskCard(BuildContext context, UserTask userTask) {
@@ -85,7 +69,7 @@ class _TaskListState extends State<TaskList> {
                   userTask.state == UserTaskState.canceled)
                   ? ButtonBar(
                       children: <Widget>[
-                        FlatButton(
+                        TextButton(
                             child: const Text('PRESS HERE TO FINISH TASK'),
                             onPressed: () => userTask.onStart(context)),
                       ],
