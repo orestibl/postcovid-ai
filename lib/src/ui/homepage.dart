@@ -32,17 +32,6 @@ class _HomePageState extends State<HomePage> {
             pinned: true,
             floating: false,
             snap: false,
-            actions: <Widget>[
-              IconButton(
-                icon: Icon(
-                  Theme.of(context).platform == TargetPlatform.iOS
-                      ? Icons.more_horiz
-                      : Icons.more_vert,
-                ),
-                tooltip: 'Settings',
-                onPressed: _showSettings,
-              ),
-            ],
             flexibleSpace: FlexibleSpaceBar(
               title: Text(studyDeploymentModel.name),
               background: Stack(
@@ -69,7 +58,7 @@ class _HomePageState extends State<HomePage> {
 
   List<Widget> _buildStudyPanel(
       BuildContext context, StudyDeploymentModel studyDeploymentModel) {
-    List<Widget> children = List<Widget>();
+    List<Widget> children = [];
 
     children.add(AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.dark,
@@ -140,11 +129,6 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
-  }
-
-  void _showSettings() {
-    Scaffold.of(context).showSnackBar(const SnackBar(
-        content: Text('Settings not implemented yet...', softWrap: true)));
   }
 }
 

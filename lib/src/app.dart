@@ -2,6 +2,7 @@ part of postcovid_ai;
 
 /// APP
 
+// ignore: must_be_immutable
 class App extends StatelessWidget {
   String code = "";
 
