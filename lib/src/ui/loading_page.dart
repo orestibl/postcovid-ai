@@ -10,9 +10,10 @@ class LoadingPage extends StatefulWidget {
 }
 
 class _LoadingPageState extends State<LoadingPage> {
-  bool skipConsent = false; //TODO: remove for production
+  bool skipConsent = true; //TODO: remove for production
   bool requestAgain = false;
   bool consentUploaded = false;
+  bool initialSurveyUploaded = false;
   RPOrderedTask consentTask;
 
   Future<Map> getStudyFromAPIREST(String code) async {
@@ -72,13 +73,16 @@ class _LoadingPageState extends State<LoadingPage> {
           username: studyCredentials['username'],
           password: studyCredentials['password']);
 
-      // Check if consent has been uploaded
+      // Check if consent and initial survey have been uploaded
       consentUploaded = await isConsentUploaded();
+      initialSurveyUploaded = await isInitialSurveyUploaded();
+
+      // Store the initial survey ID in shared preferences
+      if (!initialSurveyUploaded & !skipConsent) //TODO: modify for production
+        Settings().preferences.setInt('initialSurveyID', 5);//studyCredentials['initial_survey_id']);
 
       // Only initialize sensing if the consent is already uploaded
-      if ((!consentUploaded & !skipConsent)) { //TODO: modify for production
-        //Uncomment if only one document is available
-        //consentTask = await CarpResourceManager().getInformedConsent();
+      if (!consentUploaded & !skipConsent) { //TODO: modify for production
         DocumentSnapshot informedConsent = await CarpService().documentById(studyCredentials['consent_id']).get();
         consentTask = RPOrderedTask.fromJson(informedConsent.data);
       } else {
@@ -116,6 +120,10 @@ class _LoadingPageState extends State<LoadingPage> {
 
   Future<bool> isConsentUploaded() async {
     return Settings().preferences.containsKey("isConsentUploaded");
+  }
+
+  Future<bool> isInitialSurveyUploaded() async {
+    return Settings().preferences.containsKey("isInitialSurveyUploaded");
   }
 
   @override
