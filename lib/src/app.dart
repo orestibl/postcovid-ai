@@ -19,7 +19,7 @@ class App extends StatelessWidget {
 
   Widget build(BuildContext context) {
     return MaterialApp(
-        theme: ThemeData.dark(),
+        theme: AppTheme.theme,
         home: FutureBuilder(
             future: getCode(),
             builder: (context, snapshot) {

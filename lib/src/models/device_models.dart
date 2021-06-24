@@ -49,16 +49,16 @@ class DeviceModel {
 
   static Map<String, Icon> get deviceTypeIcon => {
     Smartphone.DEVICE_TYPE:
-      Icon(Icons.phone_android, size: 50, color: CACHET.GREY_4),
+      Icon(Icons.phone_android, size: 50, color: Colors.grey),
   };
 
   static Map<DeviceStatus, Icon> get deviceStateIcon => {
-        DeviceStatus.unknown: Icon(Icons.error_outline, color: CACHET.RED),
-        DeviceStatus.error: Icon(Icons.error_outline, color: CACHET.RED),
-        DeviceStatus.disconnected: Icon(Icons.close, color: CACHET.YELLOW),
-        DeviceStatus.connected: Icon(Icons.check, color: CACHET.GREEN),
-        DeviceStatus.sampling: Icon(Icons.save_alt, color: CACHET.ORANGE),
+        DeviceStatus.unknown: Icon(Icons.error_outline, color: Colors.red),
+        DeviceStatus.error: Icon(Icons.error_outline, color: Colors.red),
+        DeviceStatus.disconnected: Icon(Icons.close, color: Colors.yellow),
+        DeviceStatus.connected: Icon(Icons.check, color: Colors.green),
+        DeviceStatus.sampling: Icon(Icons.save_alt, color: Colors.orange),
         DeviceStatus.paired:
-            Icon(Icons.bluetooth_connected, color: CACHET.DARK_BLUE),
+            Icon(Icons.bluetooth_connected, color: Colors.blue),
       };
 }
