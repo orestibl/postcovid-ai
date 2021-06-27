@@ -14,6 +14,7 @@ class Study(Base):
     client_secret = Column(String)
     consent_id = Column(String)
     protocol_name = Column(String)
+    initial_survey_id = Column(String)
 
     def to_dict(self):
         return {
@@ -23,5 +24,6 @@ class Study(Base):
             "client_secret": self.client_secret,
             "consent_id": self.consent_id,
             "study_id": self.study_id,
-            "protocol_name": self.protocol_name
+            "protocol_name": self.protocol_name,
+            "initial_survey_id": self.initial_survey_id
         }
