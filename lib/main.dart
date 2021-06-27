@@ -40,6 +40,7 @@ part 'src/ui/informed_consent_page.dart';
 part 'src/ui/loading_page.dart';
 part 'src/ui/login_page.dart';
 part 'src/ui/shared/strings.dart';
+part 'src/ui/survey_page.dart';
 part 'src/ui/surveys_page.dart';
 part 'src/ui/widgets/clipper_widget.dart';
 part 'src/ui/widgets/wave_widget.dart';
