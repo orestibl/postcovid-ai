@@ -53,14 +53,14 @@ class _TaskListState extends State<TaskList> {
               ListTile(
                   leading: Icon(
                     Icons.description,
-                    color: CACHET.ORANGE,
+                    color: AppTheme.DARK_COLOR,
                     size: 40,
                   ), // TODO fix when research package is installedtaskTypeIcon[userTask.type],
                   title: Text(userTask.title),
                   subtitle: Text(userTask.description),
                   trailing: Icon(
                     Icons.description,
-                    color: CACHET.ORANGE,
+                    color: AppTheme.DARK_COLOR,
                     size: 40,
                   ) //taskStateIcon[userTask.state], TODO fix when research package is installed
                   ),

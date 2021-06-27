@@ -121,7 +121,7 @@ class _LoadingPageState extends State<LoadingPage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp( //TODO: Should we return another MaterialApp? Or just the FutureBuilder?
-        theme: ThemeData.dark(),
+        theme: AppTheme.theme,
         home: FutureBuilder(
             future: login(context, this.widget.text),
             builder: (context, snapshot) {

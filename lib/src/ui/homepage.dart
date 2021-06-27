@@ -87,7 +87,7 @@ class _HomePageState extends State<HomePage> {
                   padding: const EdgeInsets.symmetric(vertical: 24.0),
                   width: 72.0,
                   child: Icon(Icons.settings,
-                      size: 50, color: CACHET.CACHET_BLUE)),
+                      size: 50, color: AppTheme.DARK_COLOR)),
               Expanded(
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

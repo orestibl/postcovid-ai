@@ -2,6 +2,7 @@ library postcovid_ai;
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:carp_audio_package/audio.dart';
 import 'package:carp_backend/carp_backend.dart';
@@ -33,14 +34,15 @@ part 'src/models/probe_description.dart';
 part 'src/models/probe_models.dart';
 part 'src/sensing/local_study_protocol_manager.dart';
 part 'src/sensing/sensing.dart';
-part 'src/ui/app_theme.dart';
-part 'src/ui/cachet.dart';
+part 'src/ui/shared/app_theme.dart';
 part 'src/ui/homepage.dart';
 part 'src/ui/informed_consent_page.dart';
 part 'src/ui/loading_page.dart';
 part 'src/ui/login_page.dart';
-part 'src/ui/strings.dart';
+part 'src/ui/shared/strings.dart';
 part 'src/ui/surveys_page.dart';
+part 'src/ui/widgets/clipper_widget.dart';
+part 'src/ui/widgets/wave_widget.dart';
 
 void main() {
   runApp(App());
