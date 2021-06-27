@@ -9,7 +9,7 @@ class InformedConsentPage extends StatelessWidget {
 
   Future<void> resultCallback(BuildContext context, RPTaskResult result) async {
     // Extract signature from informed consent result and identify participant
-    RPConsentSignatureResult signature = result.results['consentreviewstepID'].results['consentSignatureID'];
+    RPConsentSignatureResult signature = result.results['consentreviewstepID'].results.values.elementAt(0);
     signature.userID = code;
 
     // Upload the signature to the database
