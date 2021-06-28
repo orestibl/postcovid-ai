@@ -19,6 +19,15 @@ class App extends StatelessWidget {
 
   Widget build(BuildContext context) {
     return MaterialApp(
+        supportedLocales: [
+          const Locale('es','')
+        ],
+        localizationsDelegates: [
+          RPLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+        ],
         theme: AppTheme.theme,
         home: FutureBuilder(
             future: getCode(),
@@ -56,9 +65,9 @@ class PostcovidAIAppState extends State<PostcovidAIApp> {
   void initState() {
     if (!Settings().preferences.containsKey("isInitialSurveyUploaded")) {
       //TODO: uncomment for production
-      //showInitialSurvey();
-      //Settings().preferences.setBool("isInitialSurveyUploaded", true);
-      //Settings().preferences.remove("initialSurveyID");
+      showInitialSurvey();
+      Settings().preferences.setBool("isInitialSurveyUploaded", true);
+      Settings().preferences.remove("initialSurveyID");
     }
     super.initState();
   }
