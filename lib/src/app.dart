@@ -65,9 +65,9 @@ class PostcovidAIAppState extends State<PostcovidAIApp> {
   void initState() {
     if (!Settings().preferences.containsKey("isInitialSurveyUploaded")) {
       //TODO: uncomment for production
-      showInitialSurvey();
-      Settings().preferences.setBool("isInitialSurveyUploaded", true);
-      Settings().preferences.remove("initialSurveyID");
+      //showInitialSurvey();
+      //Settings().preferences.setBool("isInitialSurveyUploaded", true);
+      //Settings().preferences.remove("initialSurveyID");
     }
     super.initState();
   }
