@@ -43,6 +43,7 @@ dependencies:
   research_package: ^0.5.0
   #permission_handler: ^5.0.1+1
   http: ^0.12.0
+  foreground_service: ^2.0.1+1
 
 # Overriding carp libraries to use the local or github copy
 # Remove this before release of package

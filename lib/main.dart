@@ -20,6 +20,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:research_package/research_package.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:foreground_service/foreground_service.dart';
 
 import 'src/sensing/credentials.dart';
 

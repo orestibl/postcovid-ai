@@ -64,7 +64,8 @@ class Sensing {
       String password,
       String clientID,
       String clientSecret,
-      String protocolName}) async {
+      String protocolName,
+      bool askForPermissions = true}) async {
     info('Initializing $runtimeType');
 
     // set up the devices available on this phone
@@ -125,8 +126,9 @@ class Sensing {
 
     // configure the controller with the default privacy schema -> deploy the protocol and ask for permissions
     await _controller.configure(
-      privacySchemaName: PrivacySchema.DEFAULT,
-    );
+        privacySchemaName: PrivacySchema.DEFAULT,
+        askForPermissions:
+            askForPermissions); // TODO requests permissions in UI
     // controller.resume();
 
     // listening on the data stream and print them as json to the debug console

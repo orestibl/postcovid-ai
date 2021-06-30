@@ -1,5 +1,93 @@
 part of postcovid_ai;
 
+Future<Map> getStudyFromAPIREST(String code) async {
+  final uri = Uri.parse(apiRestUri + "/get_study");
+  Map<String, dynamic> payload = {"code": code};
+  final response = await http.post(uri,
+      body: jsonEncode(payload), headers: {"Content-Type": "application/json"});
+  Map jsonResponse = jsonDecode(response.body);
+  if (response.statusCode == 500 || jsonResponse['status'] == 500) {
+    throw new ServerException(); // TODO handle all situations
+  }
+  if (jsonResponse['status'] == 400) {
+    throw new InvalidCodeException(); // TODO validate code in flutter to skip this
+  } else if (jsonResponse['status'] == 403) {
+    throw new UnauthorizedException();
+  } else {
+    return jsonResponse['data'];
+  }
+}
+
+void foregroundServiceFunction() async {
+  debugPrint("The current time is: ${DateTime.now()}");
+  ForegroundService.notification.setText("The time was: ${DateTime.now()}");
+  
+  ///////////
+
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  
+  String code = prefs.getString("code");
+  final studyCredentials = await getStudyFromAPIREST(code);
+  await bloc.initialize();
+
+  // Initialize backend
+  await CarpBackend().initialize(
+      clientID: studyCredentials["client_id"],
+      clientSecret: studyCredentials['client_secret'],
+      username: studyCredentials['username'],
+      password: studyCredentials['password']);
+
+  await Sensing().initialize(
+      username: studyCredentials['username'],
+      password: studyCredentials['password'],
+      clientID: studyCredentials['client_id'],
+      clientSecret: studyCredentials['client_secret'],
+      protocolName: studyCredentials['protocol_name'],
+      askForPermissions: false);
+
+  if (!bloc.isRunning) {
+    bloc.resume();
+  }
+  ///////
+
+  if (!ForegroundService.isIsolateCommunicationSetup) {
+    ForegroundService.setupIsolateCommunication((data) {
+      debugPrint("bg isolate received: $data");
+    });
+  }
+
+  ForegroundService.sendToPort("message from bg isolate");
+}
+
+Future<void> startService() async {
+  ///if the app was killed+relaunched, this function will be executed again
+  ///but if the foreground service stayed alive,
+  ///this does not need to be re-done
+  if (!(await ForegroundService.foregroundServiceIsStarted())) {
+    await ForegroundService.setServiceIntervalSeconds(10);
+
+    //necessity of editMode is dubious (see function comments)
+    await ForegroundService.notification.startEditMode();
+    await ForegroundService.notification.setPriority(AndroidNotificationPriority.LOW);
+
+    await ForegroundService.notification
+        .setTitle("Example Title: ${DateTime.now()}");
+    await ForegroundService.notification
+        .setText("Example Text: ${DateTime.now()}");
+
+    await ForegroundService.notification.finishEditMode();
+
+    await ForegroundService.startForegroundService(foregroundServiceFunction);
+    await ForegroundService.getWakeLock();
+  }
+
+  ///this exists solely in the main app/isolate,
+  ///so needs to be redone after every app kill+relaunch
+  await ForegroundService.setupIsolateCommunication((data) {
+    debugPrint("main received: $data");
+  });
+}
+
 class LoadingPage extends StatefulWidget {
   final String text;
 
@@ -15,25 +103,6 @@ class _LoadingPageState extends State<LoadingPage> {
   bool consentUploaded = false;
   bool initialSurveyUploaded = false;
   RPOrderedTask consentTask;
-
-  Future<Map> getStudyFromAPIREST(String code) async {
-    final uri = Uri.parse(apiRestUri + "/get_study");
-    Map<String, dynamic> payload = {"code": code};
-    final response = await http.post(uri,
-        body: jsonEncode(payload),
-        headers: {"Content-Type": "application/json"});
-    Map jsonResponse = jsonDecode(response.body);
-    if (response.statusCode == 500 || jsonResponse['status'] == 500) {
-      throw new ServerException(); // TODO handle all situations
-    }
-    if (jsonResponse['status'] == 400) {
-      throw new InvalidCodeException(); // TODO validate code in flutter to skip this
-    } else if (jsonResponse['status'] == 403) {
-      throw new UnauthorizedException();
-    } else {
-      return jsonResponse['data'];
-    }
-  }
 
   void _showDialog(String text) {
     showDialog(
@@ -96,7 +165,7 @@ class _LoadingPageState extends State<LoadingPage> {
 
       // Save user code in shared preferences
       await saveCode(code);
-
+      await startService();
       return true;
     } on InvalidCodeException catch (_) {
       requestAgain = true;
