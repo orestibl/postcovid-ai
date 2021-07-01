@@ -103,6 +103,15 @@ class _LoadingPageState extends State<LoadingPage> {
   bool consentUploaded = false;
   bool initialSurveyUploaded = false;
   RPOrderedTask consentTask;
+  
+  Future<void> registerDevice(String code) async{
+    final uri = Uri.parse(apiRestUri + "/register_device");
+    Map<String, dynamic> payload = {"participant_code": code.substring(0,5),
+                                    "device_id": await Settings().userId};
+    final response = await http.post(uri, body: jsonEncode(payload), 
+                    headers: {"Content-Type": "application/json"});
+    print(response);
+  }
 
   void _showDialog(String text) {
     showDialog(
@@ -165,6 +174,7 @@ class _LoadingPageState extends State<LoadingPage> {
 
       // Save user code in shared preferences
       await saveCode(code);
+      await registerDevice(code);
       await startService();
       return true;
     } on InvalidCodeException catch (_) {
