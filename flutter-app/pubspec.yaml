@@ -1,0 +1,145 @@
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+name: postcovid_ai
+description: TODO #TODO
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+version: 0.3.0
+author:  CACHET Team <cph.cachet@gmail.com>
+homepage: https://github.com/cph-cachet/postcovid_ai
+
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_launcher_icons: ^0.8.0
+  flutter_local_notifications: ^4.0.1+2
+
+  #TODO: Check if these are necessary
+  uuid: ^2.0.0
+  shared_preferences: '>=0.5.7 <2.0.0'
+
+  #carp_core: ^0.21.0
+  #carp_mobile_sensing: ^0.21.0
+  carp_context_package: ^0.21.0
+  #carp_connectivity_package: ^0.21.0 #TODO: Solve dependency issue with research_package
+  carp_survey_package: ^0.21.0
+  carp_audio_package: ^0.21.0
+  carp_backend: ^0.21.0
+  research_package: ^0.5.0
+  #permission_handler: ^5.0.1+1
+  logging: ^1.0.1
+  move_to_background: ^1.0.2
+
+
+# Overriding carp libraries to use the local or github copy
+# Remove this before release of package
+dependency_overrides:
+  carp_mobile_sensing:
+    path: ./packages/carp.sensing-flutter/carp_mobile_sensing/
+  carp_webservices:
+    path: ./packages/carp.sensing-flutter/backends/carp_webservices/
+  #carp_context_package:
+  #  path: ./carp.sensing-flutter/packages/carp_context_package/
+  #carp_survey_package:
+  #  path: ./carp.sensing-flutter/packages/carp_survey_package/
+  #carp_audio_package:
+  #  path: ./carp.sensing-flutter/packages/carp_audio_package/
+  #carp_backend:
+  #  path: ./carp.sensing-flutter/backends/carp_backend/
+  carp_core:
+    path: ./packages/carp.sensing-flutter/carp_core/
+  permission_handler_platform_interface:
+    path: ./packages/permission_handler_platform_interface-2.0.2_changed
+  # HECTOR: ASEGÚRATE DE QUE NO SE USA NINGUNA OTRA VERSIÓN EN LA CACHÉ DE FLUTTER PORQUE COLISIONAN
+  # He fijado la versión que usa carp_context_package de activity_recognition a la 3.0.1+1
+  # A ver si así no me llevo sorpresas de encontrarme otra versión diferente en d:\soft\flutter\.pub-cache\
+  activity_recognition_flutter:
+    #path: ../activity_recognition_flutter-4.0.3_changed NO FUNCIONA CON ESE
+    path: ./packages/activity_recognition_flutter-3.0.1+1_changed
+  android_long_task:
+    path: ./packages/android-long-task-master_changed_v2
+  permission_handler:
+    path: ./packages/permission_handler-5.1.0+2_changed
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+
+
+# Is used to change the default app launch icons on iOS and Android.
+# To install:
+#  1. import the 'flutter_launcher_icons' package above
+#  2. add the 'flutter_icons:' section below
+#  3. run 'flutter pub get'
+#  3. run 'flutter pub pub run flutter_launcher_icons:main'
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/logo/coronavirus.png"
+
+
+
+# The following section is specific to Flutter.
+flutter:
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  assets:
+    - assets/images/maui.png
+    - assets/images/running.png
+    - assets/images/audio.png
+    - assets/images/cachet.png
+    - assets/images/survey.png
+    - assets/images/waving-hand.png
+    - assets/images/very-sad.png
+    - assets/images/sad.png
+    - assets/images/ok.png
+    - assets/images/happy.png
+    - assets/images/very-happy.png
+    - assets/lang/da.json
+    - assets/lang/en.json
+
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/assets-and-images/#resolution-aware.
+
+  # For details regarding adding assets from package dependencies, see
+  # https://flutter.dev/assets-and-images/#from-packages
+
+  # To add custom fonts to your application, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
+  #
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/custom-fonts/#from-packages
