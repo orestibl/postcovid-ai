@@ -79,7 +79,7 @@ class _LoadingPageState extends State<LoadingPage> {
 
       // Store the initial survey ID in shared preferences
       if (!initialSurveyUploaded & !skipConsent) //TODO: modify for production
-        Settings().preferences.setInt('initialSurveyID', 5);//studyCredentials['initial_survey_id']);
+        Settings().preferences.setInt('initialSurveyID', studyCredentials['initial_survey_id']);
 
       // Only initialize sensing if the consent is already uploaded
       if (!consentUploaded & !skipConsent) { //TODO: modify for production
@@ -128,30 +128,29 @@ class _LoadingPageState extends State<LoadingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp( //TODO: Should we return another MaterialApp? Or just the FutureBuilder?
-        theme: AppTheme.theme,
-        home: FutureBuilder(
-            future: login(context, this.widget.text),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                // Wait for validation
-                return Scaffold(
-                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                    body: Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [CircularProgressIndicator()],
-                        )));
-              } else if (!requestAgain) {
-                // If everything was fine, proceed
-                //return consentUploaded //TODO: modify for production
-                return ((consentUploaded & !skipConsent) || (skipConsent))
-                    ? PostcovidAIApp()
-                    : InformedConsentPage(consentTask: consentTask, code: this.widget.text);
-              } else {
-                // Otherwise, return to login page
-                return LoginPage();
-              }
-            }));
+    return FutureBuilder(
+        future: login(context, this.widget.text),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            // Wait for validation
+            return Scaffold(
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                body: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [CircularProgressIndicator()],
+                    )));
+          } else if (!requestAgain) {
+            // If everything was fine, proceed
+            //return consentUploaded //TODO: modify for production
+            return ((consentUploaded & !skipConsent) || (skipConsent))
+                ? PostcovidAIApp()
+                : InformedConsentPage(consentTask: consentTask, code: this.widget.text);
+          } else {
+            // Otherwise, return to login page
+            return LoginPage();
+          }
+      }
+    );
   }
 }
