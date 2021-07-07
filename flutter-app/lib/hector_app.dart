@@ -64,9 +64,22 @@ class _AppDebugHomeState extends State<AppDebugHome>
       userTaskEventsHandler?.cancel();
     }
   }
+  
+  Future<void> initializeAll() async {
+    await initStudy(resume: false);
+    await initActivityTracking();
+    await prepareLongTask(appServiceData);
+    await runLongTask();
+    await Future.delayed(Duration(milliseconds: 1000));
+    finalizeApp = true;
+    goBackround();
+  }
 
   void handleClick(String value) async {
     switch (value) {
+      case 'RUN ALL': 
+        initializeAll();
+        break;
       case 'initializeStudy':
         initStudy(resume: false);
         break;
@@ -108,7 +121,8 @@ class _AppDebugHomeState extends State<AppDebugHome>
                 'initActivityTracking',
                 'prepareLongTask',
                 'runLongTask',
-                'stopLongTask'
+                'stopLongTask',
+                'RUN ALL'
               }.map((String choice) {
                 return PopupMenuItem<String>(
                   value: choice,
@@ -189,7 +203,7 @@ class _AppDebugHomeState extends State<AppDebugHome>
     }
   }
 
-  void prepareLongTask(AppServiceData appServiceData) async {
+  Future<void> prepareLongTask(AppServiceData appServiceData) async {
     if (await isServiceRunning()) {
       return;
     }
@@ -240,7 +254,7 @@ class _AppDebugHomeState extends State<AppDebugHome>
 
 
   Future<void> initStudy({bool resume = true, 
-  bool useTaskNameFiltering = false}) async {
+  bool useTaskNameFiltering = false}) async {  //TODO corresponde a loading_page.login (hay que añadir blocAlreadyInitialized)
     if (initStudylocked) {
       return;
     }
@@ -309,7 +323,7 @@ class _AppDebugHomeState extends State<AppDebugHome>
     goBackround();
   }
   
-  void initActivityTracking() async {
+  Future<void> initActivityTracking() async {
     /// Android requires explicitly asking permission
     if (Platform.isAndroid) {
       if (await Permission.activityRecognition.request().isGranted) {
