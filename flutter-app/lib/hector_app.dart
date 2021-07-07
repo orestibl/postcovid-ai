@@ -1,4 +1,3 @@
-part of postcovid_ai;
 
 class AppDebug extends StatelessWidget {
   Widget build(BuildContext context) {

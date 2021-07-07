@@ -32,7 +32,6 @@ import 'app_service_config.dart';
 import 'my_logger.dart';
 import 'src/sensing/credentials.dart';
 
-part 'hector_app.dart';
 
 part 'src/app.dart';
 
@@ -81,8 +80,7 @@ part 'src/ui/widgets/clipper_widget.dart';
 part 'src/ui/widgets/wave_widget.dart';
 
 bool letAppGetClosed = true;
-AppServiceData appServiceData =
-    AppServiceData(); // esta variable la usa la UI y la long task (pero son diferentes)
+AppServiceData appServiceData = AppServiceData(); // esta variable la usa la UI y la long task (pero son diferentes)
 StreamSubscription<UserTask> userTaskEventsHandler;
 
 enum LocationStatus { UNKNOWN, RUNNING, STOPPED }
@@ -101,17 +99,12 @@ LocationStatus _statusLocation = LocationStatus.UNKNOWN;
 ActivityRecognition activityRecognition = ActivityRecognition.instance;
 
 void main() {
-  print("llego aquí?");
-  // HECTOR
   WidgetsFlutterBinding.ensureInitialized();
   Logger.root.level = Level.ALL; // defaults to Level.INFO
   Logger.root.onRecord.listen((record) {
-    // milog.info("AQUÍ PODRÍA GUARDARLO EN UN FICHERO DE .LOG");
-    // descomenta milog.info y comenta MyLogger.listen si lo ejecutas en Android Studio
-    // milog.info(record.toString());
-    MyLogger.listen(record,
-        useColors: true, showLevelName: true, showTime: true);
+  MyLogger.listen(record,
+      useColors: true, showLevelName: true, showTime: true);
   });
-  milog.info("INICIANDO APP!!!");
-  runApp(AppDebug());
+ // runApp(AppDebug());
+ runApp(App());
 }
