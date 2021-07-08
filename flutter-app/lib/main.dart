@@ -19,7 +19,6 @@ import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 import 'package:move_to_background/move_to_background.dart';
@@ -31,7 +30,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'app_service_config.dart';
 import 'my_logger.dart';
 import 'src/sensing/credentials.dart';
-
 
 part 'src/app.dart';
 
