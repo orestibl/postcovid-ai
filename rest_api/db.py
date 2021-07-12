@@ -2,6 +2,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from credentials import db_string
+
+from models.StudySurveys import StudySurveys
 from models.ParticipantDevice import ParticipantDevice
 from models.ParticipantStudy import ParticipantStudy
 from models.Study import Study
@@ -27,3 +29,9 @@ def register_device(participant_code, device_id):
         participant_device = ParticipantDevice(device_id=device_id, participant_code=participant_code)
         session.add(participant_device)
         session.commit()
+
+
+def get_survey_id(study_code, hour):
+    print("code ", study_code, " hour ", hour)
+    with Session() as session:
+        return session.query(StudySurveys).filter_by(hour=hour, study_code=study_code).first().survey_id
