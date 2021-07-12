@@ -142,24 +142,7 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
     lastTimeLocation = DateTime.now();
   }
 
-  Future<Map> getStudyFromAPIREST(String code) async {
-    final uri = Uri.parse(apiRestUri + "/get_study");
-    Map<String, dynamic> payload = {"code": code};
-    final response = await http.post(uri,
-        body: jsonEncode(payload),
-        headers: {"Content-Type": "application/json"});
-    Map jsonResponse = jsonDecode(response.body);
-    if (response.statusCode == 500 || jsonResponse['status'] == 500) {
-      throw new ServerException(); // TODO handle all situations
-    }
-    if (jsonResponse['status'] == 400) {
-      throw new InvalidCodeException(); // TODO validate code in flutter to skip this
-    } else if (jsonResponse['status'] == 403) {
-      throw new UnauthorizedException();
-    } else {
-      return jsonResponse['data'];
-    }
-  }
+  
 
   void _showDialog(String text) {
     showDialog(
@@ -180,8 +163,8 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
     );
   }
   
-  Future<void> initializeAll() async {
-    await initStudy(resume: false);
+  Future<void> initializeAll(Map studyCredentials) async {
+    await initStudy(resume: false, studyCredentials: studyCredentials);
     await initActivityTracking();
     await prepareLongTask(appServiceData);
     await runLongTask();
@@ -190,7 +173,7 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
     goBackround();
   }
   Future<void> initStudy({bool resume = true, 
-  bool useTaskNameFiltering = false}) async {  //TODO corresponde a loading_page.login (hay que añadir blocAlreadyInitialized)
+  bool useTaskNameFiltering = false, Map studyCredentials}) async {  //TODO corresponde a loading_page.login (hay que añadir blocAlreadyInitialized)
     if (initStudylocked) {
       return;
     }
@@ -202,20 +185,20 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
       stopStudy();
     }
     final taskName = useTaskNameFiltering ? notifTaskName : '';
-    if (blocAlreadyInitialized) {
-      await Sensing().initialize(taskName: taskName, 
-      username: "googlePlay@test.dk", password: "googlePlay", 
-      clientID: "carp", clientSecret: "carp", protocolName: "test_protocol_rp");
-    } else {
+    if (!blocAlreadyInitialized) {
       await bloc.initialize();
-      await CarpBackend().initialize(username: "googlePlay@test.dk",
-       password: "googlePlay", clientID: "carp", clientSecret: "carp");
+      await CarpBackend().initialize(clientID: studyCredentials["client_id"],
+          clientSecret: studyCredentials['client_secret'],
+          username: studyCredentials['username'],
+          password: studyCredentials['password']);
       blocAlreadyInitialized = true;
-      await Sensing().initialize(taskName: taskName,
-           username: "googlePlay@test.dk", password: "googlePlay", 
-           clientID: "carp", clientSecret: "carp",
-           protocolName: "test_protocol_rp");
     }
+    await Sensing().initialize(taskName: taskName,
+        username: studyCredentials['username'],
+        password: studyCredentials['password'],
+        clientID: studyCredentials['client_id'],
+        clientSecret: studyCredentials['client_secret'],
+        protocolName: studyCredentials['protocol_name']);
     if (resume) {
       runStudy();
     }
@@ -330,7 +313,7 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
       }
       // Get study credentials
       final studyCredentials = await getStudyFromAPIREST(code);
-      await initializeAll();
+      await initializeAll(studyCredentials);
       // TODO merge codes
       /*
       // Initialize bloc
@@ -428,6 +411,25 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
 }
 
 
+Future<Map> getStudyFromAPIREST(String code) async {
+    final uri = Uri.parse(apiRestUri + "/get_study");
+    Map<String, dynamic> payload = {"code": code};
+    final response = await http.post(uri,
+        body: jsonEncode(payload),
+        headers: {"Content-Type": "application/json"});
+    Map jsonResponse = jsonDecode(response.body);
+    if (response.statusCode == 500 || jsonResponse['status'] == 500) {
+      throw new ServerException(); // TODO handle all situations
+    }
+    if (jsonResponse['status'] == 400) {
+      throw new InvalidCodeException(); // TODO validate code in flutter to skip this
+    } else if (jsonResponse['status'] == 403) {
+      throw new UnauthorizedException();
+    } else {
+      return jsonResponse['data'];
+    }
+  }
+
 void longTaskStartTracking() {
   activityRecognition.startStream(runForegroundService: false);
 }
@@ -449,11 +451,20 @@ serviceMain() async {
       longTaskStartTracking();
     }
     if (useBloc) {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      String code = prefs.getString("code");
+     
+      final studyCredentials = await getStudyFromAPIREST(code);
       await bloc.initialize();
-      await CarpBackend().initialize(username: "googlePlay@test.dk", 
-      password: "googlePlay", clientID: "carp", clientSecret: "carp");
-      await Sensing().initialize(username: "googlePlay@test.dk", password: "googlePlay", clientID: "carp", clientSecret: "carp",
-      protocolName: "test_protocol_rp");
+      await CarpBackend().initialize(clientID: studyCredentials["client_id"],
+          clientSecret: studyCredentials['client_secret'],
+          username: studyCredentials['username'],
+          password: studyCredentials['password']);
+      await Sensing().initialize(username: studyCredentials['username'],
+          password: studyCredentials['password'],
+          clientID: studyCredentials['client_id'],
+          clientSecret: studyCredentials['client_secret'],
+          protocolName: studyCredentials['protocol_name']);
       if (!bloc.isRunning) {
         bloc.resume();
       }

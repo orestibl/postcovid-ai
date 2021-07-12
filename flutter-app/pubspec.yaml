@@ -109,6 +109,7 @@ flutter:
   assets:
     - assets/images/maui.png
     - assets/images/running.png
+    - assets/images/background.jpg
     - assets/images/audio.png
     - assets/images/cachet.png
     - assets/images/survey.png
