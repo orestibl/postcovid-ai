@@ -4,7 +4,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-
+import 'package:flutter_local_notifications/flutter_local_notifications.dart'
+    as notification;
 import 'package:activity_recognition_flutter/activity_recognition_flutter.dart';
 import 'package:android_long_task/android_long_task.dart';
 import 'package:carp_audio_package/audio.dart';

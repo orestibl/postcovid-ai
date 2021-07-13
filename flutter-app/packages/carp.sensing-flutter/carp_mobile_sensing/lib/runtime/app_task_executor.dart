@@ -95,9 +95,9 @@ class AppTaskExecutor extends TaskExecutor {
 
   Future onResume() async {
     // when an app task is resumed it has to be put on the queue
-    if (appTask.type == 'survey') {
-      showNotification();
-    }
+    // if (appTask.type == 'survey') {
+    //   showNotification();
+    // }
     AppTaskController().enqueue(this);
   }
 
@@ -128,12 +128,15 @@ class AppTaskExecutor extends TaskExecutor {
 
   void showNotification() async {
     print('NOTIFICATIONS: Notification shown.');
-    await notificationService.flutterLocalNotificationsPlugin.show(
-        0,
-        'POSTCOVID-AI',
-        'There is an available survey',
-        platformChannelSpecifics,
-        payload: 'item x');
+    try {
+      await notificationService.flutterLocalNotificationsPlugin.show(
+          0,
+          'POSTCOVID-AI',
+          'There is an available survey',
+          platformChannelSpecifics,
+          payload: 'item x');
+    }
+    catch (_) {}
   }
 
   Future onStop() async {

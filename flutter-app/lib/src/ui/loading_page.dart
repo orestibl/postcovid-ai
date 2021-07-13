@@ -34,7 +34,7 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.inactive) {
-      AppClient.sendAppPaused();
+      AppClient.sendAppPaused(); //TODO this closes surveys when opened
       if (finalizeApp) {
         SystemNavigator.pop();
       }
@@ -170,10 +170,10 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
     await runLongTask();
     await Future.delayed(Duration(milliseconds: 1000));
     finalizeApp = true;
-    goBackround();
+    //goBackround();
   }
-  Future<void> initStudy({bool resume = true, 
-  bool useTaskNameFiltering = false, Map studyCredentials}) async {  //TODO corresponde a loading_page.login (hay que añadir blocAlreadyInitialized)
+  Future<void> initStudy({bool resume = true, bool useTaskNameFiltering = false, 
+    Map studyCredentials}) async {
     if (initStudylocked) {
       return;
     }
@@ -185,14 +185,14 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
       stopStudy();
     }
     final taskName = useTaskNameFiltering ? notifTaskName : '';
-    if (!blocAlreadyInitialized) {
-      await bloc.initialize();
-      await CarpBackend().initialize(clientID: studyCredentials["client_id"],
-          clientSecret: studyCredentials['client_secret'],
-          username: studyCredentials['username'],
-          password: studyCredentials['password']);
-      blocAlreadyInitialized = true;
-    }
+    //if (!blocAlreadyInitialized) {
+    await bloc.initialize();
+    await CarpBackend().initialize(clientID: studyCredentials["client_id"],
+        clientSecret: studyCredentials['client_secret'],
+        username: studyCredentials['username'],
+        password: studyCredentials['password']);
+    blocAlreadyInitialized = true;
+    //}
     await Sensing().initialize(taskName: taskName,
         username: studyCredentials['username'],
         password: studyCredentials['password'],
@@ -212,7 +212,7 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
         userTaskEventsHandler = AppTaskController().userTaskEvents.listen((event) {
           if (event.runtimeType == SurveyUserTask && event.state == UserTaskState.enqueued) {
             bloc.tasks.last.onStart(context);
-            waitAndGo();
+            //waitAndGo();
           }
         });
       }
@@ -261,7 +261,7 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
       await Future.delayed(Duration(milliseconds: 500));
     }
     finalizeApp = true;
-    goBackround();
+    //goBackround();
   }
   
   Future<bool> isServiceRunning() async {
@@ -303,6 +303,20 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
    void goBackround() {
     MoveToBackground.moveTaskToBack();
   }
+  
+  Future<void> showSurvey() async {
+    final document = CarpService().documentById(
+        Settings().preferences.getInt("surveyID"));
+    if (document != null) {
+      DocumentSnapshot initialSurvey = await document.get();
+    
+      Settings().preferences.remove("surveyID");
+      RPOrderedTask initialSurveyTask = RPOrderedTask.fromJson(initialSurvey.data);
+      Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => SurveyPage(surveyTask: initialSurveyTask, code: Settings().preferences.getString("code"))
+      ));
+  }
+  }
 
 
   Future<bool> login(BuildContext context, String code) async {
@@ -314,17 +328,10 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
       // Get study credentials
       final studyCredentials = await getStudyFromAPIREST(code);
       await initializeAll(studyCredentials);
-      // TODO merge codes
+      if (Settings().preferences.containsKey("surveyID")) {
+        showSurvey();
+      }
       /*
-      // Initialize bloc
-      await bloc.initialize();
-
-      // Initialize backend
-      await CarpBackend().initialize(
-          clientID: studyCredentials["client_id"],
-          clientSecret: studyCredentials['client_secret'],
-          username: studyCredentials['username'],
-          password: studyCredentials['password']);
 
       // Check if consent and initial survey have been uploaded
       consentUploaded = await isConsentUploaded();
@@ -434,6 +441,24 @@ void longTaskStartTracking() {
   activityRecognition.startStream(runForegroundService: false);
 }
 
+Future<int> getSurveyID() async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  String code = prefs.getString("code");
+  final uri = Uri.parse(apiRestUri + "/get_survey_id");
+    Map<String, dynamic> payload = {"code": code};
+    final response = await http.post(uri,
+        body: jsonEncode(payload),
+        headers: {"Content-Type": "application/json"});
+    Map jsonResponse = jsonDecode(response.body);
+    if (response.statusCode != 200 || jsonResponse['status'] != 200) {
+      return null;
+    }
+    else {
+      return jsonResponse['data']['survey_id'];
+    }
+}
+  
+
 serviceMain() async {
   bool useAR = true;
   bool useBloc = true;
@@ -476,12 +501,40 @@ serviceMain() async {
       userTaskEventsHandler = AppTaskController().userTaskEvents.listen((event) {
         if (event.runtimeType == SurveyUserTask && event.state == UserTaskState.enqueued) {
           // se lo hago saber a la app principal y le digo que pase esa encuesta
-          // y la desencolo
+          // y la desencoloe
           AppTaskController().dequeue(event.id);
         }
       });
     }
     while (true) {
+      
+    int surveyID = await getSurveyID();
+    if(surveyID != null) {
+      final notificationService = NotificationService();
+      await notificationService.init();
+  
+      notification.AndroidNotificationDetails androidPlatformChannelSpecifics =
+          notification.AndroidNotificationDetails(
+              'your channel id', 'your channel name', 'your channel description',
+              importance: notification.Importance.max,
+              priority: notification.Priority.high,
+              showWhen: false);
+  
+      notification.IOSNotificationDetails iOSPlatformChannelSpecifics =
+          notification.IOSNotificationDetails(
+              presentAlert: false, presentBadge: true, presentSound: true);
+  
+      final platformChannelSpecifics = notification.NotificationDetails(
+          android: androidPlatformChannelSpecifics,
+          iOS: iOSPlatformChannelSpecifics);
+      await Settings().preferences.setInt("surveyID", surveyID);
+      await notificationService.flutterLocalNotificationsPlugin.show(
+          surveyID,
+          'POSTCOVID-AI',
+          'There is an available survey',
+          platformChannelSpecifics,
+          payload: 'item x');
+    }
       appServiceData.progress = i;
       ServiceClient.update(appServiceData);
 
@@ -489,9 +542,9 @@ serviceMain() async {
         DeviceApps.openApp(myPackage);
       }
 
-      await ServiceClient.sendAck().timeout(const Duration(milliseconds: 1000)/*, onTimeout: () {
+      await ServiceClient.sendAck().timeout(const Duration(seconds: 3), onTimeout: () {
         return "timeout";
-      }*/);
+      });
       await Future.delayed(const Duration(seconds: 60));
       i += 1;
     }
