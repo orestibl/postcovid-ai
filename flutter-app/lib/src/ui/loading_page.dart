@@ -331,7 +331,7 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
       if (Settings().preferences.containsKey("surveyID")) {
         showSurvey();
       }
-      /*
+      
 
       // Check if consent and initial survey have been uploaded
       consentUploaded = await isConsentUploaded();
@@ -345,18 +345,10 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
       if (!consentUploaded & !skipConsent) { //TODO: modify for production
         DocumentSnapshot informedConsent = await CarpService().documentById(studyCredentials['consent_id']).get();
         consentTask = RPOrderedTask.fromJson(informedConsent.data);
-      } else {
-        await Sensing().initialize(
-            username: studyCredentials['username'],
-            password: studyCredentials['password'],
-            clientID: studyCredentials['client_id'],
-            clientSecret: studyCredentials['client_secret'],
-            protocolName: studyCredentials['protocol_name']);
       }
 
       // Save user code in shared preferences
       
-       */
       await saveCode(code);
 
       return true;
