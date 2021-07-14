@@ -1,5 +1,4 @@
-import logging
-import sys
+from datetime import datetime
 
 from flask import Flask, request
 
@@ -35,4 +34,30 @@ def register_device():
         return response
     except Exception as e:
         logger.exception("Exception registering device %s", request.json)
+        return {"status": 500, "description": str(e)}
+
+
+@app.route("/get_survey_id", methods=["POST"])
+def get_survey_id():
+    try:
+        payload = request.json
+        code = payload['code']
+        hour = int(datetime.utcnow().strftime("%H"))
+        response = helpers.get_survey_id(code=code, hour=hour)
+        return response
+    except Exception as e:
+        logger.exception("Exception getting survey %s", request.json)
+        return {"status": 500, "description": str(e)}
+
+
+@app.route("/register_completed_survey", methods=["POST"])
+def register_completed_survey():
+    try:
+        payload = request.json
+        code = payload['code']
+        survey_id = payload['survey_id']
+        response = helpers.register_completed_survey(code=code, survey_id=survey_id)
+        return response
+    except Exception as e:
+        logger.exception("Exception registering completed survey %s", request.json)
         return {"status": 500, "description": str(e)}

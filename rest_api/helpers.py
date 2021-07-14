@@ -35,3 +35,23 @@ def perform_onboarding(participant_code, device_id):
         logger.error("Participant %s device %s tried to be registered again", participant_code, device_id)
         return {"status": 412, "description": "Device already exists"}
     return {"status": 200, "description": "OK"}
+
+
+def get_survey_id(code, hour):
+    study_code = code[5:]
+    participant_code = code[:5]
+    survey_id = db.get_survey_id(study_code=study_code, hour=hour, participant_code=participant_code)
+    return {
+        "status": 200,
+        "description": "OK",
+        "data": {
+            "survey_id": survey_id
+        }
+    }
+
+
+def register_completed_survey(code, survey_id):
+    study_code = code[5:]
+    participant_code = code[:5]
+    db.register_completed_survey(study_code=study_code, participant_code=participant_code, survey_id=survey_id)
+    return {"status": 200, "description": "OK"}
