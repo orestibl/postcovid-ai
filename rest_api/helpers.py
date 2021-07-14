@@ -48,3 +48,10 @@ def get_survey_id(code, hour):
             "survey_id": survey_id
         }
     }
+
+
+def register_completed_survey(code, survey_id):
+    study_code = code[5:]
+    participant_code = code[:5]
+    db.register_completed_survey(study_code=study_code, participant_code=participant_code, survey_id=survey_id)
+    return {"status": 200, "description": "OK"}

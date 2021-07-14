@@ -55,3 +55,11 @@ def get_survey_id(study_code, participant_code, hour):
             return survey.survey_id
         else:
             return None
+
+
+def register_completed_survey(study_code, participant_code, survey_id):
+    with Session() as session:
+        registry = CompletedSurveys(study_code=study_code, participant_code=participant_code,
+                                    survey_id=survey_id, date=datetime.utcnow())
+        session.add(registry)
+        session.commit()

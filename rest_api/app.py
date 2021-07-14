@@ -48,3 +48,16 @@ def get_survey_id():
     except Exception as e:
         logger.exception("Exception getting survey %s", request.json)
         return {"status": 500, "description": str(e)}
+
+
+@app.route("/register_completed_survey", methods=["POST"])
+def register_completed_survey():
+    try:
+        payload = request.json
+        code = payload['code']
+        survey_id = payload['survey_id']
+        response = helpers.register_completed_survey(code=code, survey_id=survey_id)
+        return response
+    except Exception as e:
+        logger.exception("Exception registering completed survey %s", request.json)
+        return {"status": 500, "description": str(e)}

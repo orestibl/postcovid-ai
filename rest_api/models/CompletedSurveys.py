@@ -10,3 +10,9 @@ class CompletedSurveys(Base):
     participant_code = Column(String, primary_key=True)
     survey_id = Column(Integer, primary_key=True)
     date = Column(Date, primary_key=True)
+
+    def __init__(self, study_code, participant_code, survey_id, date):
+        self.study_code = study_code
+        self.participant_code = participant_code
+        self.survey_id = survey_id
+        self.date = date
