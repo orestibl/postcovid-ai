@@ -39,7 +39,8 @@ def perform_onboarding(participant_code, device_id):
 
 def get_survey_id(code, hour):
     study_code = code[5:]
-    survey_id = db.get_survey_id(study_code=study_code, hour=hour)
+    participant_code = code[:5]
+    survey_id = db.get_survey_id(study_code=study_code, hour=hour, participant_code=participant_code)
     return {
         "status": 200,
         "description": "OK",
