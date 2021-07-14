@@ -304,18 +304,27 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
     MoveToBackground.moveTaskToBack();
   }
   
+  Future<void> markSurveyAsCompleted(int surveyID) async {
+    final code = Settings().preferences.getString("code");
+    final uri = Uri.parse(apiRestUri + "/register_completed_survey");
+    Map<String, dynamic> payload = {"code": code, "survey_id": surveyID};
+    await http.post(uri, body: jsonEncode(payload), 
+        headers: {"Content-Type": "application/json"});
+  }
+  
   Future<void> showSurvey() async {
-    final document = CarpService().documentById(
-        Settings().preferences.getInt("surveyID"));
+    final surveyID =  Settings().preferences.getInt("surveyID");
+    final document = CarpService().documentById(surveyID);
     if (document != null) {
       DocumentSnapshot initialSurvey = await document.get();
+      await markSurveyAsCompleted(surveyID);
     
       Settings().preferences.remove("surveyID");
       RPOrderedTask initialSurveyTask = RPOrderedTask.fromJson(initialSurvey.data);
       Navigator.of(context).push(MaterialPageRoute(
       builder: (context) => SurveyPage(surveyTask: initialSurveyTask, code: Settings().preferences.getString("code"))
       ));
-  }
+    }
   }
 
 
