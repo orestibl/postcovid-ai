@@ -167,8 +167,8 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
     await initStudy(resume: false, studyCredentials: studyCredentials);
     await initActivityTracking();
     await prepareLongTask(appServiceData);
+    await Future.delayed(Duration(milliseconds: 500));
     await runLongTask();
-    await Future.delayed(Duration(milliseconds: 1000));
     finalizeApp = true;
     //goBackround();
   }

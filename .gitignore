@@ -39,7 +39,7 @@ app.*.symbols
 
 # Obfuscation related
 app.*.map.json
-lib/src/sensing/credentials.dart
+credentials.dart
 pubspec.lock
 rest_api/logs/
 rest_api/credentials.py
