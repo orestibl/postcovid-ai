@@ -42,6 +42,7 @@ app.*.map.json
 credentials.dart
 pubspec.lock
 rest_api/logs/
+rest_api/credentials.py
 # iOS Related
 Podfile
 Podfile.lock
