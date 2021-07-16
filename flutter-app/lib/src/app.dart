@@ -19,6 +19,16 @@ class App extends StatelessWidget {
 
   Widget build(BuildContext context) {
     return MaterialApp(
+        supportedLocales: [
+          Locale('es'),
+        ],
+        localizationsDelegates: [
+          AssetLocalizations.delegate,
+          RPLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+        ],
         theme: AppTheme.theme,
         home: FutureBuilder(
             future: getCode(),

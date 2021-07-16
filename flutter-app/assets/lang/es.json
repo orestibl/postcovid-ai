@@ -1,6 +1,6 @@
 {
   "AGREE": "ACEPTO",
-  "Review this form below, and tap AGREE if you're ready to continue.": "Lea detenidamente la siguiente información y pulse ACEPTAR para enviar el consentimiento informado",
+  "review_form": "Lea detenidamente la siguiente información y pulse ACEPTAR para enviar el consentimiento informado",
   "CANCEL": "CANCELAR",
   "DISAGREE": "CANCELAR",
   "Cancel?": "¿Seguro que quiere cancelar el envío del consentimiento informado?",
@@ -8,8 +8,8 @@
   "NO": "NO",
   "NEXT": "SIGUIENTE",
   "BACK": "ATRÁS",
-  "(Choose one option)": "(Escoja una opción)",
-  "Tap to answer": "Pulse para introducir un valor",
+  "choose_one_option": "Escoja una opción",
+  "tap_to_answer": "Pulse para introducir un valor",
   "Input a number": "Debe introducir un valor numérico",
-  "DONE": "HECHO"
+  "DONE": "CONTINUAR"
 }

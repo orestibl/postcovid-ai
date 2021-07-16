@@ -25,6 +25,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   flutter_launcher_icons: ^0.8.0
   flutter_local_notifications: ^4.0.1+2
 
