@@ -39,7 +39,7 @@ dependencies:
   carp_survey_package: ^0.21.0
   carp_audio_package: ^0.21.0
   carp_backend: ^0.21.0
-  research_package: ^0.5.0
+  #research_package: ^0.5.0
   #permission_handler: ^5.0.1+1
   logging: ^1.0.1
   move_to_background: ^1.0.2
@@ -65,6 +65,8 @@ dependency_overrides:
   #  path: ./carp.sensing-flutter/backends/carp_backend/
   carp_core:
     path: ./packages/carp.sensing-flutter/carp_core/
+  research_package:
+    path: ./packages/research.package
   permission_handler_platform_interface:
     path: ./packages/permission_handler_platform_interface-2.0.2_changed
   # HECTOR: ASEGÚRATE DE QUE NO SE USA NINGUNA OTRA VERSIÓN EN LA CACHÉ DE FLUTTER PORQUE COLISIONAN
