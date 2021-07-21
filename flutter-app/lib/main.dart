@@ -75,10 +75,6 @@ part 'src/ui/survey_page.dart';
 
 part 'src/ui/surveys_page.dart';
 
-part 'src/ui/widgets/clipper_widget.dart';
-
-part 'src/ui/widgets/wave_widget.dart';
-
 bool letAppGetClosed = true;
 AppServiceData appServiceData = AppServiceData(); // esta variable la usa la UI y la long task (pero son diferentes)
 StreamSubscription<UserTask> userTaskEventsHandler;

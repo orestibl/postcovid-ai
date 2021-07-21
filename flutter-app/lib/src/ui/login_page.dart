@@ -18,32 +18,21 @@ class _LoginPageState extends State<LoginPage> {
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              Container(
-                  height: size.height / 4,
-                  child: Stack(
-                      children: <Widget>[
-                        Container(
-                          color: AppTheme.DARK_COLOR,
-                        ),
-                        AnimatedPositioned(
-                          duration: Duration(milliseconds: 500),
-                          curve: Curves.easeOutQuad,
-                          top: 0.0,//keyboardOpen ? -size.height / 3.7 : 0.0,
-                          child: WaveWidget(
-                            size: size,
-                            yOffset: size.height / 4 - 50,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ]
-                  )
+              Padding(
+                padding: const EdgeInsets.only(top: 100.0),
+                child: Center(
+                  child: Container(
+                      width: 200,
+                      height: 150,
+                      child: Image.asset('assets/logo/app_icon.png')),
+                ),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 15.0),
+                padding: const EdgeInsets.only(top: 30.0),
                 child: Container(
                   child: Text(
                     'Bienvenido a POSTCOVID-AI',
-                    //textAlign: TextAlign.center,
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       color: AppTheme.DARK_COLOR,
                       fontSize: 34.0,
@@ -53,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
               ),
               Padding(
                 padding: const EdgeInsets.only(
