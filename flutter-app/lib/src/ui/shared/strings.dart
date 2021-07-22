@@ -8,4 +8,6 @@ class Strings {
 
   static String send = "Enviar";
   static String error = "Ups! Parece que ha ocurrido un error";
+
+  static String contactEmail = "cbailon@ugr.es";
 }

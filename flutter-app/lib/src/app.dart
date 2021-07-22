@@ -59,9 +59,8 @@ class PostcovidAIApp extends StatefulWidget {
 }
 
 class PostcovidAIAppState extends State<PostcovidAIApp> {
-  int _selectedIndex = 0;
-
-  final _pages = [HomePage(), TaskList()];
+  static final GlobalKey<ScaffoldState> _scaffoldKey =
+      GlobalKey<ScaffoldState>();
 
   void initState() {
     if (!Settings().preferences.containsKey("isInitialSurveyUploaded")) {
@@ -80,28 +79,41 @@ class PostcovidAIAppState extends State<PostcovidAIApp> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.school), label: 'Home'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.spellcheck), label: 'Surveys')
-        ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: restart,
-        tooltip: 'Restart study & probes',
-        child: bloc.isRunning ? Icon(Icons.pause) : Icon(Icons.play_arrow),
-      ),
-    );
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+        key: _scaffoldKey,
+        appBar: AppBar(
+          title: Text(Strings.appName),
+          centerTitle: true,
+        ),
+        body: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 28),
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                      'Está participando en el estudio POSTCOVID-AI de la Universidad de Granada',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 20)),
+                  SizedBox(height: 20),
+                  Text(
+                    'Si experimenta algún problema, puede ponerse en contacto con nosotros a través de la siguiente dirección de correo electrónico:',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  InkWell(
+                      child: Text(Strings.contactEmail,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 16, color: AppTheme.DARK_COLOR)),
+                      onTap: () async {
+                        var url = 'mailto:' + Strings.contactEmail;
+                        if (await canLaunch(url)) {
+                          await launch(url);
+                        } else {
+                          throw 'Cannot launch $url';
+                        }
+                      })
+                ])));
   }
 
   void stop() {
@@ -120,10 +132,14 @@ class PostcovidAIAppState extends State<PostcovidAIApp> {
   }
 
   Future<void> showInitialSurvey() async {
-    DocumentSnapshot initialSurvey = await CarpService().documentById(Settings().preferences.getInt("initialSurveyID")).get();
-    RPOrderedTask initialSurveyTask = RPOrderedTask.fromJson(initialSurvey.data);
+    DocumentSnapshot initialSurvey = await CarpService()
+        .documentById(Settings().preferences.getInt("initialSurveyID"))
+        .get();
+    RPOrderedTask initialSurveyTask =
+        RPOrderedTask.fromJson(initialSurvey.data);
     Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => SurveyPage(surveyTask: initialSurveyTask, code: Settings().preferences.getString("code"))
-    ));
+        builder: (context) => SurveyPage(
+            surveyTask: initialSurveyTask,
+            code: Settings().preferences.getString("code"))));
   }
 }

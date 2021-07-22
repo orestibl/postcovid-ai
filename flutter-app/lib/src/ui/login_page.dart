@@ -15,22 +15,18 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       body: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: SingleChildScrollView(
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 28),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(top: 100.0),
-                child: Center(
-                  child: Container(
+              Container(
                       width: 200,
                       height: 150,
                       child: Image.asset('assets/logo/app_icon.png')),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 30.0),
-                child: Container(
-                  child: Text(
+              SizedBox(height: 40),
+              Text(
                     'Bienvenido a POSTCOVID-AI',
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -39,15 +35,10 @@ class _LoginPageState extends State<LoginPage> {
                       //fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
-              ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
               ),
-              Padding(
-                padding: const EdgeInsets.only(
-                    left: 15.0, right: 15.0, top: 15, bottom: 0),
-                child: Material(
+              Material(
                   elevation: 3.0,
                   shadowColor: Colors.grey,
                   child: TextField(
@@ -65,11 +56,8 @@ class _LoginPageState extends State<LoginPage> {
                       labelStyle: TextStyle(color: AppTheme.DARK_COLOR)
                     ),
                   )
-                )
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-              ),
+                ),
+              SizedBox(height: 40),
               Container(
                 height: 50,
                 width: 250,
@@ -87,9 +75,6 @@ class _LoginPageState extends State<LoginPage> {
                     style: TextStyle(color: Colors.white, fontSize: 25),
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 130,
               ),
             ],
           ),

@@ -3,7 +3,6 @@ library postcovid_ai;
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart'
     as notification;
 import 'package:activity_recognition_flutter/activity_recognition_flutter.dart';
@@ -28,6 +27,7 @@ import 'package:package_info/package_info.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:research_package/research_package.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'app_service_config.dart';
 import 'my_logger.dart';
