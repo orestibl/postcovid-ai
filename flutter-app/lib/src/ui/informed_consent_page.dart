@@ -16,7 +16,8 @@ class InformedConsentPage extends StatelessWidget {
     await CarpService().createConsentDocument(signature.toJson());
 
     // Mark the document as uploaded
-    Settings().preferences.setBool("isConsentUploaded", true);
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool("isConsentUploaded", true);
 
     // Push main screen
     Navigator.of(context).pushReplacement(MaterialPageRoute(

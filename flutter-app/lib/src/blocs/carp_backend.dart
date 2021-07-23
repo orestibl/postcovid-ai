@@ -9,7 +9,8 @@ class CarpBackend {
 
   CarpApp _app;
 
-  String consentID;
+  // Dummy object to register json deserialization functions
+  RPTask rpTask = new RPTask('ignored');
 
   CarpApp get app => _app;
 

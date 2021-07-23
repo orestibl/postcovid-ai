@@ -9,12 +9,21 @@ class LoadingPage extends StatefulWidget {
   _LoadingPageState createState() => _LoadingPageState();
 }
 
+/// This page will be called 4 times:
+/// 1 - Diplay login page
+/// 2 - Present the informed consent (only backend initialized)
+/// 3 - Present the initial survey
+/// 4 - Show main screen (foreground service initialized)
+
 class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
   bool skipConsent = true; //TODO: remove for production
-  bool requestAgain = false;
-  bool consentUploaded = false;
-  bool initialSurveyUploaded = false;
+  bool consentUploaded = false; // 1st execution
+  bool initialSurveyUploaded = false; // 2nd execution
+  bool deviceIdUploaded = false;
   RPOrderedTask consentTask;
+  RPOrderedTask initialSurveyTask;
+
+  bool requestAgain = false;
   bool finalizeApp = false;
   bool initStudylocked = false;
   String notifTaskName = 'no_task_so_remove_all_of_them';
@@ -22,8 +31,7 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
   StreamSubscription<UserTask> userTaskEventsHandler;
   Stream<ActivityEvent> activityStream;
   StreamSubscription<Map<String, dynamic>> miLongTaskStreamSuscription;
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   
   @override
   void dispose() {
@@ -49,7 +57,8 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
       userTaskEventsHandler?.cancel();
     }
   }
-  
+
+  /// Executed before the loading page is displayed
   @override
   void initState() {
     super.initState();
@@ -65,6 +74,8 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
     setNotificationListener();
     checkAndConfigureNotificationsAndroid(); // esto lanza un thread que arrancará bloc if needed
   }
+
+  // Start foreground service
   void startService(AppServiceData appServiceData) async {
     try {
       await AppClient.startService(appServiceData);
@@ -73,8 +84,9 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
       print(stacktrace);
     }
   }
-  Future<void> checkAndConfigureNotificationsAndroid() async {
 
+  // Initialize bloc if needed
+  Future<void> checkAndConfigureNotificationsAndroid() async {
     final NotificationAppLaunchDetails notificationAppLaunchDetails =
         await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
     if (notificationAppLaunchDetails?.didNotificationLaunchApp ?? false) {
@@ -86,6 +98,7 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
     } else
       runInitStudyIfPendingNotificationViaSharedPrefs();
   }
+
   void setNotificationListener() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('app_icon');
@@ -101,8 +114,7 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
       }
     });
   }
-  
-  
+
   void runInitStudyIfPendingNotificationViaSharedPrefs() {
     SharedPreferences.getInstance().then((prefs) {
       String pendingNotification = prefs.getString('PENDING_NOTIFICATION');
@@ -142,8 +154,6 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
     lastTimeLocation = DateTime.now();
   }
 
-  
-
   void _showDialog(String text) {
     showDialog(
       context: context,
@@ -162,7 +172,7 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
       },
     );
   }
-  
+
   Future<void> initializeAll(Map studyCredentials) async {
     await initStudy(resume: false, studyCredentials: studyCredentials);
     await initActivityTracking();
@@ -328,37 +338,66 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
   }
 
 
+  /// Executed when the page is loaded
   Future<bool> login(BuildContext context, String code) async {
     try {
+      // [1] If the code has not been received, redirect to login page
       if (code.isEmpty) {
         requestAgain = true;
         return true;
       }
-      // Get study credentials
-      final studyCredentials = await getStudyFromAPIREST(code);
-      await initializeAll(studyCredentials);
-      if (Settings().preferences.containsKey("surveyID")) {
-        showSurvey();
-      }
-      
 
       // Check if consent and initial survey have been uploaded
-      consentUploaded = await isConsentUploaded();
-      initialSurveyUploaded = await isInitialSurveyUploaded();
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      consentUploaded = prefs.containsKey("isConsentUploaded");
+      initialSurveyUploaded = prefs.containsKey("isInitialSurveyUploaded");
+      deviceIdUploaded = prefs.containsKey("isDeviceIdUploaded");
 
-      // Store the initial survey ID in shared preferences
-      if (!initialSurveyUploaded & !skipConsent) //TODO: modify for production
-        Settings().preferences.setInt('initialSurveyID', studyCredentials['initial_survey_id']);
+      // Get study credentials
+      final studyCredentials = await getStudyFromAPIREST(code);
 
-      // Only initialize sensing if the consent is already uploaded
-      if (!consentUploaded & !skipConsent) { //TODO: modify for production
+      // [2] If the code has been received but any survey has been
+      //     filled, just load backend and present informed consent
+      if (!consentUploaded & !initialSurveyUploaded & !skipConsent) {
+        // Initialize backend
+        await CarpBackend().initialize(clientID: studyCredentials["client_id"],
+            clientSecret: studyCredentials['client_secret'],
+            username: studyCredentials['username'],
+            password: studyCredentials['password']);
+
+        // Get informed consent task
         DocumentSnapshot informedConsent = await CarpService().documentById(studyCredentials['consent_id']).get();
         consentTask = RPOrderedTask.fromJson(informedConsent.data);
-      }
 
-      // Save user code in shared preferences
-      
-      await saveCode(code);
+        // Store user code in shared prefs
+        prefs.setString("code", code);
+
+      // [3] If the code has been received and the informed consent has been
+      // sent, but the initial survey not, just present survey
+      } else if (consentUploaded & !initialSurveyUploaded & !skipConsent) {
+        // Initialize study
+        await initStudy(resume: false, studyCredentials: studyCredentials);
+
+        // Get initial survey task
+        DocumentSnapshot initialSurvey = await CarpService().documentById(studyCredentials['initial_survey_id']).get();
+        initialSurveyTask = RPOrderedTask.fromJson(initialSurvey.data);
+
+      // [4] If everything has been completed, initialize all and send to main
+      // screen
+      } else {
+        // Initialize all
+        await initializeAll(studyCredentials);
+
+        // Store device id in database
+        if (!deviceIdUploaded) {
+          await storeUser(code);
+        }
+
+        // Show survey if available
+        if (Settings().preferences.containsKey("surveyID")) {
+          showSurvey();
+        }
+      }
 
       return true;
     } on InvalidCodeException catch (_) {
@@ -377,21 +416,16 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
     }
   }
 
-  Future<void> saveCode(String code) async {
-    Settings().preferences.setString("code", code);
+  // Store user and device IDs in database
+  Future<void> storeUser(String code) async {
     final uri = Uri.parse(apiRestUri + "/register_device");
     Map<String, dynamic> payload = {"participant_code": code.substring(0,5),
-                                    "device_id": Settings().preferences.get('postcovid-ai app.user_id')};
-    await http.post(uri, body: jsonEncode(payload), 
+      "device_id": Settings().preferences.get('postcovid-ai app.user_id')};
+    await http.post(uri, body: jsonEncode(payload),
         headers: {"Content-Type": "application/json"});
-  }
 
-  Future<bool> isConsentUploaded() async {
-    return Settings().preferences.containsKey("isConsentUploaded");
-  }
-
-  Future<bool> isInitialSurveyUploaded() async {
-    return Settings().preferences.containsKey("isInitialSurveyUploaded");
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool("isDeviceIdUploaded", true);
   }
 
   @override
@@ -410,10 +444,13 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
                     )));
           } else if (!requestAgain) {
             // If everything was fine, proceed
-            //return consentUploaded //TODO: modify for production
-            return ((consentUploaded & !skipConsent) || (skipConsent))
-                ? PostcovidAIApp()
-                : InformedConsentPage(consentTask: consentTask, code: this.widget.text);
+            if (!consentUploaded & !initialSurveyUploaded & !skipConsent) {
+              return InformedConsentPage(consentTask: consentTask, code: this.widget.text);
+            } else if (consentUploaded & !initialSurveyUploaded & !skipConsent) {
+              return SurveyPage(surveyTask: initialSurveyTask, code: this.widget.text);
+            } else {
+              return PostcovidAIApp();
+            }
           } else {
             // Otherwise, return to login page
             return LoginPage();

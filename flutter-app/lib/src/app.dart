@@ -63,12 +63,6 @@ class PostcovidAIAppState extends State<PostcovidAIApp> {
       GlobalKey<ScaffoldState>();
 
   void initState() {
-    if (!Settings().preferences.containsKey("isInitialSurveyUploaded")) {
-      //TODO: uncomment for production
-      //showInitialSurvey();
-      //Settings().preferences.setBool("isInitialSurveyUploaded", true);
-      //Settings().preferences.remove("initialSurveyID");
-    }
     super.initState();
   }
 
@@ -129,17 +123,5 @@ class PostcovidAIAppState extends State<PostcovidAIApp> {
       else
         bloc.resume();
     });
-  }
-
-  Future<void> showInitialSurvey() async {
-    DocumentSnapshot initialSurvey = await CarpService()
-        .documentById(Settings().preferences.getInt("initialSurveyID"))
-        .get();
-    RPOrderedTask initialSurveyTask =
-        RPOrderedTask.fromJson(initialSurvey.data);
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => SurveyPage(
-            surveyTask: initialSurveyTask,
-            code: Settings().preferences.getString("code"))));
   }
 }
