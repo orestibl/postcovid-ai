@@ -584,6 +584,7 @@ serviceMain() async {
               'your channel id', 'your channel name', 'your channel description',
               importance: notification.Importance.max,
               priority: notification.Priority.high,
+              onlyAlertOnce: true,
               showWhen: false);
   
       notification.IOSNotificationDetails iOSPlatformChannelSpecifics =
