@@ -185,6 +185,14 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
   Future<void> initStudy({bool resume = true, bool useTaskNameFiltering = false, 
     Map studyCredentials}) async {
     if (initStudylocked) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      // If the app is opened due to a survey, initialize backend
+      if (prefs.containsKey("surveyID") & (studyCredentials != null)) {
+        await CarpBackend().initialize(clientID: studyCredentials["client_id"],
+            clientSecret: studyCredentials['client_secret'],
+            username: studyCredentials['username'],
+            password: studyCredentials['password']);
+      }
       return;
     }
     initStudylocked = true;
@@ -196,21 +204,25 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
     }
     final taskName = useTaskNameFiltering ? notifTaskName : '';
     //if (!blocAlreadyInitialized) {
-    await bloc.initialize();
-    await CarpBackend().initialize(clientID: studyCredentials["client_id"],
-        clientSecret: studyCredentials['client_secret'],
-        username: studyCredentials['username'],
-        password: studyCredentials['password']);
-    blocAlreadyInitialized = true;
-    //}
-    await Sensing().initialize(taskName: taskName,
-        username: studyCredentials['username'],
-        password: studyCredentials['password'],
-        clientID: studyCredentials['client_id'],
-        clientSecret: studyCredentials['client_secret'],
-        protocolName: studyCredentials['protocol_name']);
-    if (resume) {
-      runStudy();
+    if (studyCredentials != null) {
+      await bloc.initialize();
+
+      await CarpBackend().initialize(clientID: studyCredentials["client_id"],
+          clientSecret: studyCredentials['client_secret'],
+          username: studyCredentials['username'],
+          password: studyCredentials['password']);
+      blocAlreadyInitialized = true;
+      //}
+      await Sensing().initialize(taskName: taskName,
+          username: studyCredentials['username'],
+          password: studyCredentials['password'],
+          clientID: studyCredentials['client_id'],
+          clientSecret: studyCredentials['client_secret'],
+          protocolName: studyCredentials['protocol_name']);
+
+      if (resume) {
+        runStudy();
+      }
     }
     initStudylocked = false;
   }
@@ -324,15 +336,16 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
   
   Future<void> showSurvey() async {
     final surveyID =  Settings().preferences.getInt("surveyID");
-    final document = CarpService().documentById(surveyID);
+    DocumentReference document = CarpService().documentById(surveyID);
+
     if (document != null) {
-      DocumentSnapshot initialSurvey = await document.get();
+      DocumentSnapshot survey = await document.get();
       await markSurveyAsCompleted(surveyID);
-    
+
       Settings().preferences.remove("surveyID");
-      RPOrderedTask initialSurveyTask = RPOrderedTask.fromJson(initialSurvey.data);
+      RPOrderedTask surveyTask = RPOrderedTask.fromJson(survey.data);
       Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => SurveyPage(surveyTask: initialSurveyTask, code: Settings().preferences.getString("code"))
+          builder: (context) => SurveyPage(surveyTask: surveyTask, code: Settings().preferences.getString("code"))
       ));
     }
   }
@@ -385,6 +398,9 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
       // [4] If everything has been completed, initialize all and send to main
       // screen
       } else {
+
+        if (skipConsent) prefs.setString("code", code); //TODO: remove for production
+
         // Initialize all
         await initializeAll(studyCredentials);
 
@@ -523,24 +539,30 @@ serviceMain() async {
       String code = prefs.getString("code");
      
       final studyCredentials = await getStudyFromAPIREST(code);
-      await bloc.initialize();
-      await CarpBackend().initialize(clientID: studyCredentials["client_id"],
-          clientSecret: studyCredentials['client_secret'],
-          username: studyCredentials['username'],
-          password: studyCredentials['password']);
-      await Sensing().initialize(username: studyCredentials['username'],
-          password: studyCredentials['password'],
-          clientID: studyCredentials['client_id'],
-          clientSecret: studyCredentials['client_secret'],
-          protocolName: studyCredentials['protocol_name']);
-      if (!bloc.isRunning) {
-        bloc.resume();
+
+      if (studyCredentials != null) {
+        await bloc.initialize();
+        await CarpBackend().initialize(clientID: studyCredentials["client_id"],
+            clientSecret: studyCredentials['client_secret'],
+            username: studyCredentials['username'],
+            password: studyCredentials['password']);
+        await Sensing().initialize(username: studyCredentials['username'],
+            password: studyCredentials['password'],
+            clientID: studyCredentials['client_id'],
+            clientSecret: studyCredentials['client_secret'],
+            protocolName: studyCredentials['protocol_name']);
+
+        if (!bloc.isRunning) {
+          bloc.resume();
+        }
+
+        Sensing().controller.data.listen((event) {
+          appServiceData.progress = bloc.studyDeploymentModel.samplingSize;
+          appServiceData.mensaje = event.toJson().toString();
+          ServiceClient.update(appServiceData);
+        });
       }
-      Sensing().controller.data.listen((event) {
-        appServiceData.progress = bloc.studyDeploymentModel.samplingSize;
-        appServiceData.mensaje = event.toJson().toString();
-        ServiceClient.update(appServiceData);
-      });
+
       userTaskEventsHandler = AppTaskController().userTaskEvents.listen((event) {
         if (event.runtimeType == SurveyUserTask && event.state == UserTaskState.enqueued) {
           // se lo hago saber a la app principal y le digo que pase esa encuesta
@@ -548,6 +570,7 @@ serviceMain() async {
           AppTaskController().dequeue(event.id);
         }
       });
+
     }
     while (true) {
       
