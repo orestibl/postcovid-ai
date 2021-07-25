@@ -47,9 +47,10 @@ def _answered_today(survey, participant_code):
     return times_answered >= max_times_answered
 
 
-def get_survey_id(study_code, participant_code, hour):
+def get_survey_id(study_code, participant_code, hour, weekday):
     with Session() as session:
         survey = session.query(StudySurveys).filter(StudySurveys.hours.any(hour),
+                                                    StudySurveys.weekdays.any(weekday),
                                                     StudySurveys.study_code == study_code).first()
         if survey and not _answered_today(survey=survey, participant_code=participant_code):
             return survey.survey_id

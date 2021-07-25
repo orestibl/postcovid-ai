@@ -10,3 +10,4 @@ class StudySurveys(Base):
     survey_id = Column(Integer, primary_key=True)
     study_code = Column(String, primary_key=True)
     hours = Column(ARRAY(Integer))
+    weekdays = Column(ARRAY(Integer))

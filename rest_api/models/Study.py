@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String
+from sqlalchemy import Column, String, Integer
 from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
@@ -12,9 +12,9 @@ class Study(Base):
     password = Column(String)
     client_id = Column(String)
     client_secret = Column(String)
-    consent_id = Column(String)
+    consent_id = Column(Integer)
     protocol_name = Column(String)
-    initial_survey_id = Column(String)
+    initial_survey_id = Column(Integer)
 
     def to_dict(self):
         return {

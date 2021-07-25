@@ -43,7 +43,8 @@ def get_survey_id():
         payload = request.json
         code = payload['code']
         hour = int(datetime.utcnow().strftime("%H"))
-        response = helpers.get_survey_id(code=code, hour=hour)
+        weekday = datetime.utcnow().isoweekday()
+        response = helpers.get_survey_id(code=code, hour=hour, weekday=weekday)
         return response
     except Exception as e:
         logger.exception("Exception getting survey %s", request.json)
