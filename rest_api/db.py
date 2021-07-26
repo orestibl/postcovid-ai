@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, extract
 from sqlalchemy.orm import sessionmaker
 
 from credentials import db_string
@@ -33,18 +33,17 @@ def register_device(participant_code, device_id):
         session.commit()
 
 
-def _answered_today(survey, participant_code):
+def _answered_today(survey, participant_code, hour):
     with Session() as session:
-        today = datetime(datetime.today().year, datetime.today().month, datetime.today().day)
-        tomorrow = today + timedelta(days=1)
-        times_answered = session.query(CompletedSurveys).filter(CompletedSurveys.survey_id == survey.survey_id,
-                                                                CompletedSurveys.date > today,
-                                                                CompletedSurveys.date <= tomorrow,
+        last_answer = session.query(CompletedSurveys).filter(CompletedSurveys.survey_id == survey.survey_id,
                                                                 CompletedSurveys.study_code == survey.study_code,
-                                                                CompletedSurveys.participant_code ==
-                                                                participant_code).count()
-        max_times_answered = len(survey.hours)
-    return times_answered >= max_times_answered
+                                                                CompletedSurveys.participant_code == participant_code,
+                                                                extract('year', CompletedSurveys.date) == datetime.now().year,
+                                                                extract('month', CompletedSurveys.date) == datetime.now().month,
+                                                                extract('day', CompletedSurveys.date) == datetime.now().day
+                                                            ).order_by(CompletedSurveys.date.desc()).first()
+                                                                
+    return last_answer.date.hour < hour                                                        
 
 
 def get_survey_id(study_code, participant_code, hour, weekday):
@@ -52,7 +51,7 @@ def get_survey_id(study_code, participant_code, hour, weekday):
         survey = session.query(StudySurveys).filter(StudySurveys.hours.any(hour),
                                                     StudySurveys.weekdays.any(weekday),
                                                     StudySurveys.study_code == study_code).first()
-        if survey and not _answered_today(survey=survey, participant_code=participant_code):
+        if survey and not _answered_today(survey=survey, participant_code=participant_code, hour=hour):
             return survey.survey_id
         else:
             return None
