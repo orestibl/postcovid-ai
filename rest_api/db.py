@@ -43,7 +43,7 @@ def _answered_today(survey, participant_code, hour):
                                                                 extract('day', CompletedSurveys.date) == datetime.now().day
                                                             ).order_by(CompletedSurveys.date.desc()).first()
         if last_answer:
-            return last_answer.date.hour < hour
+            return last_answer.date.hour >= hour
         else:
             return False
 
