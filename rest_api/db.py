@@ -42,8 +42,10 @@ def _answered_today(survey, participant_code, hour):
                                                                 extract('month', CompletedSurveys.date) == datetime.now().month,
                                                                 extract('day', CompletedSurveys.date) == datetime.now().day
                                                             ).order_by(CompletedSurveys.date.desc()).first()
-                                                                
-    return last_answer.date.hour < hour                                                        
+        if last_answer:
+            return last_answer.date.hour < hour
+        else:
+            return False
 
 
 def get_survey_id(study_code, participant_code, hour, weekday):
