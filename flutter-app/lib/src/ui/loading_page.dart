@@ -16,7 +16,7 @@ class LoadingPage extends StatefulWidget {
 /// 4 - Show main screen (foreground service initialized)
 
 class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
-  bool skipConsent = true; //TODO: remove for production
+  bool skipConsent = false; //TODO: remove for production
   bool consentUploaded = false; // 1st execution
   bool initialSurveyUploaded = false; // 2nd execution
   bool deviceIdUploaded = false;
