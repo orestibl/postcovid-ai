@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, Date
+from sqlalchemy import Column, String, Integer, DateTime
 from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
@@ -9,7 +9,7 @@ class CompletedSurveys(Base):
     study_code = Column(String, primary_key=True)
     participant_code = Column(String, primary_key=True)
     survey_id = Column(Integer, primary_key=True)
-    date = Column(Date, primary_key=True)
+    date = Column(DateTime(timezone=True), primary_key=True)
 
     def __init__(self, study_code, participant_code, survey_id, date):
         self.study_code = study_code
