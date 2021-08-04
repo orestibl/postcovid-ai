@@ -41,8 +41,6 @@ part 'src/blocs/sensing_bloc.dart';
 
 part 'src/exceptions.dart';
 
-part 'src/models/data_models.dart';
-
 part 'src/models/deployment_model.dart';
 
 part 'src/models/device_models.dart';
@@ -54,10 +52,6 @@ part 'src/models/probe_models.dart';
 part 'src/sensing/local_study_protocol_manager.dart';
 
 part 'src/sensing/sensing.dart';
-
-part 'src/sensing/study_deployment_manager.dart';
-
-part 'src/ui/cachet.dart';
 
 part 'src/ui/homepage.dart';
 
@@ -73,22 +67,9 @@ part 'src/ui/shared/strings.dart';
 
 part 'src/ui/survey_page.dart';
 
-part 'src/ui/surveys_page.dart';
-
 bool letAppGetClosed = true;
 AppServiceData appServiceData = AppServiceData(); // esta variable la usa la UI y la long task (pero son diferentes)
 StreamSubscription<UserTask> userTaskEventsHandler;
-
-enum LocationStatus { UNKNOWN, RUNNING, STOPPED }
-
-String dtoToString(LocationDto dto) =>
-    'Location ${dto.latitude}, ${dto.longitude} at ${DateTime.fromMillisecondsSinceEpoch(dto.time ~/ 1)}';
-LocationDto lastLocation;
-DateTime lastTimeLocation;
-LocationManager locationManager = LocationManager.instance;
-Stream<LocationDto> dtoStream;
-StreamSubscription<LocationDto> dtoSubscription;
-LocationStatus _statusLocation = LocationStatus.UNKNOWN;
 
 // HÉCTOR. ESTA PARTE ESTÁ COGIDA DE notifications
 

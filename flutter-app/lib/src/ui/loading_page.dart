@@ -63,7 +63,6 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    initLocationTrackingParameters();
     miLongTaskStreamSuscription = getLongTaskStreamSuscription();
     isServiceRunning().then((running) {
       if (running) {
@@ -135,23 +134,6 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
       milog.info(stacktrace);
       return null;
     }
-  }
-  
-  void initLocationTrackingParameters() {
-    locationManager.interval = 5;
-    locationManager.distanceFilter = 0;
-    locationManager.notificationTitle = 'CARP Location Example';
-    locationManager.notificationMsg = 'CARP is tracking your location';
-    dtoStream = locationManager.dtoStream;
-    dtoSubscription = dtoStream.listen(onDataLocationTracking);
-  }
-
-  void onDataLocationTracking(LocationDto dto) {
-    if (_statusLocation == LocationStatus.UNKNOWN) {
-      _statusLocation = LocationStatus.RUNNING;
-    }
-    lastLocation = dto;
-    lastTimeLocation = DateTime.now();
   }
 
   void _showDialog(String text) {
