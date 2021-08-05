@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from sqlalchemy import create_engine, extract
 from sqlalchemy.orm import sessionmaker
@@ -50,13 +50,14 @@ def _answered_today(survey, participant_code, hour):
 
 def get_survey_id(study_code, participant_code, hour, weekday):
     with Session() as session:
-        survey = session.query(StudySurveys).filter(StudySurveys.hours.any(hour),
+        surveys = session.query(StudySurveys).filter(StudySurveys.hours.any(hour),
                                                     StudySurveys.weekdays.any(weekday),
-                                                    StudySurveys.study_code == study_code).first()
-        if survey and not _answered_today(survey=survey, participant_code=participant_code, hour=hour):
-            return survey.survey_id
-        else:
-            return None
+                                                    StudySurveys.study_code == study_code).all()
+        for survey in surveys:
+            if survey and not _answered_today(survey=survey, participant_code=participant_code, hour=hour):
+                return survey.survey_id 
+
+        return None
 
 
 def register_completed_survey(study_code, participant_code, survey_id):
