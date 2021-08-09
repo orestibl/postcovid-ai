@@ -5,9 +5,20 @@ part of postcovid_ai;
 // ignore: must_be_immutable
 class App extends StatelessWidget {
   String code = "";
+  bool _isConnected;
 
   Future<bool> getCode() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+    // Check internet connection
+    try {
+      final response = await InternetAddress.lookup("www.google.com");
+      if (response.isNotEmpty) {
+        _isConnected = true;
+      }
+    } on SocketException catch (err) {
+      _isConnected = false;
+      info(err.message);
+    }
     // Check if we have the code
     if (prefs.containsKey("code")) {
       code = prefs.getString("code");
@@ -44,7 +55,9 @@ class App extends StatelessWidget {
                     )));
               } else {
                 // Code is obtained, go to loading page
-                return LoadingPage(text: code);
+                return _isConnected
+                    ? LoadingPage(text: code)
+                    : ServiceNotAvailablePage();
               }
             }));
   }

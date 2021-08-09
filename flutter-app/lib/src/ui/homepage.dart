@@ -29,12 +29,12 @@ class _HomePageState extends State<HomePage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                      'Está participando en el estudio POSTCOVID-AI de la Universidad de Granada',
+                      Strings.homePageText1,
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 20)),
                   SizedBox(height: 20),
                   Text(
-                    'Si experimenta algún problema, puede ponerse en contacto con nosotros a través de la siguiente dirección de correo electrónico:',
+                    Strings.homePageText2,
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 16),
                   ),

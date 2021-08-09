@@ -503,99 +503,113 @@ Future<int> getSurveyID() async {
 serviceMain() async {
   bool useAR = true;
   bool useBloc = true;
+  bool _isConnected = true;
   
   WidgetsFlutterBinding.ensureInitialized();
   var i = 0;
   var uiPresent = true;
 
+  Future<bool> isConnected() async {
+    try {
+      final response = await InternetAddress.lookup("www.google.com");
+      return response.isNotEmpty ? true : false;
+    } on SocketException catch (err) {
+      info(err.message);
+      return false;
+    }
+  }
+
   Future<dynamic> myDartCode(Map<String, dynamic> initialData) async {
+    _isConnected = await isConnected();
     String myPackage = AppServiceData.fromJson(initialData).mensaje;
 
     String notificationMessage = "Comenzando...";
     appServiceData.miNotificationTitle = notificationMessage;
-    if (useAR) {
-      longTaskStartTracking();
-    }
-    if (useBloc) {
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      String code = prefs.getString("code");
-     
-      final studyCredentials = await getStudyFromAPIREST(code);
-
-      if (studyCredentials != null) {
-        await bloc.initialize();
-        await CarpBackend().initialize(clientID: studyCredentials["client_id"],
-            clientSecret: studyCredentials['client_secret'],
-            username: studyCredentials['username'],
-            password: studyCredentials['password']);
-        await Sensing().initialize(username: studyCredentials['username'],
-            password: studyCredentials['password'],
-            clientID: studyCredentials['client_id'],
-            clientSecret: studyCredentials['client_secret'],
-            protocolName: studyCredentials['protocol_name']);
-
-        if (!bloc.isRunning) {
-          bloc.resume();
-        }
-
-        Sensing().controller.data.listen((event) {
-          appServiceData.progress = bloc.studyDeploymentModel.samplingSize;
-          appServiceData.mensaje = event.toJson().toString();
-          ServiceClient.update(appServiceData);
-        });
+    if (_isConnected) {
+      if (useAR) {
+        longTaskStartTracking();
       }
+      if (useBloc) {
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        String code = prefs.getString("code");
 
-      userTaskEventsHandler = AppTaskController().userTaskEvents.listen((event) {
-        if (event.runtimeType == SurveyUserTask && event.state == UserTaskState.enqueued) {
-          // se lo hago saber a la app principal y le digo que pase esa encuesta
-          // y la desencoloe
-          AppTaskController().dequeue(event.id);
+        final studyCredentials = await getStudyFromAPIREST(code);
+
+        if (studyCredentials != null) {
+          await bloc.initialize();
+          await CarpBackend().initialize(clientID: studyCredentials["client_id"],
+              clientSecret: studyCredentials['client_secret'],
+              username: studyCredentials['username'],
+              password: studyCredentials['password']);
+          await Sensing().initialize(username: studyCredentials['username'],
+              password: studyCredentials['password'],
+              clientID: studyCredentials['client_id'],
+              clientSecret: studyCredentials['client_secret'],
+              protocolName: studyCredentials['protocol_name']);
+
+          if (!bloc.isRunning) {
+            bloc.resume();
+          }
+
+          Sensing().controller.data.listen((event) {
+            appServiceData.progress = bloc.studyDeploymentModel.samplingSize;
+            appServiceData.mensaje = event.toJson().toString();
+            ServiceClient.update(appServiceData);
+          });
         }
-      });
 
-    }
-    while (true) {
-      
-    int surveyID = await getSurveyID();
-    if(surveyID != null) {
-      final notificationService = NotificationService();
-      await notificationService.init();
-  
-      notification.AndroidNotificationDetails androidPlatformChannelSpecifics =
+        userTaskEventsHandler = AppTaskController().userTaskEvents.listen((event) {
+          if (event.runtimeType == SurveyUserTask && event.state == UserTaskState.enqueued) {
+            // se lo hago saber a la app principal y le digo que pase esa encuesta
+            // y la desencoloe
+            AppTaskController().dequeue(event.id);
+          }
+        });
+
+      }
+      while (true) {
+
+        int surveyID = await getSurveyID();
+        if(surveyID != null) {
+          final notificationService = NotificationService();
+          await notificationService.init();
+
+          notification.AndroidNotificationDetails androidPlatformChannelSpecifics =
           notification.AndroidNotificationDetails(
               'your channel id', 'your channel name', 'your channel description',
               importance: notification.Importance.max,
               priority: notification.Priority.high,
               onlyAlertOnce: true,
               showWhen: false);
-  
-      notification.IOSNotificationDetails iOSPlatformChannelSpecifics =
+
+          notification.IOSNotificationDetails iOSPlatformChannelSpecifics =
           notification.IOSNotificationDetails(
               presentAlert: false, presentBadge: true, presentSound: true);
-  
-      final platformChannelSpecifics = notification.NotificationDetails(
-          android: androidPlatformChannelSpecifics,
-          iOS: iOSPlatformChannelSpecifics);
-      await Settings().preferences.setInt("surveyID", surveyID);
-      await notificationService.flutterLocalNotificationsPlugin.show(
-          surveyID,
-          'POSTCOVID-AI',
-          'There is an available survey',
-          platformChannelSpecifics,
-          payload: 'item x');
-    }
-      appServiceData.progress = i;
-      ServiceClient.update(appServiceData);
 
-      if (!letAppGetClosed && !uiPresent) {
-        DeviceApps.openApp(myPackage);
+          final platformChannelSpecifics = notification.NotificationDetails(
+              android: androidPlatformChannelSpecifics,
+              iOS: iOSPlatformChannelSpecifics);
+          await Settings().preferences.setInt("surveyID", surveyID);
+          await notificationService.flutterLocalNotificationsPlugin.show(
+              surveyID,
+              'POSTCOVID-AI',
+              'There is an available survey',
+              platformChannelSpecifics,
+              payload: 'item x');
+        }
+        appServiceData.progress = i;
+        ServiceClient.update(appServiceData);
+
+        if (!letAppGetClosed && !uiPresent) {
+          DeviceApps.openApp(myPackage);
+        }
+
+        await ServiceClient.sendAck().timeout(const Duration(seconds: 3), onTimeout: () {
+          return "timeout";
+        });
+        await Future.delayed(const Duration(seconds: 60));
+        i += 1;
       }
-
-      await ServiceClient.sendAck().timeout(const Duration(seconds: 3), onTimeout: () {
-        return "timeout";
-      });
-      await Future.delayed(const Duration(seconds: 60));
-      i += 1;
     }
   }
 
