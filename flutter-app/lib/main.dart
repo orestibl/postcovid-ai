@@ -41,7 +41,6 @@ part 'src/models/probe_description.dart';
 part 'src/models/probe_models.dart';
 part 'src/sensing/local_study_protocol_manager.dart';
 part 'src/sensing/sensing.dart';
-part 'src/ui/homepage.dart';
 part 'src/ui/informed_consent_page.dart';
 part 'src/ui/loading_page.dart';
 part 'src/ui/login_page.dart';

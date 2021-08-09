@@ -97,13 +97,18 @@ class PostcovidAIAppState extends State<PostcovidAIApp> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
+                  Container(
+                      width: 150,
+                      height: 125,
+                      child: Image.asset('assets/logo/app_icon.png')),
+                  SizedBox(height: 40),
                   Text(
-                      'Está participando en el estudio POSTCOVID-AI de la Universidad de Granada',
+                      Strings.mainPageText1,
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 20)),
                   SizedBox(height: 20),
                   Text(
-                    'Si experimenta algún problema, puede ponerse en contacto con nosotros a través de la siguiente dirección de correo electrónico:',
+                    Strings.mainPageText2,
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 16),
                   ),
