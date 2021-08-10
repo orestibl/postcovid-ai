@@ -15,4 +15,6 @@ class Strings {
   static String contactEmail = "cbailon@ugr.es";
 
   static String serviceNotAvailableText = "Actualmente su dispositivo no está conectado a internet. Por favor, para continuar con el estudio, vuelva a abrir la app cuando disponga de conexión WiFi o movil.\n\n¡Gracias!";
+
+  static String surveyNotificationText = "Pulse para completar la encuesta";
 }

@@ -592,8 +592,8 @@ serviceMain() async {
           await Settings().preferences.setInt("surveyID", surveyID);
           await notificationService.flutterLocalNotificationsPlugin.show(
               surveyID,
-              'POSTCOVID-AI',
-              'There is an available survey',
+              Strings.appName,
+              Strings.surveyNotificationText,
               platformChannelSpecifics,
               payload: 'item x');
         }

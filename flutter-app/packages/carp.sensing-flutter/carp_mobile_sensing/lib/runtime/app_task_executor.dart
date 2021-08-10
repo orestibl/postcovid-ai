@@ -132,7 +132,7 @@ class AppTaskExecutor extends TaskExecutor {
       await notificationService.flutterLocalNotificationsPlugin.show(
           0,
           'POSTCOVID-AI',
-          'There is an available survey',
+          'Pulse para completar la encuesta',
           platformChannelSpecifics,
           payload: 'item x');
     }
