@@ -322,9 +322,11 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
 
     if (document != null) {
       DocumentSnapshot survey = await document.get();
-      await markSurveyAsCompleted(surveyID);
 
+      await markSurveyAsCompleted(surveyID);
       Settings().preferences.remove("surveyID");
+      await flutterLocalNotificationsPlugin.cancel(surveyID);
+
       RPOrderedTask surveyTask = RPOrderedTask.fromJson(survey.data);
       Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => SurveyPage(surveyTask: surveyTask, code: Settings().preferences.getString("code"))
