@@ -54,7 +54,7 @@ class _ServiceNotAvailablePageState extends State<ServiceNotAvailablePage> with 
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text(Strings.appName),
+        title: AutoSizeText(Strings.appName, maxLines: 1),
         centerTitle: true,
       ),
       body: Container(
@@ -68,10 +68,12 @@ class _ServiceNotAvailablePageState extends State<ServiceNotAvailablePage> with 
                   height: 125,
                   child: Image.asset('assets/logo/app_icon.png')),
               SizedBox(height: 40),
-              Text(
-                  Strings.serviceNotAvailableText,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 18))
+              AutoSizeText(
+                Strings.serviceNotAvailableText,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 18),
+                maxLines: 9,
+              )
             ]
         )
       )

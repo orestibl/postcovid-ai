@@ -10,8 +10,6 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
     return Scaffold(
       body: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
@@ -26,15 +24,15 @@ class _LoginPageState extends State<LoginPage> {
                       height: 150,
                       child: Image.asset('assets/logo/app_icon.png')),
               SizedBox(height: 40),
-              Text(
-                    'Bienvenido a POSTCOVID-AI',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: AppTheme.DARK_COLOR,
-                      fontSize: 34.0,
-                      //fontWeight: FontWeight.bold,
-                    ),
-                  ),
+              AutoSizeText(
+                Strings.loginText,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: AppTheme.DARK_COLOR,
+                    fontSize: 34
+                ),
+                maxLines: 2,
+              ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
               ),

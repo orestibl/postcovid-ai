@@ -26,6 +26,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:research_package/research_package.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 import 'app_service_config.dart';
 import 'my_logger.dart';

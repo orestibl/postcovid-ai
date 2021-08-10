@@ -88,7 +88,7 @@ class PostcovidAIAppState extends State<PostcovidAIApp> {
     return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          title: Text(Strings.appName),
+          title: AutoSizeText(Strings.appName, maxLines: 1),
           centerTitle: true,
         ),
         body: Container(
@@ -102,15 +102,18 @@ class PostcovidAIAppState extends State<PostcovidAIApp> {
                       height: 125,
                       child: Image.asset('assets/logo/app_icon.png')),
                   SizedBox(height: 40),
-                  Text(
+                  AutoSizeText(
                       Strings.mainPageText1,
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 20)),
+                      style: TextStyle(fontSize: 20),
+                      maxLines: 4
+                  ),
                   SizedBox(height: 20),
-                  Text(
+                  AutoSizeText(
                     Strings.mainPageText2,
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 16),
+                    maxLines: 5,
                   ),
                   InkWell(
                       child: Text(Strings.contactEmail,
