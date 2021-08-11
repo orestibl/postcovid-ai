@@ -2,7 +2,7 @@
 # following page: https://dart.dev/tools/pub/pubspec
 
 name: postcovid_ai
-description: TODO #TODO
+description: App developed for the project POSTCOVID-AI from the University of Granada
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -14,9 +14,9 @@ description: TODO #TODO
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.3.0
-author:  CACHET Team <cph.cachet@gmail.com>
-homepage: https://github.com/cph-cachet/postcovid_ai
+version: 1.0.0
+author:  CITIC-UGR Team <cbailon@ugr.es>
+homepage: https://projects.ugr.es/postcovid-ai
 
 
 environment:
@@ -30,7 +30,6 @@ dependencies:
   flutter_launcher_icons: ^0.8.0
   flutter_local_notifications: ^4.0.1+2
 
-  #TODO: Check if these are necessary
   uuid: ^2.0.0
   shared_preferences: '>=0.5.7 <2.0.0'
 
@@ -73,9 +72,6 @@ dependency_overrides:
     path: ./packages/research.package
   permission_handler_platform_interface:
     path: ./packages/permission_handler_platform_interface-2.0.2_changed
-  # HECTOR: ASEGÚRATE DE QUE NO SE USA NINGUNA OTRA VERSIÓN EN LA CACHÉ DE FLUTTER PORQUE COLISIONAN
-  # He fijado la versión que usa carp_context_package de activity_recognition a la 3.0.1+1
-  # A ver si así no me llevo sorpresas de encontrarme otra versión diferente en d:\soft\flutter\.pub-cache\
   activity_recognition_flutter:
     #path: ../activity_recognition_flutter-4.0.3_changed NO FUNCIONA CON ESE
     path: ./packages/activity_recognition_flutter-3.0.1+1_changed
