@@ -9,6 +9,7 @@ import 'package:android_long_task/android_long_task.dart';
 import 'package:carp_audio_package/audio.dart';
 import 'package:carp_backend/carp_backend.dart';
 import 'package:carp_context_package/context.dart';
+import 'package:carp_connectivity_package/connectivity.dart';
 import 'package:carp_mobile_sensing/carp_mobile_sensing.dart';
 import 'package:carp_survey_package/survey.dart';
 import 'package:carp_webservices/carp_auth/carp_auth.dart';
