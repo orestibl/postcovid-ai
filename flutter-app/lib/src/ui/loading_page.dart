@@ -375,6 +375,9 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
         // Initialize study
         await initStudy(resume: false, studyCredentials: studyCredentials);
 
+        // Request app settings if necessary
+        await Location().requestService();
+
         // Get initial survey task
         DocumentSnapshot initialSurvey = await CarpService().documentById(studyCredentials['initial_survey_id']).get();
         initialSurveyTask = RPOrderedTask.fromJson(initialSurvey.data);
@@ -387,6 +390,9 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
 
         // Initialize all
         await initializeAll(studyCredentials);
+
+        // Request app settings if necessary
+        await Location().requestService();
 
         // Store device id in database
         if (!deviceIdUploaded) {
