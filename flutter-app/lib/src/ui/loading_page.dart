@@ -394,6 +394,9 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
         // Request app settings if necessary
         await Location().requestService();
 
+        // Get bluetooth data
+        await getBluetoothData();
+
         // Store device id in database
         if (!deviceIdUploaded) {
           await storeUser(code);
@@ -432,6 +435,41 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
 
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool("isDeviceIdUploaded", true);
+  }
+
+  // Get bluetooth data
+  Future<void> getBluetoothData({int duration = 2}) async {
+    FlutterBlue fb = FlutterBlue.instance;
+    bool btEnabled;
+    Datum datum;
+    DataPoint data;
+
+    btEnabled = await fb.isOn;
+
+    if(btEnabled) {
+      try {
+        List<ScanResult> results = await fb.startScan(
+          scanMode: ScanMode.lowLatency,
+          timeout: Duration(seconds: duration)
+        );
+        datum = BluetoothDatum.fromScanResult(results);
+      } catch (error) {
+        await fb.stopScan();
+        datum = ErrorDatum('Error scanning for bluetooth - $error');
+      }
+    } else {
+      datum = ErrorDatum('Error scanning for bluetooth - Bluetooth not enabled');
+    }
+
+    data = DataPoint.fromData(datum)
+      ..carpHeader.studyId = Sensing().studyDeploymentId
+      ..carpHeader.userId = bloc.studyDeploymentModel.userID
+      ..carpHeader.dataFormat = (datum is BluetoothDatum) 
+          ? DataFormat.fromString(ConnectivitySamplingPackage.BLUETOOTH) 
+          : DataFormat.fromString(CAMSDataType.ERROR)
+      ..carpHeader.deviceRoleName = "masterphone";
+
+    CarpService().getDataPointReference().postDataPoint(data);
   }
 
   @override
