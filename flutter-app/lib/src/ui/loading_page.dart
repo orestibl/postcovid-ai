@@ -378,6 +378,12 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
         // Request app settings if necessary
         await Location().requestService();
 
+        // Request ignore battery optimizations if necessary
+        if (!await Permission.ignoreBatteryOptimizations.isGranted) {
+          bool isShown = await Permission.ignoreBatteryOptimizations.shouldShowRequestRationale;
+          await Permission.ignoreBatteryOptimizations.request();
+        }
+
         // Get initial survey task
         DocumentSnapshot initialSurvey = await CarpService().documentById(studyCredentials['initial_survey_id']).get();
         initialSurveyTask = RPOrderedTask.fromJson(initialSurvey.data);
