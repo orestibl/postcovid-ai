@@ -18,6 +18,7 @@ class _RPUISliderQuestionBodyState extends State<RPUISliderQuestionBody>
   Widget build(BuildContext context) {
     super.build(context);
     RPLocalizations locale = RPLocalizations.of(context);
+    bool middleLabel = (widget.answerFormat.prefix == "Sí, desagradable");
     return Container(
       padding: EdgeInsets.all(8),
       alignment: Alignment.topLeft,
@@ -30,8 +31,8 @@ class _RPUISliderQuestionBodyState extends State<RPUISliderQuestionBody>
               Text(
                   ((widget.answerFormat.prefix == "") & (widget.answerFormat.suffix == ""))
                       ? '${(value ?? (widget.answerFormat.initValue ?? widget.answerFormat.minValue)).toInt()}'
-                      : '',
-                  style: TextStyle(fontSize: 18)
+                      : (middleLabel ? "No" : ''), // This should be empty, specific configuration for the present study
+                  style: TextStyle(fontSize: (middleLabel ? 14 : 18))
               ),
               Text('${locale?.translate(widget.answerFormat.suffix) ?? widget.answerFormat.suffix}')
             ]

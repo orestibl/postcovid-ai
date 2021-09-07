@@ -596,12 +596,6 @@ serviceMain() async {
           if (!bloc.isRunning) {
             bloc.resume();
           }
-
-          Sensing().controller.data.listen((event) {
-            appServiceData.progress = bloc.studyDeploymentModel.samplingSize;
-            appServiceData.mensaje = event.toJson().toString();
-            ServiceClient.update(appServiceData);
-          });
         }
 
         userTaskEventsHandler = AppTaskController().userTaskEvents.listen((event) {
