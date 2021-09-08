@@ -29,6 +29,8 @@ class SurveyPage extends StatelessWidget {
       Navigator.of(context).push(MaterialPageRoute(
           builder: (context) =>
               LoadingPage(text: code)));
+    } else {
+      SystemChannels.platform.invokeMethod('SystemNavigator.pop');
     }
   }
 

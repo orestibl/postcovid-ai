@@ -20,8 +20,10 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
   bool consentUploaded = false; // 1st execution
   bool initialSurveyUploaded = false; // 2nd execution
   bool deviceIdUploaded = false;
+  bool pendingSurvey = false;
   RPOrderedTask consentTask;
   RPOrderedTask initialSurveyTask;
+  RPOrderedTask surveyTask;
 
   bool requestAgain = false;
   bool finalizeApp = false;
@@ -315,25 +317,6 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
     await http.post(uri, body: jsonEncode(payload), 
         headers: {"Content-Type": "application/json"});
   }
-  
-  Future<void> showSurvey() async {
-    final surveyID =  Settings().preferences.getInt("surveyID");
-    DocumentReference document = CarpService().documentById(surveyID);
-
-    if (document != null) {
-      DocumentSnapshot survey = await document.get();
-
-      await markSurveyAsCompleted(surveyID);
-      Settings().preferences.remove("surveyID");
-      await flutterLocalNotificationsPlugin.cancel(surveyID);
-
-      RPOrderedTask surveyTask = RPOrderedTask.fromJson(survey.data);
-      Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => SurveyPage(surveyTask: surveyTask, code: Settings().preferences.getString("code"))
-      ));
-    }
-  }
-
 
   /// Executed when the page is loaded
   Future<bool> login(BuildContext context, String code) async {
@@ -349,6 +332,7 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
       consentUploaded = prefs.containsKey("isConsentUploaded");
       initialSurveyUploaded = prefs.containsKey("isInitialSurveyUploaded");
       deviceIdUploaded = prefs.containsKey("isDeviceIdUploaded");
+      pendingSurvey = prefs.containsKey("surveyID");
 
       // Get study credentials
       final studyCredentials = await getStudyFromAPIREST(code);
@@ -380,7 +364,6 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
 
         // Request ignore battery optimizations if necessary
         if (!await Permission.ignoreBatteryOptimizations.isGranted) {
-          bool isShown = await Permission.ignoreBatteryOptimizations.shouldShowRequestRationale;
           await Permission.ignoreBatteryOptimizations.request();
         }
 
@@ -408,9 +391,14 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
           await storeUser(code);
         }
 
-        // Show survey if available
-        if (Settings().preferences.containsKey("surveyID")) {
-          showSurvey();
+        // Retrieve survey if available
+        if (pendingSurvey) {
+          final surveyID =  Settings().preferences.getInt("surveyID");
+          await markSurveyAsCompleted(surveyID);
+          Settings().preferences.remove("surveyID");
+          await flutterLocalNotificationsPlugin.cancel(surveyID);
+          DocumentSnapshot survey = await CarpService().documentById(surveyID).get();
+          surveyTask = RPOrderedTask.fromJson(survey.data);
         }
       }
 
@@ -499,7 +487,9 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
             } else if (consentUploaded & !initialSurveyUploaded & !skipConsent) {
               return SurveyPage(surveyTask: initialSurveyTask, code: this.widget.text);
             } else {
-              return PostcovidAIApp();
+              return pendingSurvey
+                  ? SurveyPage(surveyTask: surveyTask, code: this.widget.text)
+                  : PostcovidAIApp();
             }
           } else {
             // Otherwise, return to login page
