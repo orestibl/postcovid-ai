@@ -478,7 +478,23 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
                 body: Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
-                      children: [CircularProgressIndicator()],
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 15),
+                          child: AutoSizeText(
+                            Strings.loadingText,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 18
+                            ),
+                            maxLines: 2,
+                          )
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 15),
+                        ),
+                        CircularProgressIndicator()
+                      ],
                     )));
           } else if (!requestAgain) {
             // If everything was fine, proceed
