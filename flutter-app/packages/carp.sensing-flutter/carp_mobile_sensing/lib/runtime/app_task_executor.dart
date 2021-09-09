@@ -112,9 +112,10 @@ class AppTaskExecutor extends TaskExecutor {
 
     notification.AndroidNotificationDetails androidPlatformChannelSpecifics =
         notification.AndroidNotificationDetails(
-            'your channel id', 'your channel name', 'your channel description',
+            'surveyChannelID', 'surveyChannel', 'Survey Channel',
             importance: notification.Importance.max,
             priority: notification.Priority.high,
+            onlyAlertOnce: true,
             showWhen: false);
 
     notification.IOSNotificationDetails iOSPlatformChannelSpecifics =
