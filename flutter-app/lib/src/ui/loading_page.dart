@@ -16,7 +16,7 @@ class LoadingPage extends StatefulWidget {
 /// 4 - Show main screen (foreground service initialized)
 
 class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
-  bool skipConsent = false; //TODO: remove for production
+  bool skipConsent = true; //TODO: remove for production
   bool consentUploaded = false; // 1st execution
   bool initialSurveyUploaded = false; // 2nd execution
   bool deviceIdUploaded = false;
@@ -632,7 +632,9 @@ serviceMain() async {
               importance: notification.Importance.max,
               priority: notification.Priority.high,
               onlyAlertOnce: true,
-              showWhen: false);
+              showWhen: false,
+              icon: 'survey_icon',
+              visibility: NotificationVisibility.public);
 
           notification.IOSNotificationDetails iOSPlatformChannelSpecifics =
           notification.IOSNotificationDetails(
