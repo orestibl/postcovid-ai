@@ -1,7 +1,10 @@
 part of postcovid_ai;
 
 class ServiceNotAvailablePage extends StatefulWidget {
-  const ServiceNotAvailablePage({Key key}) : super(key: key);
+  final String pageText;
+  final bool connectionNotAvailable;
+
+  const ServiceNotAvailablePage(this.pageText, this.connectionNotAvailable, {Key key}) : super(key: key);
 
   _ServiceNotAvailablePageState createState() => _ServiceNotAvailablePageState();
 }
@@ -9,8 +12,8 @@ class _ServiceNotAvailablePageState extends State<ServiceNotAvailablePage> with 
   static final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String code = "";
 
-  final notConnectedSnackBar = SnackBar(content: Text(Strings.serviceNotAvailableSnackBar));
-  final connectedSnackBar = SnackBar(content: Text(Strings.serviceAvailableSnackBar));
+  final notConnectedSnackBar = SnackBar(content: Text(Strings.connectionNotAvailableSnackBar));
+  final connectedSnackBar = SnackBar(content: Text(Strings.connectionAvailableSnackBar));
 
   _ServiceNotAvailablePageState() : super();
 
@@ -23,7 +26,7 @@ class _ServiceNotAvailablePageState extends State<ServiceNotAvailablePage> with 
         if (prefs.containsKey("code")) {
           code = prefs.getString("code");
         }
-        ScaffoldMessenger.of(context).showSnackBar(connectedSnackBar);
+        if (widget.connectionNotAvailable) ScaffoldMessenger.of(context).showSnackBar(connectedSnackBar);
         Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context) => LoadingPage(text: code)
         ));
@@ -73,7 +76,7 @@ class _ServiceNotAvailablePageState extends State<ServiceNotAvailablePage> with 
                   child: Image.asset('assets/logo/app_icon.png')),
               SizedBox(height: 40),
               AutoSizeText(
-                Strings.serviceNotAvailableText,
+                widget.pageText,
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 18),
                 maxLines: 9,

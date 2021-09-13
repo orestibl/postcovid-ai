@@ -14,20 +14,16 @@ class CarpBackend {
 
   CarpApp get app => _app;
 
-  Future initialize(
-      {String clientID,
-      String clientSecret,
-      String username,
-      String password}) async {
+  Future initialize({Map credentials}) async {
     _app = CarpApp(
       name: "CANS Production @ UGR",
       uri: Uri.parse(uri),
-      oauth: OAuthEndPoint(clientID: clientID, clientSecret: clientSecret),
+      oauth: OAuthEndPoint(clientID: credentials['client_id'], clientSecret: credentials['client_secret']),
     );
 
     // Configure and authenticate
     CarpService().configure(app);
-    await CarpService().authenticate(username: username, password: password);
+    await CarpService().authenticate(username: credentials['username'], password: credentials['password']);
 
     CarpDeploymentService().configureFrom(CarpService());
     CANSProtocolService().configureFrom(CarpService());

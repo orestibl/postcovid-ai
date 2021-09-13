@@ -16,20 +16,30 @@ class LoadingPage extends StatefulWidget {
 /// 4 - Show main screen (foreground service initialized)
 
 class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
-  bool skipConsent = true; //TODO: remove for production
-  bool consentUploaded = false; // 1st execution
-  bool initialSurveyUploaded = false; // 2nd execution
+
+  // Workflow flags
+  bool skipConsent = false;
+  bool consentUploaded = false;
+  bool initialSurveyUploaded = false;
   bool deviceIdUploaded = false;
   bool pendingSurvey = false;
+  bool requestAgain = false;
+  bool serviceNotAvailable = false;
+
+  // Extra flags
+  bool timeoutReached = false;
+  bool finalizeApp = false; //TODO: necessary?
+  bool initStudylocked = false; //TODO: always false?
+  bool blocAlreadyInitialized = false; //TODO: necessary?
+
+  // Survey tasks
   RPOrderedTask consentTask;
   RPOrderedTask initialSurveyTask;
   RPOrderedTask surveyTask;
 
-  bool requestAgain = false;
-  bool finalizeApp = false;
-  bool initStudylocked = false;
-  String notifTaskName = 'no_task_so_remove_all_of_them';
-  bool blocAlreadyInitialized = false;
+  // Long task
+  static const Duration timeoutValue = Duration(seconds: 15); //TODO: adjust
+  String notifTaskName = 'no_task_so_remove_all_of_them'; //TODO: this part is necessary?
   StreamSubscription<UserTask> userTaskEventsHandler;
   Stream<ActivityEvent> activityStream;
   StreamSubscription<Map<String, dynamic>> miLongTaskStreamSuscription;
@@ -40,7 +50,8 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
     super.dispose();
     WidgetsBinding.instance.removeObserver(this);
   }
-  
+
+  //TODO: purpose?
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.inactive) {
@@ -61,18 +72,20 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
   }
 
   /// Executed before the loading page is displayed
+  /// //TODO: que se hace aqui exactamente?
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     miLongTaskStreamSuscription = getLongTaskStreamSuscription();
-    isServiceRunning().then((running) {
+    isServiceRunning().then((running) { //TODO: Si el servicio esta funcionando, lo inicia sin appSeviceData?
       if (running) {
         startService(null);
       }
     });
     AppClient.sendAppResumed();
-    setNotificationListener();
+    setNotificationListener(); // TODO: mirar
+    //TODO: esto que hace?
     checkAndConfigureNotificationsAndroid(); // esto lanza un thread que arrancará bloc if needed
   }
 
@@ -100,14 +113,14 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
       runInitStudyIfPendingNotificationViaSharedPrefs();
   }
 
+  // Initialize notifications
   void setNotificationListener() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('app_icon');
-
     final InitializationSettings initializationSettings =
         InitializationSettings(android: initializationSettingsAndroid);
     await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onSelectNotification: (String payload) async {
+        onSelectNotification: (String payload) async { //TODO: esto es necesario?
       if (payload != null) {
         notifTaskName = payload;
         // Ahora inicializo el nuevo bloc para que genere la task
@@ -125,7 +138,8 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
       }
     });
   }
-  
+
+  // Long task logger
   StreamSubscription<Map<String, dynamic>> getLongTaskStreamSuscription() {
     try {
       return AppClient.observe.listen((json) {
@@ -166,22 +180,21 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
     finalizeApp = true;
     //goBackround();
   }
+  //TODO: resume?
+  //TODO: cuando sepamos que hace el initstudylocked, evitar que se inicialize el backend si ya esta hecho
   Future<void> initStudy({bool resume = true, bool useTaskNameFiltering = false, 
     Map studyCredentials}) async {
     if (initStudylocked) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       // If the app is opened due to a survey, initialize backend
       if (prefs.containsKey("surveyID") & (studyCredentials != null)) {
-        await CarpBackend().initialize(clientID: studyCredentials["client_id"],
-            clientSecret: studyCredentials['client_secret'],
-            username: studyCredentials['username'],
-            password: studyCredentials['password']);
+        await CarpBackend().initialize(credentials: studyCredentials);
       }
       return;
     }
     initStudylocked = true;
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('PENDING_NOTIFICATION', "");
+    await prefs.setString('PENDING_NOTIFICATION', ""); //TODO: ??
 
     if (bloc.isRunning) {
       stopStudy();
@@ -191,18 +204,10 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
     if (studyCredentials != null) {
       await bloc.initialize();
 
-      await CarpBackend().initialize(clientID: studyCredentials["client_id"],
-          clientSecret: studyCredentials['client_secret'],
-          username: studyCredentials['username'],
-          password: studyCredentials['password']);
-      blocAlreadyInitialized = true;
+      await CarpBackend().initialize(credentials: studyCredentials);
+      blocAlreadyInitialized = true; //TODO:??
       //}
-      await Sensing().initialize(taskName: taskName,
-          username: studyCredentials['username'],
-          password: studyCredentials['password'],
-          clientID: studyCredentials['client_id'],
-          clientSecret: studyCredentials['client_secret'],
-          protocolName: studyCredentials['protocol_name']);
+      await Sensing().initialize(taskName: taskName, credentials: studyCredentials);
 
       if (resume) {
         runStudy();
@@ -237,7 +242,7 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
       _startTracking();
     }
   }
-  
+  //TODO: why?
   void stopStudy() {
     if (bloc.isRunning) {
       bloc.pause();
@@ -269,7 +274,8 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
     finalizeApp = true;
     //goBackround();
   }
-  
+
+  // Checks if the service is running
   Future<bool> isServiceRunning() async {
     try {
       return await AppClient.isServiceRunning();
@@ -306,6 +312,7 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
       milog.info(stacktrace);
     }
   }
+  //TODO: no se usa
    void goBackround() {
     MoveToBackground.moveTaskToBack();
   }
@@ -314,8 +321,12 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
     final code = Settings().preferences.getString("code");
     final uri = Uri.parse(apiRestUri + "/register_completed_survey");
     Map<String, dynamic> payload = {"code": code, "survey_id": surveyID};
-    await http.post(uri, body: jsonEncode(payload), 
+    final response = await http.post(uri,
+        body: jsonEncode(payload),
         headers: {"Content-Type": "application/json"});
+    if (response.statusCode == 500 || response.statusCode == 503) {
+      throw new ServerException();
+    }
   }
 
   /// Executed when the page is loaded
@@ -335,19 +346,16 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
       pendingSurvey = prefs.containsKey("surveyID");
 
       // Get study credentials
-      final studyCredentials = await getStudyFromAPIREST(code);
+      final studyCredentials = await getStudyFromAPIREST(code).timeout(timeoutValue);
 
       // [2] If the code has been received but any survey has been
       //     filled, just load backend and present informed consent
       if (!consentUploaded & !initialSurveyUploaded & !skipConsent) {
         // Initialize backend
-        await CarpBackend().initialize(clientID: studyCredentials["client_id"],
-            clientSecret: studyCredentials['client_secret'],
-            username: studyCredentials['username'],
-            password: studyCredentials['password']);
+        await CarpBackend().initialize(credentials: studyCredentials).timeout(timeoutValue);
 
         // Get informed consent task
-        DocumentSnapshot informedConsent = await CarpService().documentById(studyCredentials['consent_id']).get();
+        DocumentSnapshot informedConsent = await CarpService().documentById(studyCredentials['consent_id']).get().timeout(timeoutValue);
         consentTask = RPOrderedTask.fromJson(informedConsent.data);
 
         // Store user code in shared prefs
@@ -357,7 +365,7 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
       // sent, but the initial survey not, just present survey
       } else if (consentUploaded & !initialSurveyUploaded & !skipConsent) {
         // Initialize study
-        await initStudy(resume: false, studyCredentials: studyCredentials);
+        await initStudy(resume: false, studyCredentials: studyCredentials).timeout(timeoutValue);
 
         // Request app settings if necessary
         await Location().requestService();
@@ -368,7 +376,7 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
         }
 
         // Get initial survey task
-        DocumentSnapshot initialSurvey = await CarpService().documentById(studyCredentials['initial_survey_id']).get();
+        DocumentSnapshot initialSurvey = await CarpService().documentById(studyCredentials['initial_survey_id']).get().timeout(timeoutValue);
         initialSurveyTask = RPOrderedTask.fromJson(initialSurvey.data);
 
       // [4] If everything has been completed, initialize all and send to main
@@ -378,26 +386,26 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
         if (skipConsent) prefs.setString("code", code); //TODO: remove for production
 
         // Initialize all
-        await initializeAll(studyCredentials);
+        await initializeAll(studyCredentials).timeout(timeoutValue);
 
         // Request app settings if necessary
         await Location().requestService();
 
         // Get bluetooth data
-        await getBluetoothData();
+        //await getBluetoothData();
 
         // Store device id in database
         if (!deviceIdUploaded) {
-          await storeUser(code);
+          await storeUser(code).timeout(timeoutValue);
         }
 
         // Retrieve survey if available
         if (pendingSurvey) {
           final surveyID =  Settings().preferences.getInt("surveyID");
-          await markSurveyAsCompleted(surveyID);
+          await markSurveyAsCompleted(surveyID).timeout(timeoutValue);
           Settings().preferences.remove("surveyID");
           await flutterLocalNotificationsPlugin.cancel(surveyID);
-          DocumentSnapshot survey = await CarpService().documentById(surveyID).get();
+          DocumentSnapshot survey = await CarpService().documentById(surveyID).get().timeout(timeoutValue);
           surveyTask = RPOrderedTask.fromJson(survey.data);
         }
       }
@@ -405,16 +413,25 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
       return true;
     } on InvalidCodeException catch (_) {
       requestAgain = true;
-      // TODO the code must be validated in the flutter app to avoid giving hints about the code
-      _showDialog("Invalid code");
+      _showDialog(Strings.invalidCodeError);
       return false;
     } on UnauthorizedException catch (_) {
       requestAgain = true;
-      _showDialog("Unauthorized");
+      _showDialog(Strings.invalidCodeError);
       return false;
     } on ServerException catch (_) {
-      requestAgain = true;
-      _showDialog("Server error");
+      if (code.isEmpty) {
+        requestAgain = true;
+        _showDialog(Strings.serverError);
+      }
+      serviceNotAvailable = true;
+      return false;
+    } on TimeoutException catch(_) {
+      if (code.isEmpty) {
+        requestAgain = true;
+        _showDialog(Strings.serverError);
+      }
+      serviceNotAvailable = true;
       return false;
     }
   }
@@ -424,11 +441,15 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
     final uri = Uri.parse(apiRestUri + "/register_device");
     Map<String, dynamic> payload = {"participant_code": code.substring(0,5),
       "device_id": Settings().preferences.get('postcovid-ai app.user_id')};
-    await http.post(uri, body: jsonEncode(payload),
+    final response = await http.post(uri,
+        body: jsonEncode(payload),
         headers: {"Content-Type": "application/json"});
-
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool("isDeviceIdUploaded", true);
+    if (response.statusCode == 500 || response.statusCode == 503) {
+      throw new ServerException();
+    } else {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setBool("isDeviceIdUploaded", true);
+    }
   }
 
   // Get bluetooth data
@@ -497,16 +518,20 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
                       ],
                     )));
           } else if (!requestAgain) {
-            // If everything was fine, proceed
-            if (!consentUploaded & !initialSurveyUploaded & !skipConsent) {
-              return InformedConsentPage(consentTask: consentTask, code: this.widget.text);
-            } else if (consentUploaded & !initialSurveyUploaded & !skipConsent) {
-              return SurveyPage(surveyTask: initialSurveyTask, code: this.widget.text);
+            if (!serviceNotAvailable) {
+              if (!consentUploaded & !initialSurveyUploaded & !skipConsent) {
+                return InformedConsentPage(consentTask: consentTask, code: this.widget.text);
+              } else if (consentUploaded & !initialSurveyUploaded & !skipConsent) {
+                return SurveyPage(surveyTask: initialSurveyTask, code: this.widget.text);
+              } else {
+                return pendingSurvey
+                    ? SurveyPage(surveyTask: surveyTask, code: this.widget.text)
+                    : PostcovidAIApp();
+              }
             } else {
-              return pendingSurvey
-                  ? SurveyPage(surveyTask: surveyTask, code: this.widget.text)
-                  : PostcovidAIApp();
+              return ServiceNotAvailablePage(Strings.serviceNotAvailableText, false);
             }
+            // If everything was fine, proceed
           } else {
             // Otherwise, return to login page
             return LoginPage();
@@ -518,23 +543,26 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
 
 
 Future<Map> getStudyFromAPIREST(String code) async {
-    final uri = Uri.parse(apiRestUri + "/get_study");
-    Map<String, dynamic> payload = {"code": code};
-    final response = await http.post(uri,
-        body: jsonEncode(payload),
-        headers: {"Content-Type": "application/json"});
+  final uri = Uri.parse(apiRestUri + "/get_study");
+  Map<String, dynamic> payload = {"code": code};
+  final response = await http.post(uri,
+      body: jsonEncode(payload),
+      headers: {"Content-Type": "application/json"});
+  if (response.statusCode == 500 || response.statusCode == 503) {
+    throw new ServerException();
+  } else {
     Map jsonResponse = jsonDecode(response.body);
-    if (response.statusCode == 500 || jsonResponse['status'] == 500) {
-      throw new ServerException(); // TODO handle all situations
-    }
-    if (jsonResponse['status'] == 400) {
-      throw new InvalidCodeException(); // TODO validate code in flutter to skip this
+    if (jsonResponse['status'] == 500) {
+      throw new ServerException();
+    } else if (jsonResponse['status'] == 400) {
+      throw new InvalidCodeException();
     } else if (jsonResponse['status'] == 403) {
       throw new UnauthorizedException();
     } else {
       return jsonResponse['data'];
     }
   }
+}
 
 void longTaskStartTracking() {
   activityRecognition.startStream(runForegroundService: false);
@@ -548,15 +576,19 @@ Future<int> getSurveyID() async {
     final response = await http.post(uri,
         body: jsonEncode(payload),
         headers: {"Content-Type": "application/json"});
-    Map jsonResponse = jsonDecode(response.body);
-    if (response.statusCode != 200 || jsonResponse['status'] != 200) {
-      return null;
-    }
-    else {
-      return jsonResponse['data']['survey_id'];
+    if (response.statusCode == 500 || response.statusCode == 503) {
+      throw new ServerException();
+    } else {
+      Map jsonResponse = jsonDecode(response.body);
+      if (response.statusCode != 200 || jsonResponse['status'] != 200) {
+        return null;
+      }
+      else {
+        return jsonResponse['data']['survey_id'];
+      }
     }
 }
-  
+
 
 serviceMain() async {
   bool useAR = true;
@@ -595,15 +627,8 @@ serviceMain() async {
 
         if (studyCredentials != null) {
           await bloc.initialize();
-          await CarpBackend().initialize(clientID: studyCredentials["client_id"],
-              clientSecret: studyCredentials['client_secret'],
-              username: studyCredentials['username'],
-              password: studyCredentials['password']);
-          await Sensing().initialize(username: studyCredentials['username'],
-              password: studyCredentials['password'],
-              clientID: studyCredentials['client_id'],
-              clientSecret: studyCredentials['client_secret'],
-              protocolName: studyCredentials['protocol_name']);
+          await CarpBackend().initialize(credentials: studyCredentials);
+          await Sensing().initialize(credentials: studyCredentials);
 
           if (!bloc.isRunning) {
             bloc.resume();

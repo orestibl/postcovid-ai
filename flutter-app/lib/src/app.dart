@@ -57,7 +57,7 @@ class App extends StatelessWidget {
                 // Code is obtained, go to loading page
                 return _isConnected
                     ? LoadingPage(text: code)
-                    : ServiceNotAvailablePage();
+                    : ServiceNotAvailablePage(Strings.connectionNotAvailableText, true);
               }
             }));
   }

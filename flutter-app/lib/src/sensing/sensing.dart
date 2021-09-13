@@ -59,13 +59,7 @@ class Sensing {
 
   /// *** Initialize and setup sensing ***
 
-  Future<void> initialize(
-      {String username,
-      String password,
-      String clientID,
-      String clientSecret,
-      String protocolName,
-      String taskName}) async {
+  Future<void> initialize({Map credentials, String taskName}) async {
     info('Initializing $runtimeType');
 
     // set up the devices available on this phone
@@ -77,18 +71,19 @@ class Sensing {
 
     // authenticate the user
     if (!CarpService().authenticated)
-      await CarpService().authenticate(username: username, password: password);
+      await CarpService().authenticate(username: credentials['username'], password: credentials['password']);
 
     // Get current user id
     CarpUser user = await CarpService().getCurrentUserProfile();
 
     // Download custom protocol
-    protocol = await CANSProtocolService().getBy(StudyProtocolId(user.accountId, protocolName));
+    protocol = await CANSProtocolService().getBy(StudyProtocolId(user.accountId, credentials['protocol_name']));
     // DEBUG - Local protocol
     //LocalStudyProtocolManager localStudyProtocolManager = LocalStudyProtocolManager();
     //localStudyProtocolManager.userID = user.accountId;
     //StudyProtocol protocol = await localStudyProtocolManager.getStudyProtocol("");
-    
+
+    //TODO: esto sirve?
     // HECTOR_INIT
     if (taskName != null && taskName != '') {
       print("HH_Removing all tasks except: $taskName"); //taskName = 'Task #8'
@@ -142,10 +137,10 @@ class Sensing {
         uploadMethod: CarpUploadMethod.DATA_POINT,
         uri: uri,
         name: "CANS Production @ UGR",
-        clientId: clientID,
-        clientSecret: clientSecret,
-        email: username,
-        password: password);
+        clientId: credentials['client_id'],
+        clientSecret: credentials['client_secret'],
+        email: credentials['username'],
+        password: credentials['password']);
     deployment.dataEndPoint = dataEndPoint;
 
     // configure the controller with the default privacy schema -> deploy the protocol and ask for permissions

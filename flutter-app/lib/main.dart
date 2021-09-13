@@ -53,12 +53,11 @@ part 'src/ui/survey_page.dart';
 part 'src/ui/shared/app_theme.dart';
 part 'src/ui/shared/strings.dart';
 
-bool letAppGetClosed = true;
+bool letAppGetClosed = true; //TODO: never used
 AppServiceData appServiceData = AppServiceData(); // esta variable la usa la UI y la long task (pero son diferentes)
-StreamSubscription<UserTask> userTaskEventsHandler;
+StreamSubscription<UserTask> userTaskEventsHandler; //TODO: surveys??
 
 // HÉCTOR. ESTA PARTE ESTÁ COGIDA DE notifications
-
 ActivityRecognition activityRecognition = ActivityRecognition.instance;
 
 void main() {
