@@ -9,6 +9,9 @@ class _ServiceNotAvailablePageState extends State<ServiceNotAvailablePage> with 
   static final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String code = "";
 
+  final notConnectedSnackBar = SnackBar(content: Text(Strings.serviceNotAvailableSnackBar));
+  final connectedSnackBar = SnackBar(content: Text(Strings.serviceAvailableSnackBar));
+
   _ServiceNotAvailablePageState() : super();
 
   Future<void> checkConnection() async {
@@ -20,11 +23,13 @@ class _ServiceNotAvailablePageState extends State<ServiceNotAvailablePage> with 
         if (prefs.containsKey("code")) {
           code = prefs.getString("code");
         }
+        ScaffoldMessenger.of(context).showSnackBar(connectedSnackBar);
         Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context) => LoadingPage(text: code)
         ));
       }
     } on SocketException catch (err) {
+      ScaffoldMessenger.of(context).showSnackBar(notConnectedSnackBar);
       info(err.message);
     }
   }
@@ -44,7 +49,6 @@ class _ServiceNotAvailablePageState extends State<ServiceNotAvailablePage> with 
   void didChangeAppLifecycleState(AppLifecycleState state) {
     setState(() {
       if (state == AppLifecycleState.resumed)
-        //runApp(App());
         checkConnection();
     });
   }
@@ -73,6 +77,23 @@ class _ServiceNotAvailablePageState extends State<ServiceNotAvailablePage> with 
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 18),
                 maxLines: 9,
+              ),
+              SizedBox(height: 30),
+              Container(
+                height: 50,
+                width: 250,
+                decoration: BoxDecoration(
+                    color: AppTheme.DARK_COLOR,
+                    borderRadius: BorderRadius.circular(20)),
+                child: TextButton(
+                    onPressed: () => checkConnection(),
+                    child: Text(
+                      Strings.retry,
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18),
+                    )
+                )
               )
             ]
         )
