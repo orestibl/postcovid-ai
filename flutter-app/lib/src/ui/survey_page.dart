@@ -17,7 +17,7 @@ class SurveyPage extends StatelessWidget {
     ..carpHeader.deviceRoleName = "masterphone";
 
     // Upload the result to the database
-    CarpService().getDataPointReference().postDataPoint(data);
+    await CarpService().getDataPointReference().postDataPoint(data);
 
     // Only execute this for initial survey, otherwise just pop
     final SharedPreferences prefs = await SharedPreferences.getInstance();

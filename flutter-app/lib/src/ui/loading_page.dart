@@ -478,12 +478,13 @@ serviceMain() async {
 
     String notificationMessage = "Comenzando...";
     appServiceData.miNotificationTitle = notificationMessage;
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
     if (_isConnected) {
       if (useAR) {
         longTaskStartTracking();
       }
       if (useBloc) {
-        final SharedPreferences prefs = await SharedPreferences.getInstance();
         String code = prefs.getString("code");
 
         final studyCredentials = await getStudyFromAPIREST(code);
@@ -523,7 +524,7 @@ serviceMain() async {
           final platformChannelSpecifics = NotificationDetails(
               android: androidPlatformChannelSpecifics,
               iOS: iOSPlatformChannelSpecifics);
-          await Settings().preferences.setInt("surveyID", surveyID);
+          await prefs.setInt("surveyID", surveyID);
           await notificationService.flutterLocalNotificationsPlugin.show(
               surveyID,
               Strings.appName,

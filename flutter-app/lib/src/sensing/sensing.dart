@@ -101,8 +101,7 @@ class Sensing {
       deploymentService: deploymentService,
       deviceRegistry: DeviceController(),
     );
-    await client
-        .configure(); //TODO: set userId as deviceId in the client configuration. Now is not possible because the study has not been already deployed here, so the userId has not been generated yet.
+    await client.configure();
 
     // add and deploy this deployment -> device added to deployment
     _controller = await client.addStudy(studyDeploymentId, deviceRolename);
