@@ -28,30 +28,27 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
 
   // Extra flags
   bool timeoutReached = false;
-  bool finalizeApp = false; //TODO: necessary?
-  bool initStudylocked = false; //TODO: always false?
-  bool blocAlreadyInitialized = false; //TODO: necessary?
+  bool finalizeApp = false;
 
   // Survey tasks
   RPOrderedTask consentTask;
   RPOrderedTask initialSurveyTask;
   RPOrderedTask surveyTask;
 
-  // Long task
-  static const Duration timeoutValue = Duration(seconds: 15); //TODO: adjust
-  String notifTaskName = 'no_task_so_remove_all_of_them'; //TODO: this part is necessary?
-  StreamSubscription<UserTask> userTaskEventsHandler;
+  // Other objects
+  static const Duration timeoutValue = Duration(seconds: 10);
   Stream<ActivityEvent> activityStream;
   StreamSubscription<Map<String, dynamic>> miLongTaskStreamSuscription;
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  
+
+  /// App lifecycle state
+
   @override
   void dispose() {
     super.dispose();
     WidgetsBinding.instance.removeObserver(this);
   }
 
-  //TODO: purpose?
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.inactive) {
@@ -62,31 +59,27 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
     }
     if (state == AppLifecycleState.resumed) {
       AppClient.sendAppResumed();
-      runInitStudyIfPendingNotificationViaSharedPrefs();
     }
     if (state == AppLifecycleState.detached) {
       miLongTaskStreamSuscription?.cancel();
       miLongTaskStreamSuscription = null;
-      userTaskEventsHandler?.cancel();
     }
   }
 
   /// Executed before the loading page is displayed
-  /// //TODO: que se hace aqui exactamente?
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     miLongTaskStreamSuscription = getLongTaskStreamSuscription();
-    isServiceRunning().then((running) { //TODO: Si el servicio esta funcionando, lo inicia sin appSeviceData?
+    isServiceRunning().then((running) {
       if (running) {
         startService(null);
       }
     });
     AppClient.sendAppResumed();
-    setNotificationListener(); // TODO: mirar
-    //TODO: esto que hace?
-    checkAndConfigureNotificationsAndroid(); // esto lanza un thread que arrancará bloc if needed
+    initializeNotifications();
   }
 
   // Start foreground service
@@ -99,44 +92,11 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
     }
   }
 
-  // Initialize bloc if needed
-  Future<void> checkAndConfigureNotificationsAndroid() async {
-    final NotificationAppLaunchDetails notificationAppLaunchDetails =
-        await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
-    if (notificationAppLaunchDetails?.didNotificationLaunchApp ?? false) {
-      if (notificationAppLaunchDetails != null) {
-        var selectedNotificationPayload = notificationAppLaunchDetails.payload;
-        notifTaskName = selectedNotificationPayload;
-        initStudy(resume: true, useTaskNameFiltering: true); 
-      }
-    } else
-      runInitStudyIfPendingNotificationViaSharedPrefs();
-  }
-
   // Initialize notifications
-  void setNotificationListener() async {
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('app_icon');
-    final InitializationSettings initializationSettings =
-        InitializationSettings(android: initializationSettingsAndroid);
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onSelectNotification: (String payload) async { //TODO: esto es necesario?
-      if (payload != null) {
-        notifTaskName = payload;
-        // Ahora inicializo el nuevo bloc para que genere la task
-        initStudy(resume: true, useTaskNameFiltering: true); //no pongo await
-      }
-    });
-  }
-
-  void runInitStudyIfPendingNotificationViaSharedPrefs() {
-    SharedPreferences.getInstance().then((prefs) {
-      String pendingNotification = prefs.getString('PENDING_NOTIFICATION');
-      if (pendingNotification != null && pendingNotification != "") {
-        notifTaskName = pendingNotification;
-        initStudy(resume: true, useTaskNameFiltering: true);
-      }
-    });
+  void initializeNotifications() async {
+    const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
+    final InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
   // Long task logger
@@ -152,107 +112,37 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
     }
   }
 
-  void _showDialog(String text) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(Strings.error),
-          content: Text(text),
-          actions: [
-            TextButton(
-                child: Text("OK"),
-                onPressed: () {
-                  Navigator.pop(context);
-                })
-          ],
-        );
-      },
-    );
+  /// Initialization functions
+
+  Future<void> initStudy({Map studyCredentials}) async {
+    if (studyCredentials != null) {
+      await bloc.initialize();
+      await CarpBackend().initialize(credentials: studyCredentials);
+      await Sensing().initialize(credentials: studyCredentials);
+    }
   }
 
   Future<void> initializeAll(Map studyCredentials) async {
-    await initStudy(resume: false, studyCredentials: studyCredentials);
+    await initStudy(studyCredentials: studyCredentials);
     await initActivityTracking();
     await prepareLongTask(appServiceData);
     await Future.delayed(Duration(milliseconds: 500));
     await runLongTask();
     finalizeApp = true;
-    //goBackround();
-  }
-  //TODO: resume?
-  //TODO: cuando sepamos que hace el initstudylocked, evitar que se inicialize el backend si ya esta hecho
-  Future<void> initStudy({bool resume = true, bool useTaskNameFiltering = false, 
-    Map studyCredentials}) async {
-    if (initStudylocked) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      // If the app is opened due to a survey, initialize backend
-      if (prefs.containsKey("surveyID") & (studyCredentials != null)) {
-        await CarpBackend().initialize(credentials: studyCredentials);
-      }
-      return;
-    }
-    initStudylocked = true;
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('PENDING_NOTIFICATION', ""); //TODO: ??
-
-    if (bloc.isRunning) {
-      stopStudy();
-    }
-    final taskName = useTaskNameFiltering ? notifTaskName : '';
-    //if (!blocAlreadyInitialized) {
-    if (studyCredentials != null) {
-      await bloc.initialize();
-
-      await CarpBackend().initialize(credentials: studyCredentials);
-      blocAlreadyInitialized = true; //TODO:??
-      //}
-      await Sensing().initialize(taskName: taskName, credentials: studyCredentials);
-
-      if (resume) {
-        runStudy();
-      }
-    }
-    initStudylocked = false;
   }
 
-  void runStudy() {
-    if (!bloc.isRunning) {
-      bloc.resume();
-      if (userTaskEventsHandler == null) {
-        userTaskEventsHandler = AppTaskController().userTaskEvents.listen((event) {
-          if (event.runtimeType == SurveyUserTask && event.state == UserTaskState.enqueued) {
-            bloc.tasks.last.onStart(context);
-            //waitAndGo();
-          }
-        });
-      }
-    }
-  }
+  /// Activity recognition
+
   Future<void> initActivityTracking() async {
-    /// Android requires explicitly asking permission
+    // Android requires explicitly asking permission
     if (Platform.isAndroid) {
       if (await Permission.activityRecognition.request().isGranted) {
         _startTracking();
       }
     }
-
-    /// iOS does not
+    // iOS does not
     else {
       _startTracking();
-    }
-  }
-  //TODO: why?
-  void stopStudy() {
-    if (bloc.isRunning) {
-      bloc.pause();
-      try {
-        bloc.stop();
-      } catch (e, s) {
-        milog.severe("Error al hacer bloc.stop: $e: $s");
-      }
-      userTaskEventsHandler?.cancel();
-      userTaskEventsHandler = null;
     }
   }
 
@@ -265,31 +155,10 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
     }
   }
 
-  Future<void> waitAndGo() async {
-    int ticks = 50;
-    while (bloc.tasks.last.state != UserTaskState.done && ticks != 0) {
-      ticks -= 1;
-      await Future.delayed(Duration(milliseconds: 500));
-    }
-    finalizeApp = true;
-    //goBackround();
-  }
-
-  // Checks if the service is running
-  Future<bool> isServiceRunning() async {
-    try {
-      return await AppClient.isServiceRunning();
-    } on PlatformException catch (e, stacktrace) {
-      print(e);
-      print(stacktrace);
-      return false;
-    }
-  }
-
   void onData(ActivityEvent activityEvent) {
     milog.info("NEW ACTIVITY: ${activityEvent.toString()}");
   }
-    Future<void> prepareLongTask(AppServiceData appServiceData) async {
+  Future<void> prepareLongTask(AppServiceData appServiceData) async {
     if (await isServiceRunning()) {
       return;
     }
@@ -304,6 +173,19 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
     }
   }
 
+  /// Foreground service
+
+  // Checks if the service is running
+  Future<bool> isServiceRunning() async {
+    try {
+      return await AppClient.isServiceRunning();
+    } on PlatformException catch (e, stacktrace) {
+      print(e);
+      print(stacktrace);
+      return false;
+    }
+  }
+
   Future<void> runLongTask() async {
     try {
       AppClient.execute();
@@ -312,24 +194,9 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
       milog.info(stacktrace);
     }
   }
-  //TODO: no se usa
-   void goBackround() {
-    MoveToBackground.moveTaskToBack();
-  }
-  
-  Future<void> markSurveyAsCompleted(int surveyID) async {
-    final code = Settings().preferences.getString("code");
-    final uri = Uri.parse(apiRestUri + "/register_completed_survey");
-    Map<String, dynamic> payload = {"code": code, "survey_id": surveyID};
-    final response = await http.post(uri,
-        body: jsonEncode(payload),
-        headers: {"Content-Type": "application/json"});
-    if (response.statusCode == 500 || response.statusCode == 503) {
-      throw new ServerException();
-    }
-  }
 
-  /// Executed when the page is loaded
+  /// FutureBuilder function
+
   Future<bool> login(BuildContext context, String code) async {
     try {
       // [1] If the code has not been received, redirect to login page
@@ -365,7 +232,7 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
       // sent, but the initial survey not, just present survey
       } else if (consentUploaded & !initialSurveyUploaded & !skipConsent) {
         // Initialize study
-        await initStudy(resume: false, studyCredentials: studyCredentials).timeout(timeoutValue);
+        await initStudy(studyCredentials: studyCredentials).timeout(timeoutValue);
 
         // Request app settings if necessary
         await Location().requestService();
@@ -390,9 +257,6 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
 
         // Request app settings if necessary
         await Location().requestService();
-
-        // Get bluetooth data
-        //await getBluetoothData();
 
         // Store device id in database
         if (!deviceIdUploaded) {
@@ -436,11 +300,43 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
     }
   }
 
+  // Show error dialogs
+  void _showDialog(String text) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(Strings.error),
+          content: Text(text),
+          actions: [
+            TextButton(
+                child: Text("OK"),
+                onPressed: () {
+                  Navigator.pop(context);
+                })
+          ],
+        );
+      },
+    );
+  }
+
+  // Mark completed survey in database
+  Future<void> markSurveyAsCompleted(int surveyID) async {
+    final code = Settings().preferences.getString("code");
+    final uri = Uri.parse(apiRestUri + "/register_completed_survey");
+    Map<String, dynamic> payload = {"code": code, "survey_id": surveyID};
+    final response = await http.post(uri,
+        body: jsonEncode(payload),
+        headers: {"Content-Type": "application/json"});
+    if (response.statusCode == 500 || response.statusCode == 503) {
+      throw new ServerException();
+    }
+  }
+
   // Store user and device IDs in database
   Future<void> storeUser(String code) async {
     final uri = Uri.parse(apiRestUri + "/register_device");
-    Map<String, dynamic> payload = {"participant_code": code.substring(0,5),
-      "device_id": Settings().preferences.get('postcovid-ai app.user_id')};
+    Map<String, dynamic> payload = {"participant_code": code.substring(0,5), "device_id": Settings().preferences.get('postcovid-ai app.user_id')};
     final response = await http.post(uri,
         body: jsonEncode(payload),
         headers: {"Content-Type": "application/json"});
@@ -452,40 +348,7 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
     }
   }
 
-  // Get bluetooth data
-  Future<void> getBluetoothData({int duration = 2}) async {
-    FlutterBlue fb = FlutterBlue.instance;
-    bool btEnabled;
-    Datum datum;
-    DataPoint data;
-
-    btEnabled = await fb.isOn;
-
-    if(btEnabled) {
-      try {
-        List<ScanResult> results = await fb.startScan(
-          scanMode: ScanMode.lowLatency,
-          timeout: Duration(seconds: duration)
-        );
-        datum = BluetoothDatum.fromScanResult(results);
-      } catch (error) {
-        await fb.stopScan();
-        datum = ErrorDatum('Error scanning for bluetooth - $error');
-      }
-    } else {
-      datum = ErrorDatum('Error scanning for bluetooth - Bluetooth not enabled');
-    }
-
-    data = DataPoint.fromData(datum)
-      ..carpHeader.studyId = Sensing().studyDeploymentId
-      ..carpHeader.userId = bloc.studyDeploymentModel.userID
-      ..carpHeader.dataFormat = (datum is BluetoothDatum) 
-          ? DataFormat.fromString(ConnectivitySamplingPackage.BLUETOOTH) 
-          : DataFormat.fromString(CAMSDataType.ERROR)
-      ..carpHeader.deviceRoleName = "masterphone";
-
-    CarpService().getDataPointReference().postDataPoint(data);
-  }
+  /// Widget builder
 
   @override
   Widget build(BuildContext context) {
@@ -531,9 +394,7 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
             } else {
               return ServiceNotAvailablePage(Strings.serviceNotAvailableText, false);
             }
-            // If everything was fine, proceed
           } else {
-            // Otherwise, return to login page
             return LoginPage();
           }
       }
@@ -541,6 +402,7 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
   }
 }
 
+/// Functions shared between UI and foreground service
 
 Future<Map> getStudyFromAPIREST(String code) async {
   final uri = Uri.parse(apiRestUri + "/get_study");
@@ -589,15 +451,16 @@ Future<int> getSurveyID() async {
     }
 }
 
+/// Foreground service main
 
 serviceMain() async {
   bool useAR = true;
   bool useBloc = true;
   bool _isConnected = true;
+  bool uiPresent = true;
   
   WidgetsFlutterBinding.ensureInitialized();
   var i = 0;
-  var uiPresent = true;
 
   Future<bool> isConnected() async {
     try {
@@ -635,14 +498,6 @@ serviceMain() async {
           }
         }
 
-        userTaskEventsHandler = AppTaskController().userTaskEvents.listen((event) {
-          if (event.runtimeType == SurveyUserTask && event.state == UserTaskState.enqueued) {
-            // se lo hago saber a la app principal y le digo que pase esa encuesta
-            // y la desencoloe
-            AppTaskController().dequeue(event.id);
-          }
-        });
-
       }
       while (true) {
 
@@ -651,21 +506,21 @@ serviceMain() async {
           final notificationService = NotificationService();
           await notificationService.init();
 
-          notification.AndroidNotificationDetails androidPlatformChannelSpecifics =
-          notification.AndroidNotificationDetails(
+          AndroidNotificationDetails androidPlatformChannelSpecifics =
+          AndroidNotificationDetails(
               'surveyChannelID', 'surveyChannel', 'Survey Channel',
-              importance: notification.Importance.max,
-              priority: notification.Priority.high,
+              importance: Importance.max,
+              priority: Priority.high,
               onlyAlertOnce: true,
               showWhen: false,
               icon: 'survey_icon',
               visibility: NotificationVisibility.public);
 
-          notification.IOSNotificationDetails iOSPlatformChannelSpecifics =
-          notification.IOSNotificationDetails(
+          IOSNotificationDetails iOSPlatformChannelSpecifics =
+          IOSNotificationDetails(
               presentAlert: false, presentBadge: true, presentSound: true);
 
-          final platformChannelSpecifics = notification.NotificationDetails(
+          final platformChannelSpecifics = NotificationDetails(
               android: androidPlatformChannelSpecifics,
               iOS: iOSPlatformChannelSpecifics);
           await Settings().preferences.setInt("surveyID", surveyID);
@@ -679,10 +534,6 @@ serviceMain() async {
         appServiceData.progress = i;
         ServiceClient.update(appServiceData);
 
-        if (!letAppGetClosed && !uiPresent) {
-          DeviceApps.openApp(myPackage);
-        }
-
         await ServiceClient.sendAck().timeout(const Duration(seconds: 3), onTimeout: () {
           return "timeout";
         });
@@ -693,7 +544,6 @@ serviceMain() async {
   }
 
   Future<dynamic> myEndDartCode() async {
-    userTaskEventsHandler?.cancel();
     if (bloc.isRunning){
       bloc.pause();
     }

@@ -59,7 +59,7 @@ class Sensing {
 
   /// *** Initialize and setup sensing ***
 
-  Future<void> initialize({Map credentials, String taskName}) async {
+  Future<void> initialize({Map credentials}) async {
     info('Initializing $runtimeType');
 
     // set up the devices available on this phone
@@ -82,31 +82,6 @@ class Sensing {
     //LocalStudyProtocolManager localStudyProtocolManager = LocalStudyProtocolManager();
     //localStudyProtocolManager.userID = user.accountId;
     //StudyProtocol protocol = await localStudyProtocolManager.getStudyProtocol("");
-
-    //TODO: esto sirve?
-    // HECTOR_INIT
-    if (taskName != null && taskName != '') {
-      print("HH_Removing all tasks except: $taskName"); //taskName = 'Task #8'
-      var a = (protocol.tasks.elementAt(0) as CustomProtocolTask).studyProtocol;
-      // a = a.replaceAll('"enabled": true', '"enabled": false');
-      // No parece que le haga mucho caso (al menos, para las surveys)
-      a = a.replaceAll('PeriodicTrigger', 'ImmediateTrigger');
-      //Un Periodic tiene un par de campos después, pero debería ignorarlos (simplemente no leer esos valores al ver que es ImmediateTrigger)
-      var map = jsonDecode(a);
-      (map['tasks'] as List).removeWhere((it) => it['name'] != taskName);
-      (map['triggeredTasks'] as List)
-          .removeWhere((it) => it['taskName'] != taskName);
-      // y ahora le decimos que no queremos que muestre notification cuando se ejecute
-      if (map['tasks'].length > 0) {
-        map['tasks'][0]['notification'] = false;
-      }
-      // para que esto funcione, tienes que poner en onResume app_task_executor.dart:  if (appTask.type == 'survey' && appTask.notification != false) {showNotification(payload: appTask.name);}
-      //print(a.toString());
-      (protocol.tasks.elementAt(0) as CustomProtocolTask).studyProtocol =
-          jsonEncode(map);
-      //print("HH_protocol cambiado: ${protocol.toJson().toString()}");
-
-    }
 
     // Get deployment
     if (!Settings().preferences.containsKey("studyDeploymentId")){

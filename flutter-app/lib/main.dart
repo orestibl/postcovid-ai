@@ -3,7 +3,6 @@ library postcovid_ai;
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart' as notification;
 import 'package:activity_recognition_flutter/activity_recognition_flutter.dart';
 import 'package:android_long_task/android_long_task.dart';
 import 'package:carp_audio_package/audio.dart';
@@ -14,14 +13,12 @@ import 'package:carp_mobile_sensing/carp_mobile_sensing.dart';
 import 'package:carp_survey_package/survey.dart';
 import 'package:carp_webservices/carp_auth/carp_auth.dart';
 import 'package:carp_webservices/carp_services/carp_services.dart';
-import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
-import 'package:move_to_background/move_to_background.dart';
 import 'package:package_info/package_info.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:research_package/research_package.dart';
@@ -29,7 +26,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:location/location.dart';
-import 'package:flutter_blue/flutter_blue.dart';
 
 import 'app_service_config.dart';
 import 'my_logger.dart';
@@ -53,11 +49,7 @@ part 'src/ui/survey_page.dart';
 part 'src/ui/shared/app_theme.dart';
 part 'src/ui/shared/strings.dart';
 
-bool letAppGetClosed = true; //TODO: never used
 AppServiceData appServiceData = AppServiceData(); // esta variable la usa la UI y la long task (pero son diferentes)
-StreamSubscription<UserTask> userTaskEventsHandler; //TODO: surveys??
-
-// HÉCTOR. ESTA PARTE ESTÁ COGIDA DE notifications
 ActivityRecognition activityRecognition = ActivityRecognition.instance;
 
 void main() {
@@ -67,6 +59,5 @@ void main() {
   MyLogger.listen(record,
       useColors: true, showLevelName: true, showTime: true);
   });
- // runApp(AppDebug());
  runApp(App());
 }
