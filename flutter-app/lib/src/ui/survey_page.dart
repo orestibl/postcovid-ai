@@ -26,7 +26,7 @@ class SurveyPage extends StatelessWidget {
       prefs.setBool("isInitialSurveyUploaded", true);
 
       // Push main screen
-      Navigator.of(context).push(MaterialPageRoute(
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context) =>
               LoadingPage(text: code)));
     } else {

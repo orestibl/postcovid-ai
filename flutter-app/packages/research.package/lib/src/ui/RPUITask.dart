@@ -72,7 +72,7 @@ class _RPUITaskState extends State<RPUITask> with CanSaveResult {
             //Creating and sending the task level of result to a stream to which anybody can subscribe
             createAndSendResult();
             if (widget.task.closeAfterFinished) {
-              Navigator.of(context).pop();
+              //Navigator.of(context).pop();
             }
             break;
           }
