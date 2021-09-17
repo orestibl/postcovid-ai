@@ -51,7 +51,8 @@ class _RPUIFormStepState extends State<RPUIFormStep> with WidgetsBindingObserver
     // checkReadyToProceed is executed after the widget is created, to allow
     // continuing with default values in case all the questions are sliders
     WidgetsBinding.instance.addObserver(this);
-    WidgetsBinding.instance.addPostFrameCallback((_) => checkReadyToProceed());
+    if (widget.formStep.steps.length > 5)
+      WidgetsBinding.instance.addPostFrameCallback((_) => checkReadyToProceed());
 
     super.initState();
   }
