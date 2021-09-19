@@ -474,73 +474,77 @@ serviceMain() async {
 
   Future<dynamic> myDartCode(Map<String, dynamic> initialData) async {
     _isConnected = await isConnected();
-    String myPackage = AppServiceData.fromJson(initialData).mensaje;
-
     String notificationMessage = "Comenzando...";
     appServiceData.miNotificationTitle = notificationMessage;
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    if (_isConnected) {
-      if (useAR) {
+    try {
+      if (useAR & _isConnected) {
         longTaskStartTracking();
       }
-      if (useBloc) {
+      if (useBloc & _isConnected) {
         String code = prefs.getString("code");
 
         final studyCredentials = await getStudyFromAPIREST(code);
 
         if (studyCredentials != null) {
-          await bloc.initialize();
-          await CarpBackend().initialize(credentials: studyCredentials);
-          await Sensing().initialize(credentials: studyCredentials);
+          await bloc.initialize().timeout(const Duration(seconds: 10));
+          await CarpBackend().initialize(credentials: studyCredentials).timeout(const Duration(seconds: 10));
+          await Sensing().initialize(credentials: studyCredentials).timeout(const Duration(seconds: 10));
 
           if (!bloc.isRunning) {
             bloc.resume();
           }
         }
-
       }
       while (true) {
+        _isConnected = await isConnected();
+        if (_isConnected) {
+          int surveyID = await getSurveyID();
+          if (surveyID != null) {
+            final notificationService = NotificationService();
+            await notificationService.init();
 
-        int surveyID = await getSurveyID();
-        if(surveyID != null) {
-          final notificationService = NotificationService();
-          await notificationService.init();
+            AndroidNotificationDetails androidPlatformChannelSpecifics =
+            AndroidNotificationDetails(
+                'surveyChannelID', 'surveyChannel', 'Survey Channel',
+                importance: Importance.max,
+                priority: Priority.high,
+                onlyAlertOnce: true,
+                showWhen: false,
+                icon: 'survey_icon',
+                visibility: NotificationVisibility.public);
 
-          AndroidNotificationDetails androidPlatformChannelSpecifics =
-          AndroidNotificationDetails(
-              'surveyChannelID', 'surveyChannel', 'Survey Channel',
-              importance: Importance.max,
-              priority: Priority.high,
-              onlyAlertOnce: true,
-              showWhen: false,
-              icon: 'survey_icon',
-              visibility: NotificationVisibility.public);
+            IOSNotificationDetails iOSPlatformChannelSpecifics =
+            IOSNotificationDetails(
+                presentAlert: false, presentBadge: true, presentSound: true);
 
-          IOSNotificationDetails iOSPlatformChannelSpecifics =
-          IOSNotificationDetails(
-              presentAlert: false, presentBadge: true, presentSound: true);
-
-          final platformChannelSpecifics = NotificationDetails(
-              android: androidPlatformChannelSpecifics,
-              iOS: iOSPlatformChannelSpecifics);
-          await prefs.setInt("surveyID", surveyID);
-          await notificationService.flutterLocalNotificationsPlugin.show(
-              surveyID,
-              Strings.appName,
-              Strings.surveyNotificationText,
-              platformChannelSpecifics,
-              payload: 'item x');
+            final platformChannelSpecifics = NotificationDetails(
+                android: androidPlatformChannelSpecifics,
+                iOS: iOSPlatformChannelSpecifics);
+            await prefs.setInt("surveyID", surveyID);
+            await notificationService.flutterLocalNotificationsPlugin.show(
+                surveyID,
+                Strings.appName,
+                Strings.surveyNotificationText,
+                platformChannelSpecifics,
+                payload: 'item x');
+          }
         }
         appServiceData.progress = i;
         ServiceClient.update(appServiceData);
 
-        await ServiceClient.sendAck().timeout(const Duration(seconds: 3), onTimeout: () {
+        await ServiceClient.sendAck().timeout(
+            const Duration(seconds: 3), onTimeout: () {
           return "timeout";
         });
         await Future.delayed(const Duration(seconds: 60));
         i += 1;
       }
+    } on ServerException catch (_) {
+      return("service_not_available");
+    } on TimeoutException catch(_) {
+      return("timeout");
     }
   }
 
