@@ -452,7 +452,7 @@ Future<int> getSurveyID() async {
 }
 
 /// Foreground service main
-
+@pragma('vm:entry-point')
 serviceMain() async {
   bool useAR = true;
   bool useBloc = true;
