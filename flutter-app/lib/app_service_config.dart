@@ -5,7 +5,7 @@ import 'package:android_long_task/android_long_task.dart';
 class AppServiceData extends ServiceData {
   int progress = -1;
   String mensaje = '';
-  String miNotificationTitle = "PostCovid-AI";
+  String miNotificationTitle = "POSTCOVID-AI";
 
   @override
   String toJson() {
@@ -29,5 +29,6 @@ class AppServiceData extends ServiceData {
   }
 
   @override
-  String get notificationDescription => 'Sample Size: $progress';
+  //String get notificationDescription => 'Sample Size: $progress';
+  String get notificationDescription => 'La app está en funcionamiento';
 }

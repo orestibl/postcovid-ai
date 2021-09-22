@@ -474,8 +474,8 @@ serviceMain() async {
 
   Future<dynamic> myDartCode(Map<String, dynamic> initialData) async {
     _isConnected = await isConnected();
-    String notificationMessage = "Comenzando...";
-    appServiceData.miNotificationTitle = notificationMessage;
+    //String notificationMessage = "Comenzando...";
+    //appServiceData.miNotificationTitle = notificationMessage;
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     /// Initialization
