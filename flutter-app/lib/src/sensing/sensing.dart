@@ -108,13 +108,14 @@ class Sensing {
 
     // Set data endpoint to deployment (default value is FILE)
     CarpDataEndPoint dataEndPoint = CarpDataEndPoint(
-        uploadMethod: CarpUploadMethod.DATA_POINT,
+        uploadMethod: CarpUploadMethod.BATCH_DATA_POINT,
         uri: uri,
         name: "CANS Production @ UGR",
         clientId: credentials['client_id'],
         clientSecret: credentials['client_secret'],
         email: credentials['username'],
-        password: credentials['password']);
+        password: credentials['password'],
+        bufferSize: 10 * 1000); // 10KB ~ 25 data points
     deployment.dataEndPoint = dataEndPoint;
 
     // configure the controller with the default privacy schema -> deploy the protocol and ask for permissions

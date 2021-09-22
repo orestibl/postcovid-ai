@@ -478,28 +478,41 @@ serviceMain() async {
     appServiceData.miNotificationTitle = notificationMessage;
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    try {
-      if (useAR & _isConnected) {
-        longTaskStartTracking();
-      }
-      if (useBloc & _isConnected) {
-        String code = prefs.getString("code");
+    /// Initialization
+    if (_isConnected) {
+      try {
+        // Start AR
+        if (useAR) {
+          longTaskStartTracking();
+        }
+        // Initialize bloc
+        if (useBloc) {
+          String code = prefs.getString("code");
+          final studyCredentials = await getStudyFromAPIREST(code);
 
-        final studyCredentials = await getStudyFromAPIREST(code);
+          if (studyCredentials != null) {
+            await bloc.initialize().timeout(const Duration(seconds: 10));
+            await CarpBackend().initialize(credentials: studyCredentials).timeout(const Duration(seconds: 10));
+            await Sensing().initialize(credentials: studyCredentials).timeout(const Duration(seconds: 10));
 
-        if (studyCredentials != null) {
-          await bloc.initialize().timeout(const Duration(seconds: 10));
-          await CarpBackend().initialize(credentials: studyCredentials).timeout(const Duration(seconds: 10));
-          await Sensing().initialize(credentials: studyCredentials).timeout(const Duration(seconds: 10));
-
-          if (!bloc.isRunning) {
-            bloc.resume();
+            if (!bloc.isRunning) {
+              bloc.resume();
+            }
           }
         }
+      } catch (e){
+        print('Initialization: $e');
       }
-      while (true) {
-        _isConnected = await isConnected();
-        if (_isConnected) {
+    }
+
+    /// Survey loop
+    while (true) {
+      _isConnected = await isConnected();
+      if (_isConnected) {
+        if (!bloc.isRunning) {
+          bloc.resume();
+        }
+        try {
           int surveyID = await getSurveyID();
           if (surveyID != null) {
             final notificationService = NotificationService();
@@ -530,21 +543,24 @@ serviceMain() async {
                 platformChannelSpecifics,
                 payload: 'item x');
           }
+        } catch (e) {
+          print('Loop: $e');
         }
-        appServiceData.progress = i;
-        ServiceClient.update(appServiceData);
-
-        await ServiceClient.sendAck().timeout(
-            const Duration(seconds: 3), onTimeout: () {
-          return "timeout";
-        });
-        await Future.delayed(const Duration(seconds: 60));
-        i += 1;
+      } else {
+        if (bloc.isRunning){
+          bloc.pause();
+        }
       }
-    } on ServerException catch (_) {
-      return("service_not_available");
-    } on TimeoutException catch(_) {
-      return("timeout");
+
+      appServiceData.progress = i;
+      ServiceClient.update(appServiceData);
+
+      await ServiceClient.sendAck().timeout(
+          const Duration(seconds: 3), onTimeout: () {
+        return "timeout";
+      });
+      await Future.delayed(const Duration(seconds: 60));
+      i += 1;
     }
   }
 

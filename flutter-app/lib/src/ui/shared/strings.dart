@@ -11,6 +11,7 @@ class Strings {
 
   static String send = "Enviar";
   static String retry = "Intentar de nuevo";
+  static String close = "Cerrar app";
 
   static String mainPageText1 = "Está participando en el estudio POSTCOVID-AI de la Universidad de Granada";
   static String mainPageText2 = "Si experimenta algún problema, puede ponerse en contacto con nosotros a través de la siguiente dirección de correo electrónico:";

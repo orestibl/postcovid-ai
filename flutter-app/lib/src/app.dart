@@ -116,18 +116,37 @@ class PostcovidAIAppState extends State<PostcovidAIApp> {
                     maxLines: 5,
                   ),
                   InkWell(
-                      child: Text(Strings.contactEmail,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 16, color: AppTheme.DARK_COLOR)),
-                      onTap: () async {
-                        var url = 'mailto:' + Strings.contactEmail;
-                        if (await canLaunch(url)) {
-                          await launch(url);
-                        } else {
-                          throw 'Cannot launch $url';
-                        }
-                      })
+                    child: Text(Strings.contactEmail,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 16, color: AppTheme.DARK_COLOR)),
+                    onTap: () async {
+                      var url = 'mailto:' + Strings.contactEmail;
+                      if (await canLaunch(url)) {
+                        await launch(url);
+                      } else {
+                        throw 'Cannot launch $url';
+                      }
+                    }),
+                  SizedBox(height: 30),
+                  Container(
+                      height: 50,
+                      width: 250,
+                      decoration: BoxDecoration(
+                          color: AppTheme.DARK_COLOR,
+                          borderRadius: BorderRadius.circular(20)),
+                      child: TextButton(
+                          onPressed: () {
+                            SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+                          },
+                          child: Text(
+                            Strings.close,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18),
+                          )
+                      )
+                  )
                 ])));
   }
 
