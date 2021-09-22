@@ -54,7 +54,7 @@ public class ActivityRecognitionFlutterPlugin implements FlutterPlugin, EventCha
         PendingIntent.FLAG_UPDATE_CURRENT);
 
     /// Frequency in milliseconds
-    long frequency = 5 * 1000;
+    long frequency = 60 * 1000;
     Task<Void> task = ActivityRecognition.getClient(androidContext).requestActivityUpdates(frequency, pendingIntent);
 
     task.addOnSuccessListener(new OnSuccessListener<Void>() {
