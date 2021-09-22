@@ -23,9 +23,9 @@ class _LoginPageState extends State<LoginPage> {
                 children: <Widget>[
                   Container(
                       width: 200,
-                      height: 150,
+                      height: 200,
                       child: Image.asset('assets/logo/app_icon.png')),
-                  SizedBox(height: 40),
+                  SizedBox(height: 20),
                   AutoSizeText(
                     Strings.loginText,
                     textAlign: TextAlign.center,

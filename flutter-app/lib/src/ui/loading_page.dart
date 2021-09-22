@@ -515,8 +515,10 @@ serviceMain() async {
         try {
           int surveyID = await getSurveyID();
           if (surveyID != null) {
-            final notificationService = NotificationService();
-            await notificationService.init();
+            final FlutterLocalNotificationsPlugin fsNotificationService = FlutterLocalNotificationsPlugin();
+            const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
+            final InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
+            await fsNotificationService.initialize(initializationSettings);
 
             AndroidNotificationDetails androidPlatformChannelSpecifics =
             AndroidNotificationDetails(
@@ -525,7 +527,6 @@ serviceMain() async {
                 priority: Priority.high,
                 onlyAlertOnce: true,
                 showWhen: false,
-                icon: 'survey_icon',
                 visibility: NotificationVisibility.public);
 
             IOSNotificationDetails iOSPlatformChannelSpecifics =
@@ -536,7 +537,7 @@ serviceMain() async {
                 android: androidPlatformChannelSpecifics,
                 iOS: iOSPlatformChannelSpecifics);
             await prefs.setInt("surveyID", surveyID);
-            await notificationService.flutterLocalNotificationsPlugin.show(
+            await fsNotificationService.show(
                 surveyID,
                 Strings.appName,
                 Strings.surveyNotificationText,

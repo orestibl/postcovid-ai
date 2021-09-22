@@ -71,8 +71,8 @@ class _ServiceNotAvailablePageState extends State<ServiceNotAvailablePage> with 
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Container(
-                  width: 150,
-                  height: 125,
+                  width: 200,
+                  height: 200,
                   child: Image.asset('assets/logo/app_icon.png')),
               SizedBox(height: 40),
               AutoSizeText(

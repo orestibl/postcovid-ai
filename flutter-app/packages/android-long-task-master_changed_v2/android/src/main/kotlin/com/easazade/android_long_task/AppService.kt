@@ -244,8 +244,8 @@ class AppService : Service() {
 
   private fun getMipMapIconId(): Int =
       this.applicationContext.resources.getIdentifier(
-          "ic_launcher",
-          "mipmap",
+          "app_icon",
+          "drawable",
           this.applicationContext.packageName
       )
 

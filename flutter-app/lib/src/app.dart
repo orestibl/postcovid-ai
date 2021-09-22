@@ -98,10 +98,10 @@ class PostcovidAIAppState extends State<PostcovidAIApp> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Container(
-                      width: 150,
-                      height: 125,
+                      width: 200,
+                      height: 200,
                       child: Image.asset('assets/logo/app_icon.png')),
-                  SizedBox(height: 40),
+                  SizedBox(height: 20),
                   AutoSizeText(
                       Strings.mainPageText1,
                       textAlign: TextAlign.center,
