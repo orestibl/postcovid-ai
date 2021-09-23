@@ -47,6 +47,7 @@ dependencies:
   url_launcher: ^6.0.0
   auto_size_text: ^2.1.0
   location: ^3.2.4
+  #rx_ble: ^1.0.0
 
 
 # Overriding carp libraries to use the local or github copy

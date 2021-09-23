@@ -158,20 +158,6 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
   void onData(ActivityEvent activityEvent) {
     milog.info("NEW ACTIVITY: ${activityEvent.toString()}");
   }
-  Future<void> prepareLongTask(AppServiceData appServiceData) async {
-    if (await isServiceRunning()) {
-      return;
-    }
-    try {
-      PackageInfo packageInfo = await PackageInfo.fromPlatform();
-      appServiceData.mensaje = packageInfo.packageName;
-      await AppClient.startService(appServiceData);
-      await AppClient.prepareExecute();
-    } on PlatformException catch (e, stacktrace) {
-      milog.info(e);
-      milog.info(stacktrace);
-    }
-  }
 
   /// Foreground service
 
@@ -189,6 +175,21 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
   Future<void> runLongTask() async {
     try {
       AppClient.execute();
+    } on PlatformException catch (e, stacktrace) {
+      milog.info(e);
+      milog.info(stacktrace);
+    }
+  }
+
+  Future<void> prepareLongTask(AppServiceData appServiceData) async {
+    if (await isServiceRunning()) {
+      return;
+    }
+    try {
+      PackageInfo packageInfo = await PackageInfo.fromPlatform();
+      appServiceData.mensaje = packageInfo.packageName;
+      await AppClient.startService(appServiceData);
+      await AppClient.prepareExecute();
     } on PlatformException catch (e, stacktrace) {
       milog.info(e);
       milog.info(stacktrace);
@@ -237,6 +238,9 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
         // Request app settings if necessary
         await Location().requestService();
 
+        // Request bluetooth settings if necesary
+        //await RxBle.requestAccess();
+
         // Request ignore battery optimizations if necessary
         if (!await Permission.ignoreBatteryOptimizations.isGranted) {
           await Permission.ignoreBatteryOptimizations.request();
@@ -257,6 +261,14 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
 
         // Request app settings if necessary
         await Location().requestService();
+
+        // Request bluetooth settings if necesary
+        //await RxBle.requestAccess();
+
+        // Request ignore battery optimizations if necessary
+        if (!await Permission.ignoreBatteryOptimizations.isGranted) {
+          await Permission.ignoreBatteryOptimizations.request();
+        }
 
         // Store device id in database
         if (!deviceIdUploaded) {
@@ -458,10 +470,15 @@ serviceMain() async {
   bool useBloc = true;
   bool _isConnected = true;
   bool uiPresent = true;
-  
+
+  // StreamSubscription<ScanResult> bluetoothScanSteamSubscription;
+  // List<dynamic> btResults = [];
+  // List<String> btIdList = [];
+
   WidgetsFlutterBinding.ensureInitialized();
   var i = 0;
 
+  // Checks internet connection
   Future<bool> isConnected() async {
     try {
       final response = await InternetAddress.lookup("www.google.com");
@@ -471,6 +488,63 @@ serviceMain() async {
       return false;
     }
   }
+
+  // Starts bluetooth scan
+  // void startScanBluetoothDataTxBle() {
+  //   var bluetoothScanStream = RxBle.startScan();
+  //   bluetoothScanSteamSubscription = bluetoothScanStream.listen((scanResult) {
+  //     if (!btIdList.contains(scanResult.deviceId)) {
+  //       Map<String, dynamic> btDevice = {
+  //         'bluetooth_device_id': scanResult.deviceId,
+  //         'bluetooth_device_name': scanResult.deviceName,
+  //         'rssi': scanResult.rssi
+  //       };
+  //       btResults.add(btDevice);
+  //       btIdList.add(scanResult.deviceId);
+  //     }
+  //   });
+  // }
+  //
+  // // Generates bluetooth data point from scan
+  // Future<DataPoint> getBluetoothDataRxBle({int duration = 2}) async {
+  //   Datum datum;
+  //   DataPoint data;
+  //   bool btEnabled;
+  //
+  //   btEnabled = await RxBle.hasAccess();
+  //   btResults.clear();
+  //   btIdList.clear();
+  //
+  //   if (btEnabled) {
+  //     try {
+  //       startScanBluetoothDataTxBle();
+  //       await Future.delayed(Duration(seconds: duration));
+  //       bluetoothScanSteamSubscription?.cancel();
+  //       if (btResults != null) {
+  //         var jsonDatum = BluetoothDatum().toJson();
+  //         jsonDatum['scan_result'] = btResults;
+  //         datum = BluetoothDatum.fromJson(jsonDatum);
+  //       } else {
+  //         datum = BluetoothDatum();
+  //       }
+  //     } catch (e) {
+  //       bluetoothScanSteamSubscription?.cancel();
+  //       datum = ErrorDatum('Error scanning for bluetooth - $e');
+  //     }
+  //   } else {
+  //     datum = ErrorDatum('Error scanning for bluetooth - Bluetooth not enabled');
+  //   }
+  //
+  //   data = DataPoint.fromData(datum)
+  //     ..carpHeader.studyId = Sensing().studyDeploymentId
+  //     ..carpHeader.userId = bloc.studyDeploymentModel.userID
+  //     ..carpHeader.dataFormat = (datum is BluetoothDatum)
+  //         ? DataFormat.fromString(ConnectivitySamplingPackage.BLUETOOTH)
+  //         : DataFormat.fromString(CAMSDataType.ERROR)
+  //     ..carpHeader.deviceRoleName = "masterphone";
+  //
+  //   return data;
+  // }
 
   Future<dynamic> myDartCode(Map<String, dynamic> initialData) async {
     _isConnected = await isConnected();
@@ -544,6 +618,12 @@ serviceMain() async {
                 platformChannelSpecifics,
                 payload: 'item x');
           }
+
+          // Bluetooth measure every 5 min
+          // if (i%5 == 0) {
+          //   DataPoint btData = await getBluetoothDataRxBle();
+          //   await CarpService().getDataPointReference().postDataPoint(btData).timeout(Duration(seconds: 10));
+          // }
         } catch (e) {
           print('Loop: $e');
         }

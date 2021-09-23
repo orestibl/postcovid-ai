@@ -26,6 +26,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:location/location.dart';
+//import 'package:rx_ble/rx_ble.dart';
 
 import 'app_service_config.dart';
 import 'my_logger.dart';

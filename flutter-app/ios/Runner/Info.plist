@@ -27,7 +27,9 @@
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Uses bluetooth to connect to the eSense device</string>
+	<string>Please enable location to continue.</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Please enable bluetooth to continue.</string>
 	<key>NSCalendarsUsageDescription</key>
 	<string>Collects calendar events.</string>
 	<key>NSHealthShareUsageDescription</key>
@@ -39,7 +41,7 @@
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Uses the location API to record location.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Uses the location API to record location.</string>
+	<string>Please enable location to continue.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Uses the microphone to record ambient noise in the phone's environment.</string>
 	<key>NSMotionUsageDescription</key>
