@@ -5,6 +5,7 @@ part of postcovid_ai;
 // ignore: must_be_immutable
 class App extends StatelessWidget {
   String code = "";
+  String loadingText;
   bool _isConnected;
 
   Future<bool> getCode() async {
@@ -19,6 +20,10 @@ class App extends StatelessWidget {
       _isConnected = false;
       info(err.message);
     }
+    // Get loading text
+    loadingText = (prefs.containsKey("surveyID"))
+        ? Strings.loadingSurveyText
+        : Strings.loadingAppText;
     // Check if we have the code
     if (prefs.containsKey("code")) {
       code = prefs.getString("code");
@@ -56,8 +61,8 @@ class App extends StatelessWidget {
               } else {
                 // Code is obtained, go to loading page
                 return _isConnected
-                    ? LoadingPage(text: code)
-                    : ServiceNotAvailablePage(Strings.connectionNotAvailableText, true);
+                    ? LoadingPage(text: code, loadingText: loadingText)
+                    : ServiceNotAvailablePage(Strings.connectionNotAvailableText, loadingText, true);
               }
             }));
   }

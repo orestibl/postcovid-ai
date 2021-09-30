@@ -2,8 +2,9 @@ part of postcovid_ai;
 
 class LoadingPage extends StatefulWidget {
   final String text;
+  final String loadingText;
 
-  LoadingPage({Key key, this.text}) : super(key: key);
+  LoadingPage({Key key, this.text, this.loadingText}) : super(key: key);
 
   @override
   _LoadingPageState createState() => _LoadingPageState();
@@ -378,7 +379,7 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 15),
                           child: AutoSizeText(
-                            Strings.loadingText,
+                            widget.loadingText,
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 fontSize: 18
@@ -404,7 +405,7 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
                     : PostcovidAIApp();
               }
             } else {
-              return ServiceNotAvailablePage(Strings.serviceNotAvailableText, false);
+              return ServiceNotAvailablePage(Strings.serviceNotAvailableText, widget.loadingText, false);
             }
           } else {
             return LoginPage();

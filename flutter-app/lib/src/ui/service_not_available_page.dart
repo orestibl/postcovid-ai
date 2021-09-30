@@ -2,9 +2,10 @@ part of postcovid_ai;
 
 class ServiceNotAvailablePage extends StatefulWidget {
   final String pageText;
+  final String loadingText;
   final bool connectionNotAvailable;
 
-  const ServiceNotAvailablePage(this.pageText, this.connectionNotAvailable, {Key key}) : super(key: key);
+  const ServiceNotAvailablePage(this.pageText, this.loadingText, this.connectionNotAvailable, {Key key}) : super(key: key);
 
   _ServiceNotAvailablePageState createState() => _ServiceNotAvailablePageState();
 }
@@ -23,12 +24,14 @@ class _ServiceNotAvailablePageState extends State<ServiceNotAvailablePage> with 
       final response = await InternetAddress.lookup("www.google.com");
       if (response.isNotEmpty) {
         final SharedPreferences prefs = await SharedPreferences.getInstance();
+        // Get code
         if (prefs.containsKey("code")) {
           code = prefs.getString("code");
         }
+        // Retry
         if (widget.connectionNotAvailable) ScaffoldMessenger.of(context).showSnackBar(connectedSnackBar);
         Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => LoadingPage(text: code)
+          builder: (context) => LoadingPage(text: code, loadingText: widget.loadingText)
         ));
       }
     } on SocketException catch (err) {

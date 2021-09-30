@@ -68,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
                       onPressed: () {
                         Navigator.of(context).pushReplacement(MaterialPageRoute(
                             builder: (context) =>
-                                LoadingPage(text: textController.text)));
+                                LoadingPage(text: textController.text, loadingText: Strings.loadingAppText)));
                       },
                       child: Text(
                         Strings.send,

@@ -22,7 +22,7 @@ class InformedConsentPage extends StatelessWidget {
     // Push main screen
     Navigator.of(context).pushReplacement(MaterialPageRoute(
         builder: (context) =>
-            LoadingPage(text: code)));
+            LoadingPage(text: code, loadingText: Strings.loadingAppText)));
   }
 
   @override

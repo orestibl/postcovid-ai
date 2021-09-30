@@ -3,7 +3,8 @@ part of postcovid_ai;
 class Strings {
   static String appName = "POSTCOVID-AI";
 
-  static String loadingText = "Cargando datos de la app, espere por favor.";
+  static String loadingAppText = "Cargando datos de la app, espere por favor.";
+  static String loadingSurveyText = "Cargando encuesta, espere por favor.";
 
   static String loginText = "Bienvenido a POSTCOVID-AI";
   static String loginLabel = "Código de participante";
