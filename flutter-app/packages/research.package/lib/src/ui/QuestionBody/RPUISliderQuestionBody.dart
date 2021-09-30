@@ -31,7 +31,7 @@ class _RPUISliderQuestionBodyState extends State<RPUISliderQuestionBody>
               Text(
                   ((widget.answerFormat.prefix == "") & (widget.answerFormat.suffix == ""))
                       ? '${(value ?? (widget.answerFormat.initValue ?? widget.answerFormat.minValue)).toInt()}'
-                      : (middleLabel ? "No" : ''), // This should be empty, specific configuration for the present study
+                      : (middleLabel ? "No    " : ''), // This should be empty, specific configuration for the present study
                   style: TextStyle(fontSize: (middleLabel ? 14 : 18))
               ),
               Text('${locale?.translate(widget.answerFormat.suffix) ?? widget.answerFormat.suffix}')
