@@ -217,7 +217,7 @@ class _RPUITaskState extends State<RPUITask> with CanSaveResult {
                           margin: EdgeInsets.symmetric(horizontal: 3.0),
                           decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: index <= _currentQuestionIndex
+                              color: index < _currentQuestionIndex
                                   ? Theme.of(context).primaryColor
                                   : Theme.of(context)
                                       .primaryColor
