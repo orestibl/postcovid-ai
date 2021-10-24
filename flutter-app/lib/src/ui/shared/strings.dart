@@ -6,7 +6,7 @@ class Strings {
   static String loadingAppText = "Cargando datos de la app, espere por favor.";
   static String loadingSurveyText = "Cargando encuesta, espere por favor.";
 
-  static String loginText = "Bienvenido a POSTCOVID-AI";
+  static String loginText = "Bienvenido/a a POSTCOVID-AI";
   static String loginLabel = "Código de participante";
   static String loginHint = "Introduce tu código de participante";
 
