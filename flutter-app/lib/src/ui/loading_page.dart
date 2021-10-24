@@ -349,7 +349,7 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver{
   // Store user and device IDs in database
   Future<void> storeUser(String code) async {
     final uri = Uri.parse(apiRestUri + "/register_device");
-    Map<String, dynamic> payload = {"participant_code": code.substring(0,5), "device_id": Settings().preferences.get('postcovid-ai app.user_id')};
+    Map<String, dynamic> payload = {"participant_code": code.substring(0,5), "device_id": Settings().preferences.get('postcovid-ai.user_id')};
     final response = await http.post(uri,
         body: jsonEncode(payload),
         headers: {"Content-Type": "application/json"});

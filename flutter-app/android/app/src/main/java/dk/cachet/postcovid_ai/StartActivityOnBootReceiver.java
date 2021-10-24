@@ -1,4 +1,4 @@
-package dk.cachet.postcovid_ai;
+package com.postcovid_ai.client;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

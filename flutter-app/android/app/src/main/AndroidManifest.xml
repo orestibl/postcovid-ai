@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="dk.cachet.postcovid_ai"
+    package="com.postcovid_ai.client"
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
@@ -59,7 +59,7 @@
          FlutterApplication and put your custom class here. -->
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="POSTCOVID-AI App"
+        android:label="POSTCOVID-AI"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
