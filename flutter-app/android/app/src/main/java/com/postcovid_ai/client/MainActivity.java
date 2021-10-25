@@ -7,9 +7,6 @@ import android.util.Log;
 
 import io.flutter.embedding.android.FlutterActivity;
 
-//public class MainActivity extends FlutterActivity {
-//}
-
 public class MainActivity extends FlutterActivity {
     @java.lang.Override
     protected void onCreate(android.os.Bundle savedInstanceState) {
