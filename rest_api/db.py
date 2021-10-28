@@ -57,7 +57,8 @@ def get_survey_id(study_code, participant_code, hour, weekday):
         for survey in surveys:
             if survey and not _answered_today(survey=survey, participant_code=participant_code, hour=hour):
                 if (survey.survey_id == 3): # Remove if time is not half hour
-                    return survey.survey_id if (min >= 30) else None
+                    if (min >= 30):
+                        return survey.survey_id
                 else:
                     return survey.survey_id
 
