@@ -50,17 +50,12 @@ def _answered_today(survey, participant_code, hour):
 
 def get_survey_id(study_code, participant_code, hour, weekday):
     with Session() as session:
-        min = int(datetime.utcnow().strftime("%M"))
         surveys = session.query(StudySurveys).filter(StudySurveys.hours.any(hour),
                                                     StudySurveys.weekdays.any(weekday),
                                                     StudySurveys.study_code == study_code).all()
         for survey in surveys:
             if survey and not _answered_today(survey=survey, participant_code=participant_code, hour=hour):
-                if (survey.survey_id == 3): # Remove if time is not half hour
-                    if (min >= 30):
-                        return survey.survey_id
-                else:
-                    return survey.survey_id
+                return survey.survey_id
 
         return None
 
