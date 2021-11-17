@@ -40,7 +40,7 @@ android {
     defaultConfig {
         applicationId "com.postcovid_ai.client"
         minSdkVersion 24
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
