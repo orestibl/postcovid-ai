@@ -1,4 +1,4 @@
-from models import CompletedSurveys, ParticipantDevice, ParticipantStudy, Study, StudySurveys
+from models import CompletedSurveys, OngoingSurveys, ParticipantDevice, ParticipantStudy, Study, StudySurveys
 from sqlalchemy import create_engine, inspect
 from credentials import db_string
 
@@ -12,6 +12,9 @@ tables = inspector.get_table_names()
 # Create tables if not exist
 if not CompletedSurveys.CompletedSurveys.__tablename__ in tables:
     CompletedSurveys.Base.metadata.create_all(db)
+
+if not OngoingSurveys.OngoingSurveys.__tablename__ in tables:
+    OngoingSurveys.Base.metadata.create_all(db)
 
 if not ParticipantDevice.ParticipantDevice.__tablename__ in tables:
     ParticipantDevice.Base.metadata.create_all(db)
