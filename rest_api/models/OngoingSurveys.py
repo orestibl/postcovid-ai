@@ -6,13 +6,9 @@ Base = declarative_base()
 
 class OngoingSurveys(Base):
     __tablename__ = "ongoing_surveys"
-    study_code = Column(String, primary_key=True)
     participant_code = Column(String, primary_key=True)
-    survey_id = Column(Integer, primary_key=True)
     date = Column(DateTime(timezone=True), primary_key=True)
 
-    def __init__(self, study_code, participant_code, survey_id, date):
-        self.study_code = study_code
+    def __init__(self, participant_code, date):
         self.participant_code = participant_code
-        self.survey_id = survey_id
         self.date = date
