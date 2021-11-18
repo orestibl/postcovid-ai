@@ -14,7 +14,7 @@ from models.StudySurveys import StudySurveys
 
 db = create_engine(db_string)
 Session = sessionmaker(bind=db)
-tz = pytz.timezone('Europe/Madrid')
+#tz = pytz.timezone('Europe/Madrid')
 
 
 def get_study_id(participant_code):
@@ -83,7 +83,7 @@ def get_survey_id(study_code, participant_code, hour, weekday):
                         return survey.survey_id
                     else:
                         # if showed less than 5 min ago, send code - otherwise return None
-                        timeframe_over = ((last_record + timedelta(minutes=5)) < tz.localize(datetime.now()))
+                        timeframe_over = ((last_record + timedelta(minutes=5)) < pytz.UTC.localize(datetime.now()))
                         if timeframe_over:
                             return survey.survey_id
 
