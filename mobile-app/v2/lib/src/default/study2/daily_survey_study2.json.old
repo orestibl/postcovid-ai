@@ -1,0 +1,154 @@
+{
+  "__type": "RPOrderedTask",
+  "steps": [
+    {
+      "__type": "RPFormStep",
+      "answer_format": {
+        "__type": "RPFormAnswerFormat",
+        "question_type": "Form"
+      },
+      "steps": [
+        {
+          "__type": "RPQuestionStep",
+          "title": "",
+          "optional": false,
+          "identifier": "valence",
+          "answer_format": {
+            "__type": "RPSliderAnswerFormat",
+            "divisions": 100,
+            "question_type": "Scale",
+            "prefix": "Muy mal",
+            "suffix": "Muy bien",
+            "max_value": 50,
+            "min_value": -50,
+            "init_value": 0
+          }
+        },
+        {
+          "__type": "RPQuestionStep",
+          "title": "",
+          "optional": false,
+          "identifier": "energetic_arousal",
+          "answer_format": {
+            "__type": "RPSliderAnswerFormat",
+            "divisions": 100,
+            "question_type": "Scale",
+            "prefix": "Sin\nenergía",
+            "suffix": "Lleno(a)\nde energía",
+            "max_value": 100,
+            "min_value": 0,
+            "init_value": 50
+          }
+        },
+        {
+          "__type": "RPQuestionStep",
+          "title": "",
+          "optional": false,
+          "identifier": "tense_arousal",
+          "answer_format": {
+            "__type": "RPSliderAnswerFormat",
+            "divisions": 100,
+            "question_type": "Scale",
+            "prefix": "Muy\ntranquilo(a)",
+            "suffix": "Muy\ninquieto(a)",
+            "max_value": 100,
+            "min_value": 0,
+            "init_value": 50
+          }
+        },
+        {
+          "__type": "RPQuestionStep",
+          "title": "Desde tu último registro, ¿has vivido alguna situación destacable a nivel emocional?",
+          "optional": false,
+          "identifier": "emotional_event",
+          "answer_format": {
+            "__type": "RPSliderAnswerFormat",
+            "divisions": 100,
+            "question_type": "Scale",
+            "prefix": "Sí, muy\ndesagradable",
+            "suffix": "Sí, muy\nagradable",
+            "max_value": 50,
+            "min_value": -50,
+            "init_value": 0
+          }
+        }
+      ],
+      "title": "¿Cómo te sientes ahora?",
+      "optional": false,
+      "identifier": "affect_and_emotional_event_questionnaire"
+    },
+    {
+      "__type": "RPFormStep",
+      "answer_format": {
+        "__type": "RPFormAnswerFormat",
+        "question_type": "Form"
+      },
+      "steps": [
+        {
+          "__type": "RPQuestionStep",
+          "title": "¿Te has relacionado con otras personas (en persona o por redes sociales)?",
+          "optional": false,
+          "identifier": "social_quantity",
+          "answer_format": {
+            "__type": "RPChoiceAnswerFormat",
+            "choices": [
+              {
+                "text": "No",
+                "__type": "RPChoice",
+                "value": 0,
+                "is_free_text": false
+              },
+              {
+                "text": "Sí, con 1 persona",
+                "__type": "RPChoice",
+                "value": 1,
+                "is_free_text": false
+              },
+              {
+                "text": "Sí, con 2 personas",
+                "__type": "RPChoice",
+                "value": 2,
+                "is_free_text": false
+              },
+              {
+                "text": "Sí, con entre 3 y 5 personas",
+                "__type": "RPChoice",
+                "value": 3,
+                "is_free_text": false
+              },
+              {
+                "text": "Sí, con más de 5 personas",
+                "__type": "RPChoice",
+                "value": 4,
+                "is_free_text": false
+              }
+            ],
+            "answer_style": "SingleChoice",
+            "question_type": "SingleChoice"
+          }
+        },
+        {
+          "__type": "RPQuestionStep",
+          "title": "En el caso de que sí hayas tenido interacción con otras personas, ¿cómo te has sentido?",
+          "optional": false,
+          "identifier": "social_quality",
+          "answer_format": {
+            "__type": "RPSliderAnswerFormat",
+            "divisions": 100,
+            "question_type": "Scale",
+            "prefix": "Muy mal",
+            "suffix": "Muy bien",
+            "max_value": 50,
+            "min_value": -50,
+            "init_value": 0
+          }
+        }
+      ],
+      "title": "Desde tu último registro:",
+      "optional": false,
+      "identifier": "social_interaction_questionnaire"
+    }
+  ],
+  "identifier": "daily_survey",
+  "close_after_finished": true
+}
