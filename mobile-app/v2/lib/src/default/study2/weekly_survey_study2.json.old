@@ -1,0 +1,518 @@
+{
+  "__type": "RPOrderedTask",
+  "steps": [
+    {
+      "__type": "RPFormStep",
+      "answer_format": {
+        "__type": "RPFormAnswerFormat",
+        "question_type": "Form"
+      },
+      "steps": [
+        {
+          "__type": "RPQuestionStep",
+          "title": "¿Cómo dirías que ha sido tu salud?",
+          "optional": false,
+          "identifier": "health",
+          "answer_format": {
+            "__type": "RPChoiceAnswerFormat",
+            "choices": [
+              {
+                "text": "Mala",
+                "__type": "RPChoice",
+                "value": 0,
+                "is_free_text": false
+              },
+              {
+                "text": "Regular",
+                "__type": "RPChoice",
+                "value": 1,
+                "is_free_text": false
+              },
+              {
+                "text": "Buena",
+                "__type": "RPChoice",
+                "value": 2,
+                "is_free_text": false
+              },
+              {
+                "text": "Muy buena",
+                "__type": "RPChoice",
+                "value": 3,
+                "is_free_text": false
+              },
+              {
+                "text": "Excelente",
+                "__type": "RPChoice",
+                "value": 4,
+                "is_free_text": false
+              }
+            ],
+            "answer_style": "SingleChoice",
+            "question_type": "SingleChoice"
+          }
+        },
+        {
+          "__type": "RPQuestionStep",
+          "title": "¿Cuánto ejercicio físico has hecho?",
+          "optional": false,
+          "identifier": "physical_activity",
+          "answer_format": {
+            "__type": "RPChoiceAnswerFormat",
+            "choices": [
+              {
+                "text": "Menos de 2h",
+                "__type": "RPChoice",
+                "value": 1,
+                "is_free_text": false
+              },
+              {
+                "text": "2 a 4h",
+                "__type": "RPChoice",
+                "value": 2,
+                "is_free_text": false
+              },
+              {
+                "text": "4 a 6h",
+                "__type": "RPChoice",
+                "value": 3,
+                "is_free_text": false
+              },
+              {
+                "text": "6 a 8h",
+                "__type": "RPChoice",
+                "value": 4,
+                "is_free_text": false
+              },
+              {
+                "text": "Más de 8h",
+                "__type": "RPChoice",
+                "value": 5,
+                "is_free_text": false
+              }
+            ],
+            "answer_style": "SingleChoice",
+            "question_type": "SingleChoice"
+          }
+        }
+      ],
+      "title": "Durante la última semana:",
+      "optional": false,
+      "identifier": "health_questionnaire"
+    },
+    {
+      "__type": "RPFormStep",
+      "answer_format": {
+        "__type": "RPFormAnswerFormat",
+        "question_type": "Form"
+      },
+      "steps": [
+        {
+          "__type": "RPQuestionStep",
+          "title": "¿Con qué frecuencia has sentido que te faltaba compañía?",
+          "optional": false,
+          "identifier": "TILS_1",
+          "answer_format": {
+            "__type": "RPChoiceAnswerFormat",
+            "choices": [
+              {
+                "text": "Casi nunca",
+                "__type": "RPChoice",
+                "value": 1,
+                "is_free_text": false
+              },
+              {
+                "text": "Algunas veces",
+                "__type": "RPChoice",
+                "value": 2,
+                "is_free_text": false
+              },
+              {
+                "text": "Con frecuencia",
+                "__type": "RPChoice",
+                "value": 3,
+                "is_free_text": false
+              }
+            ],
+            "answer_style": "SingleChoice",
+            "question_type": "SingleChoice"
+          }
+        },
+        {
+          "__type": "RPQuestionStep",
+          "title": "¿Con qué frecuencia te has sentido excluido(a)?",
+          "optional": false,
+          "identifier": "TILS_2",
+          "answer_format": {
+            "__type": "RPChoiceAnswerFormat",
+            "choices": [
+              {
+                "text": "Casi nunca",
+                "__type": "RPChoice",
+                "value": 1,
+                "is_free_text": false
+              },
+              {
+                "text": "Algunas veces",
+                "__type": "RPChoice",
+                "value": 2,
+                "is_free_text": false
+              },
+              {
+                "text": "Con frecuencia",
+                "__type": "RPChoice",
+                "value": 3,
+                "is_free_text": false
+              }
+            ],
+            "answer_style": "SingleChoice",
+            "question_type": "SingleChoice"
+          }
+        },
+        {
+          "__type": "RPQuestionStep",
+          "title": "¿Con qué frecuencia te has sentido aislado(a) de los demás?",
+          "optional": false,
+          "identifier": "TILS_3",
+          "answer_format": {
+            "__type": "RPChoiceAnswerFormat",
+            "choices": [
+              {
+                "text": "Casi nunca",
+                "__type": "RPChoice",
+                "value": 1,
+                "is_free_text": false
+              },
+              {
+                "text": "Algunas veces",
+                "__type": "RPChoice",
+                "value": 2,
+                "is_free_text": false
+              },
+              {
+                "text": "Con frecuencia",
+                "__type": "RPChoice",
+                "value": 3,
+                "is_free_text": false
+              }
+            ],
+            "answer_style": "SingleChoice",
+            "question_type": "SingleChoice"
+          }
+        }
+      ],
+      "title": "Durante la última semana:",
+      "optional": false,
+      "identifier": "TILS_questionnaire"
+    },
+    {
+      "__type": "RPFormStep",
+      "answer_format": {
+        "__type": "RPFormAnswerFormat",
+        "question_type": "Form"
+      },
+      "steps": [
+        {
+          "__type": "RPQuestionStep",
+          "title": "¿Qué tan satisfecho(a) has estado con tu vida?",
+          "optional": false,
+          "identifier": "GLS",
+          "answer_format": {
+            "__type": "RPChoiceAnswerFormat",
+            "choices": [
+              {
+                "text": "Muy insatisfecho(a)",
+                "__type": "RPChoice",
+                "value": 1,
+                "is_free_text": false
+              },
+              {
+                "text": "Insatisfecho(a)",
+                "__type": "RPChoice",
+                "value": 2,
+                "is_free_text": false
+              },
+              {
+                "text": "Satisfecho(a)",
+                "__type": "RPChoice",
+                "value": 3,
+                "is_free_text": false
+              },
+              {
+                "text": "Muy satisfecho(a)",
+                "__type": "RPChoice",
+                "value": 4,
+                "is_free_text": false
+              }
+            ],
+            "answer_style": "SingleChoice",
+            "question_type": "SingleChoice"
+          }
+        },
+        {
+          "__type": "RPQuestionStep",
+          "title": "¿Qué tan satisfecho(a) has estado con los siguientes ámbitos de tu vida?  \n\nTus relaciones personales",
+          "optional": false,
+          "identifier": "RELAT_LS",
+          "answer_format": {
+            "__type": "RPChoiceAnswerFormat",
+            "choices": [
+              {
+                "text": "Muy insatisfecho(a)",
+                "__type": "RPChoice",
+                "value": 1,
+                "is_free_text": false
+              },
+              {
+                "text": "Insatisfecho(a)",
+                "__type": "RPChoice",
+                "value": 2,
+                "is_free_text": false
+              },
+              {
+                "text": "Satisfecho(a)",
+                "__type": "RPChoice",
+                "value": 3,
+                "is_free_text": false
+              },
+              {
+                "text": "Muy satisfecho(a)",
+                "__type": "RPChoice",
+                "value": 4,
+                "is_free_text": false
+              }
+            ],
+            "answer_style": "SingleChoice",
+            "question_type": "SingleChoice"
+          }
+        },
+        {
+          "__type": "RPQuestionStep",
+          "title": "Tu situación laboral",
+          "optional": false,
+          "identifier": "WORK_LS",
+          "answer_format": {
+            "__type": "RPChoiceAnswerFormat",
+            "choices": [
+              {
+                "text": "Muy insatisfecho(a)",
+                "__type": "RPChoice",
+                "value": 1,
+                "is_free_text": false
+              },
+              {
+                "text": "Insatisfecho(a)",
+                "__type": "RPChoice",
+                "value": 2,
+                "is_free_text": false
+              },
+              {
+                "text": "Satisfecho(a)",
+                "__type": "RPChoice",
+                "value": 3,
+                "is_free_text": false
+              },
+              {
+                "text": "Muy satisfecho(a)",
+                "__type": "RPChoice",
+                "value": 4,
+                "is_free_text": false
+              }
+            ],
+            "answer_style": "SingleChoice",
+            "question_type": "SingleChoice"
+          }
+        },
+        {
+          "__type": "RPQuestionStep",
+          "title": "Tu situación financiera",
+          "optional": false,
+          "identifier": "FINAN_LS",
+          "answer_format": {
+            "__type": "RPChoiceAnswerFormat",
+            "choices": [
+              {
+                "text": "Muy insatisfecho(a)",
+                "__type": "RPChoice",
+                "value": 1,
+                "is_free_text": false
+              },
+              {
+                "text": "Insatisfecho(a)",
+                "__type": "RPChoice",
+                "value": 2,
+                "is_free_text": false
+              },
+              {
+                "text": "Satisfecho(a)",
+                "__type": "RPChoice",
+                "value": 3,
+                "is_free_text": false
+              },
+              {
+                "text": "Muy satisfecho(a)",
+                "__type": "RPChoice",
+                "value": 4,
+                "is_free_text": false
+              }
+            ],
+            "answer_style": "SingleChoice",
+            "question_type": "SingleChoice"
+          }
+        },
+        {
+          "__type": "RPQuestionStep",
+          "title": "Tu tiempo libre",
+          "optional": false,
+          "identifier": "TIME_LS",
+          "answer_format": {
+            "__type": "RPChoiceAnswerFormat",
+            "choices": [
+              {
+                "text": "Muy insatisfecho(a)",
+                "__type": "RPChoice",
+                "value": 1,
+                "is_free_text": false
+              },
+              {
+                "text": "Insatisfecho(a)",
+                "__type": "RPChoice",
+                "value": 2,
+                "is_free_text": false
+              },
+              {
+                "text": "Satisfecho(a)",
+                "__type": "RPChoice",
+                "value": 3,
+                "is_free_text": false
+              },
+              {
+                "text": "Muy satisfecho(a)",
+                "__type": "RPChoice",
+                "value": 4,
+                "is_free_text": false
+              }
+            ],
+            "answer_style": "SingleChoice",
+            "question_type": "SingleChoice"
+          }
+        },
+        {
+          "__type": "RPQuestionStep",
+          "title": "Tu salud física",
+          "optional": false,
+          "identifier": "PHYS_LS",
+          "answer_format": {
+            "__type": "RPChoiceAnswerFormat",
+            "choices": [
+              {
+                "text": "Muy insatisfecho(a)",
+                "__type": "RPChoice",
+                "value": 1,
+                "is_free_text": false
+              },
+              {
+                "text": "Insatisfecho(a)",
+                "__type": "RPChoice",
+                "value": 2,
+                "is_free_text": false
+              },
+              {
+                "text": "Satisfecho(a)",
+                "__type": "RPChoice",
+                "value": 3,
+                "is_free_text": false
+              },
+              {
+                "text": "Muy satisfecho(a)",
+                "__type": "RPChoice",
+                "value": 4,
+                "is_free_text": false
+              }
+            ],
+            "answer_style": "SingleChoice",
+            "question_type": "SingleChoice"
+          }
+        },
+        {
+          "__type": "RPQuestionStep",
+          "title": "Tu bienestar mental",
+          "optional": false,
+          "identifier": "MENT_LS",
+          "answer_format": {
+            "__type": "RPChoiceAnswerFormat",
+            "choices": [
+              {
+                "text": "Muy insatisfecho(a)",
+                "__type": "RPChoice",
+                "value": 1,
+                "is_free_text": false
+              },
+              {
+                "text": "Insatisfecho(a)",
+                "__type": "RPChoice",
+                "value": 2,
+                "is_free_text": false
+              },
+              {
+                "text": "Satisfecho(a)",
+                "__type": "RPChoice",
+                "value": 3,
+                "is_free_text": false
+              },
+              {
+                "text": "Muy satisfecho(a)",
+                "__type": "RPChoice",
+                "value": 4,
+                "is_free_text": false
+              }
+            ],
+            "answer_style": "SingleChoice",
+            "question_type": "SingleChoice"
+          }
+        },
+        {
+          "__type": "RPQuestionStep",
+          "title": "El área donde vives",
+          "optional": false,
+          "identifier": "AREA_LS",
+          "answer_format": {
+            "__type": "RPChoiceAnswerFormat",
+            "choices": [
+              {
+                "text": "Muy insatisfecho(a)",
+                "__type": "RPChoice",
+                "value": 1,
+                "is_free_text": false
+              },
+              {
+                "text": "Insatisfecho(a)",
+                "__type": "RPChoice",
+                "value": 2,
+                "is_free_text": false
+              },
+              {
+                "text": "Satisfecho(a)",
+                "__type": "RPChoice",
+                "value": 3,
+                "is_free_text": false
+              },
+              {
+                "text": "Muy satisfecho(a)",
+                "__type": "RPChoice",
+                "value": 4,
+                "is_free_text": false
+              }
+            ],
+            "answer_style": "SingleChoice",
+            "question_type": "SingleChoice"
+          }
+        }
+      ],
+      "title": "Durante la última semana:",
+      "optional": false,
+      "identifier": "LS_questionnaire"
+    }
+  ],
+  "identifier": "weekly_survey",
+  "close_after_finished": true
+}

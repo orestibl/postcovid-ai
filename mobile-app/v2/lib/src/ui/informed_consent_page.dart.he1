@@ -1,0 +1,52 @@
+import 'package:flutter/material.dart';
+import 'package:research_package/model.dart';
+import 'package:research_package/ui.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../main.dart';
+import '../../my_logger.dart';
+import '../strings.dart';
+import 'loading_page.dart';
+
+class InformedConsentPage extends StatelessWidget {
+  /// RPOrderedTask to be presented as informed consent
+  final RPOrderedTask consentTask;
+  final String code;
+
+  const InformedConsentPage(
+      {super.key, required this.consentTask, required this.code});
+
+  Future<void> resultCallback(BuildContext context, RPTaskResult result) async {
+    // Extract signature from informed consent result and identify participant
+    // RPConsentSignatureResult signature =
+    //     result.results['consentreviewstepID']?.results.values.elementAt(0);
+    // signature.userID = code;
+
+    // Upload the signature to the database
+    // await CarpService().createConsentDocument(signature.toJson());
+    milog.severe("Aquí hay que hacer algo!!!"); // todo hacer algo aquí
+
+    // Mark the document as uploaded
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool("isConsentUploaded", true).timeout(timeoutValue,
+        onTimeout: () {
+      return false;
+    });
+
+    // Push main screen
+    if (context.mounted) {
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) =>
+              LoadingPage(code: code, loadingText: Strings.loadingAppText)));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return RPUITask(
+        task: consentTask,
+        onSubmit: (result) {
+          resultCallback(context, result);
+        });
+  }
+}

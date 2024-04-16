@@ -1,0 +1,233 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
+import 'package:retry/retry.dart';
+
+import '../debug/debugPrintWrapped.dart';
+
+/// The HTTP Retry method.
+final HTTPRetry httpr = HTTPRetry();
+
+/// A MultipartFile class which support cloning of the file for re-submission
+/// of POST request.
+class MultipartFileRecreatable extends http.MultipartFile {
+  final String filePath;
+
+  MultipartFileRecreatable(
+    this.filePath,
+    super.field,
+    super.stream,
+    super.length, {
+    super.filename,
+    super.contentType,
+  });
+
+  /// Creates a new [MultipartFileRecreatable] from a file specified by
+  /// the [filePath].
+  factory MultipartFileRecreatable.fromFileSync(String filePath) {
+    final file = File(filePath);
+    final length = file.lengthSync();
+    final stream = file.openRead();
+    var name = file.path.split('/').last;
+
+    return MultipartFileRecreatable(
+      filePath,
+      'file',
+      stream,
+      length,
+      filename: name,
+    );
+  }
+
+  /// Make a clone of this [MultipartFileRecreatable].
+  MultipartFileRecreatable clone() =>
+      MultipartFileRecreatable.fromFileSync(filePath);
+}
+
+/// A class wrapping all HTTP operations (GET, POST, PUT, DELETE) in a retry manner.
+///
+/// In case of network problems ([SocketException] or [TimeoutException]),
+/// this method will retry the HTTP operation N=15 times, with an increasing
+/// delay time as 2^(N+1) * 5 secs (20, 40, , ..., 10.240).
+/// I.e., maximum retry time is ca. three hours.
+class HTTPRetry {
+
+
+
+
+  HECTOR: REEMPLAZA LOS RETRY POR SIMPLES BUCLES!!!!!
+
+
+
+  // default values (DELAY and TIMEOUT in seconds)
+  static const MAX_ATTEMPTS = 3;
+  static const DELAY = 5;
+  static const TIMEOUT = 30;
+  var client = http.Client();
+
+  /// Sends an HTTP GET request with the given [headers] to the given [url].
+  Future<http.Response> get(String url,
+      {Map<String, String>? headers,
+      int maxAttempts = HTTPRetry.MAX_ATTEMPTS,
+      int delay = HTTPRetry.DELAY,
+      int timeout = HTTPRetry.TIMEOUT}) async {
+    debugPrint("HECTOR:HTTP_RETRY.DART: get");
+    debugPrint(Uri.encodeFull(url));
+    debugPrint("headers:\n$headers");
+    final http.Response response = await retry(
+      () => client
+          .get(
+            Uri.parse(Uri.encodeFull(url)),
+            headers: headers,
+          )
+          .timeout(Duration(seconds: timeout)),
+      delayFactor: Duration(seconds: delay),
+      maxAttempts: maxAttempts,
+      retryIf: (e) =>
+          e is SocketException || e is TimeoutException || e is HttpException,
+      onRetry: (e) => debugPrint(
+          'HECTOR: ${e.runtimeType.toString()} - Retrying to GET $url: Error: ${e.toString()}'),
+    );
+    debugPrintWrapped("HECTOR: Respuesta: ${response.body}");
+    return response;
+  }
+
+  /// Sends an HTTP POST request with the given [headers] and [body] to the given [url].
+  Future<http.Response> post(String url,
+      {Map<String, String>? headers,
+      body,
+      Encoding? encoding,
+      int maxAttempts = HTTPRetry.MAX_ATTEMPTS,
+      int delay = HTTPRetry.DELAY,
+      int timeout = HTTPRetry.TIMEOUT}) async {
+    // calling the http POST method using the retry approach
+    // HECTOR: PARA VER QUÉ PASA EXACTAMENTE CON EL SERVIDOR
+    // HECTOR: le añado que se puedan pasar los maxAttempts como parámetro opcional
+    debugPrint("HECTOR:HTTP_RETRY.DART: post");
+    debugPrint(Uri.encodeFull(url));
+    debugPrint("headers:\n$headers");
+    debugPrint("body:\n$body");
+    final http.Response response = await retry(
+      () => client
+          .post(
+            Uri.parse(Uri.encodeFull(url)),
+            headers: headers,
+            body: body,
+            encoding: encoding,
+          )
+          .timeout(Duration(seconds: timeout)),
+      delayFactor: Duration(seconds: delay),
+      maxAttempts: maxAttempts,
+      retryIf: (e) =>
+          e is SocketException || e is TimeoutException || e is HttpException,
+      onRetry: (e) => debugPrint(
+          '${e.runtimeType.toString()} - Retrying to POST $url: Error: ${e.toString()}'),
+    );
+    debugPrintWrapped("Respuesta: ${response.body}");
+    return response;
+  }
+
+  /// Sends an HTTP PUT request with the given [headers] and [body] to the given [url].
+  Future<http.Response> put(String url,
+      {Map<String, String>? headers,
+      body,
+      Encoding? encoding,
+      int maxAttempts = HTTPRetry.MAX_ATTEMPTS,
+      int delay = HTTPRetry.DELAY,
+      int timeout = HTTPRetry.TIMEOUT}) async {
+    // calling the http PUT method using the retry approach
+    debugPrint("HECTOR:HTTP_RETRY.DART: put");
+    debugPrint(Uri.encodeFull(url));
+    debugPrint("headers:\n$headers");
+    final http.Response response = await retry(
+      () => client
+          .put(
+            Uri.parse(Uri.encodeFull(url)),
+            headers: headers,
+            body: body,
+            encoding: encoding,
+          )
+          .timeout(Duration(seconds: timeout)),
+      delayFactor: Duration(seconds: delay),
+      maxAttempts: maxAttempts,
+      retryIf: (e) =>
+          e is SocketException || e is TimeoutException || e is HttpException,
+      onRetry: (e) => debugPrint('${e.runtimeType} - Retrying to PUT $url'),
+    );
+    debugPrintWrapped("Respuesta: ${response.body}");
+    return response;
+  }
+
+  /// Sends an HTTP DELETE request with the given [headers] to the given [url].
+  Future<http.Response> delete(String url,
+      {Map<String, String>? headers,
+      int maxAttempts = HTTPRetry.MAX_ATTEMPTS,
+      int delay = HTTPRetry.DELAY,
+      int timeout = HTTPRetry.TIMEOUT}) async {
+    // calling the http DELETE method using the retry approach
+    debugPrint("HECTOR:HTTP_RETRY.DART: delete");
+    debugPrint(Uri.encodeFull(url));
+    debugPrint("headers:\n$headers");
+    final http.Response response = await retry(
+      () => client
+          .delete(
+            Uri.parse(Uri.encodeFull(url)),
+            headers: headers,
+          )
+          .timeout(Duration(seconds: timeout)),
+      delayFactor: Duration(seconds: delay),
+      maxAttempts: maxAttempts,
+      retryIf: (e) =>
+          e is SocketException || e is TimeoutException || e is HttpException,
+      onRetry: (e) => debugPrint('${e.runtimeType} - Retrying to DELETE $url'),
+    );
+    debugPrintWrapped("Respuesta: ${response.body}");
+    return response;
+  }
+
+  /// Sends an generic HTTP [MultipartRequest].
+  Future<http.StreamedResponse> send(http.MultipartRequest request,
+      {int maxAttempts = HTTPRetry.MAX_ATTEMPTS,
+      int delay = HTTPRetry.DELAY,
+      int timeout = HTTPRetry.TIMEOUT}) async {
+    debugPrint("HECTOR:HTTP_RETRY.DART: send");
+    debugPrint(request.url.toString());
+    debugPrint(request.headers.toString());
+
+    // final response = await request.send();  // FUNCIONA!!!
+    // debugPrint(response.toString());
+
+    // final response = await client.send(request); //FUNCIONA!!!
+    // debugPrint(response.toString());
+
+    http.MultipartRequest sending = request;
+
+    final response = await retry(
+      () => client.send(sending).timeout(Duration(seconds: timeout)),
+      delayFactor: Duration(seconds: delay),
+      maxAttempts: maxAttempts,
+      retryIf: (e) =>
+          e is SocketException || e is TimeoutException || e is HttpException,
+      onRetry: (e) {
+        debugPrint(
+            '${e.runtimeType.toString()} - Retrying to SEND ${request.url}: Error: ${e.toString()}');
+
+        // when retrying sending form data, the request needs to be cloned
+        // see e.g. >> https://github.com/flutterchina/dio/issues/482
+        sending = http.MultipartRequest(request.method, request.url);
+        sending.headers.addAll(request.headers);
+        sending.fields.addAll(request.fields);
+
+        for (var file in request.files) {
+          if (file is MultipartFileRecreatable) {
+            sending.files.add(file.clone());
+          }
+        }
+      },
+    );
+    return response;
+  }
+}

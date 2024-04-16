@@ -1,0 +1,74 @@
+// import 'dart:async';
+// import 'dart:convert';
+// import 'dart:io';
+//
+// import 'package:flutter/material.dart';
+// import 'package:postcovid_ai_sin_carp/main.dart';
+//
+// import '../../my_logger.dart';
+// import 'carp_backend_modificado.dart';
+// import 'http_retry.dart';
+// import 'package:http/http.dart' as http;
+// import 'package:http_parser/http_parser.dart';
+
+// Future<int> postData(
+//     String jsonEncodedData, String url, Map<String, String> headers,
+//     {int maxAttempts = -1, int timeoutSeconds = 10}) async {
+//   http.Response response;
+//   // POST the data point to the CARP web service
+//   if (maxAttempts == -1) {
+//     // dejamos el valor que tenga por defecto
+//     response = await httpr.post(Uri.encodeFull(url),
+//         headers: headers, body: jsonEncodedData);
+//   } else {
+//     response = await httpr.post(Uri.encodeFull(url),
+//         headers: headers, body: jsonEncodedData, maxAttempts: maxAttempts);
+//   }
+//
+//   int httpStatusCode = response.statusCode;
+//   Map<String, dynamic> responseJson = json.decode(response.body);
+//
+//   if ((httpStatusCode == HttpStatus.ok) ||
+//       (httpStatusCode == HttpStatus.created)) return responseJson["id"];
+//
+//   // All other cases are treated as an error.
+//   throw CarpServiceException(
+//     httpStatus: HTTPStatus(httpStatusCode, response.reasonPhrase),
+//     message: responseJson["message"],
+//     path: responseJson["path"],
+//   );
+// }
+
+// Future batchPostData(File file, String url, Map<String, String> headers, {int maxAttempts = -1, int timeoutSeconds = 10}) async {
+//   // final String url = "$dataEndpointUri/batch";
+//
+//   var request = http.MultipartRequest("POST", Uri.parse(url));
+//   request.headers['Authorization'] = headers['Authorization']!;
+//   request.headers['Content-Type'] = 'multipart/form-data';
+//   request.headers['cache-control'] = 'no-cache';
+//
+//   request.files.add(http.MultipartFile.fromBytes(
+//     'file',
+//     file.readAsBytesSync(),
+//     filename: file.path,
+//     contentType: MediaType('application', 'json'),
+//   ));
+//
+//   // sending the request using the retry approach
+//   httpr.send(request).then((response) async {
+//     final int httpStatusCode = response.statusCode;
+//
+//     // CARP web service returns 200 or 201 when a file is uploaded to the server
+//     if ((httpStatusCode == HttpStatus.ok) || (httpStatusCode == HttpStatus.created)) return;
+//
+//     // everything else is an exception
+//     response.stream.toStringStream().first.then((body) {
+//       final Map<String, dynamic> responseJson = json.decode(body);
+//       throw CarpServiceException(
+//         httpStatus: HTTPStatus(httpStatusCode, response.reasonPhrase),
+//         message: responseJson["message"],
+//         path: responseJson["path"],
+//       );
+//     });
+//   });
+// }
