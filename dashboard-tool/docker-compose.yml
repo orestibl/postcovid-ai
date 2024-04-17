@@ -1,0 +1,38 @@
+version: "3.0"
+
+services:
+  indicators:
+    image: postgres
+    container_name: indicators
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_INDICATORS}
+      POSTGRES_USER: ${POSTGRES_USER_INDICATORS}
+      POSTGRES_DB: ${POSTGRES_DB_INDICATORS}
+    volumes:
+      - /var/lib/postgresql/data
+  backend:
+    restart: unless-stopped
+    container_name: backend
+    build: ./backend
+    volumes:
+      - /app/node_modules
+  web:
+    restart: unless-stopped
+    container_name: dashboard
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - /app/node_modules
+
+  # data_ingest:
+  #   container_name: data_ingest
+  #   build: ./data_ingest
+
+  #adminer:
+  #  image: adminer
+  #  ports:
+  #    - "3005:8080"
