@@ -1,0 +1,46 @@
+{
+  "sidebar": {
+    "main": "Main",
+    "advanced": "Advanced",
+    "filters": "Filters",
+    "settings": "Settings",
+    "admin": "Admin",
+    "studies": "Studies"
+  },
+  "indicator_names": {
+    "social_interaction": "Social Interaction",
+    "physical_activity": "Physical Activity",
+    "emmotional_state": "Emotional State",
+    "overall_wellbeing": "Overall Wellbeing"
+  },
+  "login": {
+    "title": "Login",
+    "email": "Email",
+    "password": "Password",
+    "login": "Login",
+    "forgot_password": "Forgot password?",
+    "dont_have_account": "Don't have an account? Register.",
+    "register": "Register"
+  },
+  "register": {
+    "title": "Register",
+    "email": "Email Address",
+    "password": "Password",
+    "password_confirmation": "Repeat Password",
+    "register": "Register",
+    "login": "Login",
+    "already_have_account": "Already have an account? Sign in.",
+    "select_study:": "Select study",
+    "first_name": "First name",
+    "last_name": "Last name"
+  },
+  "filters": {
+    "title": "Filters",
+    "add": "Add a filter"
+  },
+  "studies":{
+    "available_studies": "Available studies",
+    "suscribe": "Suscribe",
+    "unsuscribe": "Unsuscribe"
+  }
+}
