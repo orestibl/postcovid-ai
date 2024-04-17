@@ -1,0 +1,5 @@
+SQLAlchemy==2.0.19
+pandas==2.0.3
+pyodbc==4.0.39
+psycopg2==2.9.6
+scikit-learn
